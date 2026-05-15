@@ -31,8 +31,6 @@ cones_year <- cone_count %>%
   summarise(NumNew = sum(NumNew, na.rm = TRUE)) %>%
   mutate(mast = as.numeric(Year) %in% mast_years)
 
-View(cones_year)
-
 # Plot cone yearly production over time
 ggplot(cones_year, aes(x = as.numeric(Year), y = NumNew)) +
   geom_line(linewidth = 1) +
@@ -109,4 +107,76 @@ ggplot(df, aes(x = NumNew, y = JulianDay)) +
   theme_minimal()
 
 
+
+# ---------------------------
+# Distribution of parturition timing
+# ---------------------------
+litter <- litter %>%
+  mutate(
+    fieldBDate = as.Date(fieldBDate),
+    JulianDay = as.numeric(format(fieldBDate, "%j")),
+    mast = as.numeric(Year) %in% mast_years)
+
+# Density plot showing the distribution of parturition timing (Julian Day) in mast vs. non-mast years
+ggplot(litter, aes(x = JulianDay, color = mast, fill = mast)) +
+  geom_density(alpha = 0.3) +
+  scale_color_manual(values = c("black", "red")) +
+  scale_fill_manual(values = c("black", "red")) +
+  labs(
+    title = "Parturition Timing Distribution",
+    x = "Julian Day",
+    y = "Density",
+    color = "Mast Year",
+    fill = "Mast Year"
+  ) +
+  theme_minimal()
+
+
+
+# ---------------------------
+# Statistical analysis
+# ---------------------------
+# Check if data follow Normal Distribution
+hist(litter_year$JulianDay)
+
+qqnorm(litter_year$JulianDay); qqline(litter_year$JulianDay)
+
+shapiro.test(litter_year$JulianDay)
+
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  litter_year$JulianDay
+## W = 0.96363, p-value = 0.2352
+#W = 0.96363, p-value = 0.2352
+# Consistent with normality 
+# Parametric tests
+t.test(JulianDay ~ mast, data = litter_year)
+## 
+##  Welch Two Sample t-test
+## 
+## data:  JulianDay by mast
+## t = -4.9027, df = 8.5, p-value = 0.0009976
+## alternative hypothesis: true difference in means between group FALSE and group TRUE is not equal to 0
+## 95 percent confidence interval:
+##  -60.07561 -21.90654
+## sample estimates:
+## mean in group FALSE  mean in group TRUE 
+##            116.4375            157.4286
+# t = -4.9027, df = 8.5, p-value = 0.0009976
+# mean in group FALSE  mean in group TRUE 
+#            116.4375            157.4286
+cor.test(df$NumNew, df$JulianDay, method = "pearson")
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  df$NumNew and df$JulianDay
+## t = 7.5026, df = 37, p-value = 6.13e-09
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.6110078 0.8772829
+## sample estimates:
+##       cor 
+## 0.7767755
+# Years with higher cone production (mast years) tend to have later parturition (higher Julian day).
 
