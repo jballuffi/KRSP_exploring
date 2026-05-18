@@ -97,27 +97,41 @@ basic[is.na(food), food := 0]
 #make food factor
 basic[, food := as.factor(food)]
 
-
-ggplot(basic)+
+#look at a t-test of food add and growth rate
+(foodadd <- ggplot(basic)+
   geom_boxplot(aes(x = food, y = growthrate))+
   labs(x = "Food add", y = "Growth rate (g/day)")+
-  theme_bw()
+  theme_bw())
 
+#get birth month based on bdate
+basic[, bmonth := as.factor(month(bdate))]
+
+#if bmonth is NA, use month of date1
+basic[is.na(bmonth), bmonth := as.factor(month(date1))]
+
+#look at growth rate in response to birth month and food add
+(birthmonth <- ggplot(basic)+
+  geom_boxplot(aes(x = bmonth, y = growthrate, color = food))+
+  labs(x = "Birth month", y = "Growth rate (g/day)")+
+  theme_bw())
+
+#get average growth rates by year
 annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(yr, food)]
 setorder(annual, yr)
 
-ggplot(annual)+
+#plot avg annual growth rate over time and by food add
+(annual <- ggplot(annual)+
   geom_line(aes(x = yr, y = growthrate, color = food), linewidth = 1)+
   labs(x = "Year", y = "Growth rate (g/day)")+
-  theme_bw()
+  theme_bw())
 
 
 
 # save ---------------------------------------------------
 
 saveRDS(dat2, "Output/Data/growth_rates.rds")
-
-
-
+ggsave("Output/Figures/GR_foodadd.jpeg", foodadd, width = 3, height = 4, unit = "in")
+ggsave("Output/Figures/GR_birthmonth.jpeg", birthmonth, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/GR_annual.jpeg", annual, width = 6, height = 4, unit = "in")
 
 
