@@ -21,7 +21,7 @@ con <- krsp_connect(
 lit2 <- as.data.table(tbl(con, "litter") %>% collect())
 
 #take only cols of interest
-lit2 <- lit2[, .(squirrel_id, litter_id = id, yr, br, food,
+lit2 <- lit2[, .(mother_id = squirrel_id, litter_id = id, yr, br, food,
                bdate = fieldBDate, date1, date2 = tagDt)]
 
 #fix up dates
@@ -37,36 +37,54 @@ juv2 <- as.data.table(tbl(con, "juvenile") %>% collect())
 
 #take only cols of interest
 juv2 <- juv2[, .(squirrel_id, litter_id, sex, 
-                 #date1 = date_created, date2 = last_updated, 
+                 #jdate1 = date_created, jdate2 = last_updated, 
                  weight1 = weight, weight2 = tagWT)]
-
-# #fix up dates
-# juv2[, date1 := tstrsplit(date1, " ", keep = 1)]
-# juv2[, date2 := tstrsplit(date2, " ", keep = 1)]
-# juv2[, date1 := ymd(date1)][, date2 := ymd(date2)]
-# juv2[, m := month(date1)]
 
 #any weights as zero make NA 
 juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
 
 
 
-# merge juv2 and lit2 -----------------------------------------------------
+#WHAT ARE THESE DATES??????
+# juv2[, yr := tstrsplit(jdate1, "-", keep = 1)]
+# juv2[, .N, yr]
+#based on this it I believe that the dates are dates data was entered. 2014 has 12299 entries
 
 
 
+# merge juv2 and lit2 and clean based on weight data -----------------------------------------------------
+
+#merge
+dat2 <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
+
+#cases where weight 1 and weight 2 are the same.
+dat2[weight1 == weight2] #this looks to be usually when first nests were missed
+
+#number of cases where weight 1 is bigger than weight 1
+dat2[weight1 > weight2, .N] #this is a rare scenario
+
+#remove both of those issues
+dat2 <- dat2[!(weight1 > weight2 | weight1 == weight2)]
 
 
 
+# calculate growth rates --------------------------------------------------
 
-#number of cases where weight 1 and weight 2 are the same.
-juvs[weight1 == weight2, .N]
+#get time difference
+dat2[, days := as.integer(date2 - date1)]
 
-#remove cases where both weights are the same
-juvs <- juvs[!weight1 == weight2]
+#any cases where the two dates were the same make days NA
+dat2[days == 0, days := NA]
 
-#remove cases where weight 1 is bigger than weight 1
-juvs <- juvs[!weight1 > weight2]
+#get growth rate over that time (g/day)
+dat2[, growthrate := (weight2 - weight1)/days]
+
+hist(dat2$growthrate)
+#there's one value of 15 which doesn't seem possible
+#make anything over 10 grams per day NA
+dat2[!growthrate > 10, growthrate := NA]
+
+
 
 
 
