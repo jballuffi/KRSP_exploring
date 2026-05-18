@@ -14,47 +14,50 @@ con <- krsp_connect(
 
 
 
-# early juvenile data -----------------------------------------------------
-
-juvs1 <- as.data.table(tbl(con, "dbajuvenile") %>% collect())
-
-
-
-
 
 # later litter data -------------------------------------------------------
 
 #get litter data
-lit <- as.data.table(tbl(con, "litter") %>% collect())
+lit2 <- as.data.table(tbl(con, "litter") %>% collect())
 
 #take only cols of interest
-lit <- lit[, .(squirrel_id, yr, )]
+lit2 <- lit2[, .(squirrel_id, litter_id = id, yr, br, food,
+               bdate = fieldBDate, date1, date2 = tagDt)]
+
+#fix up dates
+lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 
 
 
 # later juvenile data -----------------------------------------------------------
 
 #get juvenile data 
-juvs <- as.data.table(tbl(con, "juvenile") %>% collect())
+juv2 <- as.data.table(tbl(con, "juvenile") %>% collect())
 #this data is only from 2013 - 2025
 
 #take only cols of interest
-juvs <- juvs[, .(squirrel_id, litter_id, sex, 
-                 date1 = date_created, date2 = last_updated, 
+juv2 <- juv2[, .(squirrel_id, litter_id, sex, 
+                 #date1 = date_created, date2 = last_updated, 
                  weight1 = weight, weight2 = tagWT)]
 
-#fix up dates
-juvs[, date1 := tstrsplit(date1, " ", keep = 1)]
-juvs[, date2 := tstrsplit(date2, " ", keep = 1)]
-juvs[, date1 := ymd(date1)][, date2 := ymd(date2)]
-juvs[, y := year(date1)]
-juvs[, m := month(date1)]
+# #fix up dates
+# juv2[, date1 := tstrsplit(date1, " ", keep = 1)]
+# juv2[, date2 := tstrsplit(date2, " ", keep = 1)]
+# juv2[, date1 := ymd(date1)][, date2 := ymd(date2)]
+# juv2[, m := month(date1)]
 
 #any weights as zero make NA 
-juvs[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
+juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
 
-#number of cases where date 1 and date 2 are the same. What's going on here?
-juvs[date1 == date2, .N]
+
+
+# merge juv2 and lit2 -----------------------------------------------------
+
+
+
+
+
+
 
 #number of cases where weight 1 and weight 2 are the same.
 juvs[weight1 == weight2, .N]
@@ -65,14 +68,5 @@ juvs <- juvs[!weight1 == weight2]
 #remove cases where weight 1 is bigger than weight 1
 juvs <- juvs[!weight1 > weight2]
 
-#calculate number of days between first and second litter
-juvs[, days := as.integer(date2 - date1)]
 
-#calculate growth rate between nests (g)
-juvs[, growthrate := (weight2 - weight1)]
-
-
-hist(juvs$growthrate)
-
-hist(juvs$weight1)
 
