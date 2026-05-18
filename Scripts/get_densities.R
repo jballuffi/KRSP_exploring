@@ -15,29 +15,26 @@ con <- krsp_connect(
 
 
 
-# get census data ---------------------------------------------------------
+# get all squirrel data ---------------------------------------------------------
 
-#get census data
-census <- as.data.table(tbl(con, "census") %>% collect())
+#import data
+squirrel <- as.data.table(tbl(con, "squirrel") %>% collect())
 
 #take only cols of interest
-census <- census[, .(cdate = census_date, grid = gr, squirrel_id)]
+squirrel <- squirrel[, .(squirrel_id = id, tdate = ymd(trap_date), grid = gr)]
 
 
 
-# calculate grid density by census ----------------------------------------
-
-#make a date
-census[, cdate := ymd(cdate)]
+# calculate grid densities  ----------------------------------------
 
 #get year and month
-census[, yr := year(cdate)][, m := month(cdate)]
+squirrel[, yr := year(tdate)]
 
 #get total number of individual per year and grid
-density <- census[, .(density = length(unique(squirrel_id))), by = .(yr, grid)]
+density <- squirrel[, .(density = length(unique(squirrel_id))), by = .(yr, grid)]
 
 #remove the missing grid
-density <- density[!grid == ""]
+density <- density[!is.na(grid)]
 
 
 
