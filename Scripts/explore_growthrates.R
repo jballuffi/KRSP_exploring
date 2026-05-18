@@ -87,6 +87,37 @@ dat2[growthrate <= 0 | growthrate > 10, growthrate := NA]
 
 
 
+# figures -----------------------------------------------------------------
+
+basic <- dat2[food == 1 | food == 0 | is.na(food)]
+
+#assume NA is a control
+basic[is.na(food), food := 0]
+
+#make food factor
+basic[, food := as.factor(food)]
+
+
+ggplot(basic)+
+  geom_boxplot(aes(x = food, y = growthrate))+
+  labs(x = "Food add", y = "Growth rate (g/day)")+
+  theme_bw()
+
+annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(yr, food)]
+setorder(annual, yr)
+
+ggplot(annual)+
+  geom_line(aes(x = yr, y = growthrate, color = food), linewidth = 1)+
+  labs(x = "Year", y = "Growth rate (g/day)")+
+  theme_bw()
+
+
+
+# save ---------------------------------------------------
+
+saveRDS(dat2, "Output/Data/growth_rates.rds")
+
+
 
 
 
