@@ -13,6 +13,10 @@ con <- krsp_connect(
 )
 
 
+#erin's code for 130 m radius
+#
+
+
 
 
 # get all squirrel data ---------------------------------------------------------

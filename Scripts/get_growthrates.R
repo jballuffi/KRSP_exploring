@@ -84,6 +84,10 @@ hist(dat2$growthrate)
 #anything less than or equal to zero OR greater than 10 make NA
 dat2[growthrate <= 0 | growthrate > 10, growthrate := NA]
 
+#look at example analyses 
+#exclude certain litters for growth rate calculations (Dulaney paper and David Fisher paper exclude certain litters)
+#excl
+#first mass over 50 g or 2nd mass was over 100
 
 
 

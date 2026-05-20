@@ -76,10 +76,14 @@ playback[, playback := as.factor(playback)]
 
 
 
-# density analysis --------------playback# density analysis --------------food# density analysis --------------------------------------------------------
+## density analysis --------------------------------------------------------
 
 #look at growth rate in response to litter size and density
 #use the factor version of litter size
+
+
+#flip litter size and density. Categorize density and use that as the factor keep litter size an integer
+
 
 #sample size
 control[!is.na(growthrate), .N]
