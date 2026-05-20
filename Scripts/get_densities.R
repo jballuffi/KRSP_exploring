@@ -73,7 +73,7 @@ census[, length(unique(squirrel_id)), by = .(year)]
 census[, .N, by = year]
 
 #convert spatial locations into meters
-census[, locXm := locX*30][, locYm := locY*30]
+census[, locX := locX*30][, locY := locY*30]
 
 #test with a subset of data
 test <- census[grid == "SU" & year == 2002]
