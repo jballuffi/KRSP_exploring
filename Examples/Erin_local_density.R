@@ -28,11 +28,7 @@ neighbours.all <- data.frame()
 
 
 #Bring in the census - depending on what data you're working with you may need the dbamidden file or the census file or both
-census2 <- as.data.table(tbl(con, "census") %>% collect()) #squirrel census
-
-census1 <- as.data.table(tbl(con, "dbamidden") %>% collect()) #midden census essentially
-
-
+census <- tbl(con, "census") %>% collect() #squirrel census
 
 
 census %<>% 
