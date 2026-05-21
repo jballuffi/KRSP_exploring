@@ -214,34 +214,3 @@ test2[, x := locXm][, y := locYm]
 test2[(x - locXm)^2 + (y - locYm)^2 <= (distance)^2, .N, squirrel_id]
 
 
-
-
-
-
-# get all squirrel data ---------------------------------------------------------
-
-#import data
-squirrel <- as.data.table(tbl(con, "squirrel") %>% collect())
-
-#take only cols of interest
-squirrel <- squirrel[, .(squirrel_id = id, tdate = ymd(trap_date), grid = gr)]
-
-
-
-# calculate grid densities  ----------------------------------------
-
-#get year and month
-squirrel[, yr := year(tdate)]
-
-#get total number of individual per year and grid
-density <- squirrel[, .(density = length(unique(squirrel_id))), by = .(yr, grid)]
-
-#remove the missing grid
-density <- density[!is.na(grid)]
-
-
-
-# save densities ----------------------------------------------------------
-
-saveRDS(density, "Output/Data/grid_densities.rds")
-
