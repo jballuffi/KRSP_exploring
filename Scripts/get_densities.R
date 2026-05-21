@@ -58,25 +58,32 @@ data2 <- data2[!duplicated(squirrel_yr)]
 #convert spatial locations into meters
 data2[, locX := locX*30][, locY := locY*30]
 
+#further subset to build and test functions
+#for this we will use Sulphur in 2002
+testfun <- data2[grid == "SU" & year == 2002]
 
 
 
-# build function for density -----------------------------------------------------------
+# test the idea of counting within a radius -----------------------------------------------------------
 
-#test with a subset of data, Sulphur in 2002
+#duplicate test
 test <- data2[grid == "SU" & year == 2002]
-testfun <- test #the test for the function building
 
-#pick an individual
-testid <- "5475"
+#randomly pick an individual
+testid <- sample(test$squirrel_id, 1)
 
 #make a col to highlight that individual
-test[squirrel_id == testid, idtest := "yes"]
+test[squirrel_id == testid, testsubject := "yes"]
+test[is.na(testsubject), testsubject := "no"]
+
+#make colors for test subject
+testcols <- c("yes" = "red", "no" = "grey")
 
 #plot the location of all squirrels for that test data with the test individual highlighted
 ggplot(test)+
-  geom_circle(aes(x0 = locX, y0 = locY, r = radius, color = idtest), linewidth = .75)+
-  geom_point(aes(x = locX, y = locY, color = idtest), size = 3)+
+  geom_circle(aes(x0 = locX, y0 = locY, r = radius, color = testsubject))+
+  geom_point(aes(x = locX, y = locY, color = testsubject), size = 3)+
+  scale_color_manual(guide = NULL, values = testcols)+
   coord_fixed()+
   theme_minimal()
 
@@ -85,12 +92,13 @@ testx <- test[squirrel_id == testid, locX]
 testy <- test[squirrel_id == testid, locY]
 
 #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
-count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N - 1]
-count
+test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2]
+count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N]
+count-1 #squirrels
 
 #calculate the density based on that count
 density <- count/((pi*radius^2)/10000)
-density
+density #squirrels per hectare
 
 # ^^^ THIS WORKS FOR INDIVIDUALS
 
