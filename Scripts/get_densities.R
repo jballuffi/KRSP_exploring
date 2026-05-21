@@ -5,6 +5,7 @@ library(lubridate)
 library(ggforce)
 library(dplyr)
 
+
 #read in prepped census data
 census <- readRDS("Output/Data/census_full.rds")
 
@@ -52,22 +53,29 @@ data2[, date := NULL]
 #make a squirrel_year col
 data2[, squirrel_yr := paste0(squirrel_id, "_", year)]
 
+#make a squirrel_year_grid col
+data2[, squirrel_yr_gr := paste0(squirrel_id, "_", year, "_", grid)]
+
 #remove any cases of duplicate squirrel years
 data2 <- data2[!duplicated(squirrel_yr)]
 
 #convert spatial locations into meters
 data2[, locX := locX*30][, locY := locY*30]
 
-#further subset to build and test functions
-#for this we will use Sulphur in 2002
-testfun <- data2[grid == "SU" & year == 2002]
 
 
+# test on one individual on one grid in one year -----------------------------------------------------------
 
-# test the idea of counting within a radius -----------------------------------------------------------
+#step 1 get the squirrel's location
+#step 2 get the number of locations for that squirrel
+#step 3 take all locations that are within the radius
+#step 4 tally that number of locations
+#step 5 subtract the locations that are the same squirrel
+#step 6 calculate density
+
 
 #duplicate test
-test <- data2[grid == "SU" & year == 2002]
+test <- data2[grid == "SU" & year == 2023]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -93,8 +101,8 @@ testy <- test[squirrel_id == testid, locY]
 
 #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
 test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2]
-count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N]
-count-1 #squirrels
+count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N] - 1
+count #squirrels
 
 #calculate the density based on that count
 density <- count/((pi*radius^2)/10000)
@@ -105,120 +113,77 @@ density #squirrels per hectare
 
 
 
+# create function for one grid and one year ---------------------------------------------------------
 
-
-get_density <- function(dat, id, xloc, yloc){
-  
-  #first get all individuals
-  ids <- list(dat$id)
-  
-  #get all X locs of those individuals
-  xcenters <- 
-  
-  xcenter = dat[squirrel_id == id, locX]
-  ycenter = dat[squirrel_id == id, locY]
-  N = dat[(xcenter - locX)^2 + (ycenter - locY)^2 <= (distance)^2, .N]
-  N = N - 1
-  density <- N/((pi*distance^2)/10000)
-  return(density)
-}
-
-
-ids <- list(test$squirrel_id)
-
-xcenters <- lapply(ids, function(z){test[squirrel_id == z, return(locX)]})
-
-ycenters <- lapply(ids, function(z){test[squirrel_id == z, return(locY)]})
-
-
-
-
-get_density(id = "5540")
-
-test$density <- lapply(ids, get_density)
-
-test[, density := get_density(id = squirrel_id), squirrel_id]
-
-
-
-
-
-
-#create coordinates of a test location
-testX = 250
-testY = 250
-
-#from Erin's code:
-#(30*data$locX[i] - 30*census$locX)^2 + (30*data$locY[i] - 30*census$locY)^2 <= (distance)^2)
-
-test[(testX - locX)^2 + (testY - locY)^2 <= (distance)^2, .N]
-
-#how many individuals?
-test[, length(unique(squirrel_id))]
-
-#get avg locations of individuals
-
-
-
-
-inds <- test[!is.na(squirrel_id), .(N = .N, 
-                                    meanX = mean(locX, na.rm = TRUE),
-                                    meanY = mean(locY, na.rm = TRUE)),
-             by = squirrel_id]
-
-
-
-
-getdensity <- function(x, y){
-  
-  test[(x - locX)^2 + (x - locY)^2 <= (distance)^2, .N]
-  
+#test function
+fun1 <- function(id){
+  #get the x and y locations for that test individual
+  testx <- test[squirrel_id == id, locX]
+  testy <- test[squirrel_id == id, locY]
+  #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
+  count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N] - 1
+  density <- count/((pi*radius^2)/10000)
+  return(density) #squirrels per hectare
   }
 
+fun1(id = testid)
 
-inds[, count := getdensity(x = meanX, y = meanY), squirrel_id]
-inds[count == 0, type := "none"]
-
-
-#plot the location of all squirrels for that test data
-ggplot(inds)+
-  geom_circle(aes(x0 = meanX, y0 = meanY, r = distance), color = "blue")+
-  geom_point(aes(x = meanX, y = meanY, size = count, color = type))+
-  coord_fixed()+
-  theme_minimal()
+#test function on the entire list of squirrels
+test$density <- lapply(test$squirrel_id, fun1)
 
 
 
+# create function for one grid but multi years ----------------------------
 
-#step 1 get the squirrel's avg location
-#step 2 get the number of locations for that squirrel
-#step 3 take all locations that are within the radius
-#step 4 tally that number of locations
-#step 5 subtract the locations that are the same squirrel
-#step 6 calculate density
-
-
-
-
-
-
-
-
-
-
-
-getdensity <- function(x, y){
-  
-  #tally up how many locations in the test folder are within the radius
-  test2[(x - locXm)^2 + (y - locYm)^2 <= (distance)^2, .N]
-  
+#test function
+fun2 <- function(id){
+  #get the x and y locations for that test individual
+  testx <- test2[squirrel_yr == id, locX]
+  testy <- test2[squirrel_yr == id, locY]
+  testyear <- test2[squirrel_yr == id, year]
+  #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
+  count <- test2[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear, .N] - 1
+  density <- count/((pi*radius^2)/10000)
+  return(density) #squirrels per hectare
 }
 
-test2[, .(density = getdensity(x = locXm, y = locYm))]
+#duplicate test
+test2 <- data2[grid == "SU" & year > 2020]
+
+testidyr <- paste0(testid, "_", 2023)
+
+fun2(id = testidyr)
+
+test2$density <- lapply(test2$squirrel_yr, fun2)
+
+test2[squirrel_yr == testidyr]
 
 
-test2[, x := locXm][, y := locYm]
-
-test2[(x - locXm)^2 + (y - locYm)^2 <= (distance)^2, .N, squirrel_id]
 
 
+# create function for multi grid and multi years ----------------------------
+
+#test function
+fun3 <- function(id){
+  #get the x and y locations for that test individual
+  testx <- test3[squirrel_yr_gr == id, locX]
+  testy <- test3[squirrel_yr_gr == id, locY]
+  testyear <- test3[squirrel_yr_gr == id, year]
+  testgrid <- test3[squirrel_yr_gr == id, grid]
+  #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
+  count <- test3[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
+  density <- count/((pi*radius^2)/10000)
+  return(count) #squirrels per hectare
+}
+
+#duplicate test
+test3 <- data2[grid == "SU" | grid == "KL" & year > 2020]
+
+testid <- sample(test3$squirrel_yr_gr)
+
+fun3(id = testid)
+
+test3$density <- lapply(test3$squirrel_yr_gr, fun3)
+min(test3$density)
+
+#a few with neg densities but likely because of the minus 1
