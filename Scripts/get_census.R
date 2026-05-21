@@ -12,9 +12,6 @@ con <- krsp_connect(
   password = Sys.getenv("krsp_password")
 )
 
-#set distance for local densities
-distance <- 130
-
 
 
 # Import and bind all census data (Andrew's code) -----------------------------------------
