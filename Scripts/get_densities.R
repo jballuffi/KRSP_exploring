@@ -9,7 +9,7 @@ library(dplyr)
 census <- readRDS("Output/Data/census_full.rds")
 
 #set distance for local densities
-distance <- 130
+radius <- 130
 
 
 
@@ -41,7 +41,7 @@ for (i in 1:n) {
 
 
 
-# My code -----------------------------------------------------------------
+# Clean data -----------------------------------------------------------------
 
 #subset census data
 data2 <- census[!is.na(squirrel_id) & month == 5]
@@ -60,15 +60,42 @@ data2[, locX := locX*30][, locY := locY*30]
 
 
 
+
+# build function for density -----------------------------------------------------------
+
 #test with a subset of data, Sulphur in 2002
 test <- data2[grid == "SU" & year == 2002]
+testfun <- test #the test for the function building
 
-#plot the location of all squirrels for that test data
+#pick an individual
+testid <- "5475"
+
+#make a col to highlight that individual
+test[squirrel_id == testid, idtest := "yes"]
+
+#plot the location of all squirrels for that test data with the test individual highlighted
 ggplot(test)+
-  geom_circle(aes(x0 = locX, y0 = locY, r = distance), color = "blue")+
-  geom_point(aes(x = locX, y = locY))+
+  geom_circle(aes(x0 = locX, y0 = locY, r = radius, color = idtest), linewidth = .75)+
+  geom_point(aes(x = locX, y = locY, color = idtest), size = 3)+
   coord_fixed()+
   theme_minimal()
+
+#get the x and y locations for that test individual
+testx <- test[squirrel_id == testid, locX]
+testy <- test[squirrel_id == testid, locY]
+
+#count the number of other individuals within the radius (minus 1 to remove the test ind's location)
+count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N - 1]
+count
+
+#calculate the density based on that count
+density <- count/((pi*radius^2)/10000)
+density
+
+# ^^^ THIS WORKS FOR INDIVIDUALS
+
+
+
 
 
 
