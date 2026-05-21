@@ -3,6 +3,7 @@ library(ggplot2)
 library(data.table)
 library(lubridate)
 library(ggforce)
+library(dplyr)
 
 #read in prepped census data
 census <- readRDS("Output/Data/census_full.rds")
@@ -12,22 +13,55 @@ distance <- 130
 
 
 
-# my inquiries into the data ----------------------------------------------
+# Erin's code -------------------------------------------------------------
 
-#take only data when there is a squirrel ID and from May census
-census <- census[!is.na(squirrel_id) & month == 5]
+#this initial subsetting removes any duplicated IDs across all years. This is a mistake
+data <- census %>% 
+  filter(month == 5,
+         !is.na(squirrel_id),
+         !duplicated(squirrel_id)) %>%
+  mutate(local.density = "") #this creates a new column in which to store your calculated local density
 
-#not sure what to do about replicate squirrel IDs
+n <- length(data$squirrel_id) #This is the length of your data (i.e. the squirrels that you want to create neighbourhoods and calculate density for). You can substitute squirrel_id for any column. This is the data the code below will loop through.
 
-#sample size of squirrels by year
-census[, length(unique(squirrel_id)), by = .(year)]
-census[, .N, by = year]
+for (i in 1:n) {
+  print(i)
+  neighbours <- subset(census, census$grid==data$grid[i] & census$year==data$year[i] & census$month == data$month[i] & (30*data$locX[i]-30*census$locX)^2+(30*data$locY[i]-30*census$locY)^2<=(distance)^2) #This selects neighbours in the same grid, year, month and within 130 m of your focal individual.
+  neighbours$Focal_ID <- data$squirrel_id[i] #this creates a column in your new 'neighbours' dataframe so that you can identify which focal individual you just created a neighbourhood for. 
+  neighbours <- subset(neighbours, !neighbours$Focal_ID==neighbours$squirrel_id) #this makes sure your focal squirrel is not included in your neighbours.
+  
+  #Calculate Density (squirrels per hectare: 53,092 m2 = 5.3 hectares)
+  num.indiv <-  length(unique(neighbours$squirrel_id))
+  density <- num.indiv/((pi*distance^2)/10000)
+  
+  #Put it all together
+  data[i,"local.density"] <- density
+  
+}
+
+
+
+# My code -----------------------------------------------------------------
+
+#subset census data
+data2 <- census[!is.na(squirrel_id) & month == 5]
+
+#remove date col
+data2[, date := NULL]
+
+#make a squirrel_year col
+data2[, squirrel_yr := paste0(squirrel_id, "_", year)]
+
+#remove any cases of duplicate squirrel years
+data2 <- data2[!duplicated(squirrel_yr)]
 
 #convert spatial locations into meters
-#census[, locX := locX*30][, locY := locY*30]
+data2[, locX := locX*30][, locY := locY*30]
 
-#test with a subset of data
-test <- census[grid == "SU" & year == 2002]
+
+
+#test with a subset of data, Sulphur in 2002
+test <- data2[grid == "SU" & year == 2002]
 
 #plot the location of all squirrels for that test data
 ggplot(test)+
@@ -36,14 +70,44 @@ ggplot(test)+
   coord_fixed()+
   theme_minimal()
 
-#take average location for each squirrel ID
-test2 <- test[, .(locXm = mean(locXm), locYm = mean(locYm)), squirrel_id]
 
-ggplot(test2)+
-  geom_circle(aes(x0 = locXm, y0 = locYm, r = distance), color = "blue")+
-  geom_point(aes(x = locXm, y = locYm))+
-  coord_fixed()+
-  theme_minimal()
+
+get_density <- function(dat, id, xloc, yloc){
+  
+  #first get all individuals
+  ids <- list(dat$id)
+  
+  #get all X locs of those individuals
+  xcenters <- 
+  
+  xcenter = dat[squirrel_id == id, locX]
+  ycenter = dat[squirrel_id == id, locY]
+  N = dat[(xcenter - locX)^2 + (ycenter - locY)^2 <= (distance)^2, .N]
+  N = N - 1
+  density <- N/((pi*distance^2)/10000)
+  return(density)
+}
+
+
+ids <- list(test$squirrel_id)
+
+xcenters <- lapply(ids, function(z){test[squirrel_id == z, return(locX)]})
+
+ycenters <- lapply(ids, function(z){test[squirrel_id == z, return(locY)]})
+
+
+
+
+get_density(id = "5540")
+
+test$density <- lapply(ids, get_density)
+
+test[, density := get_density(id = squirrel_id), squirrel_id]
+
+
+
+
+
 
 #create coordinates of a test location
 testX = 250
@@ -52,7 +116,60 @@ testY = 250
 #from Erin's code:
 #(30*data$locX[i] - 30*census$locX)^2 + (30*data$locY[i] - 30*census$locY)^2 <= (distance)^2)
 
-test2[(testX - locXm)^2 + (testY - locYm)^2 <= (distance)^2, .N]
+test[(testX - locX)^2 + (testY - locY)^2 <= (distance)^2, .N]
+
+#how many individuals?
+test[, length(unique(squirrel_id))]
+
+#get avg locations of individuals
+
+
+
+
+inds <- test[!is.na(squirrel_id), .(N = .N, 
+                                    meanX = mean(locX, na.rm = TRUE),
+                                    meanY = mean(locY, na.rm = TRUE)),
+             by = squirrel_id]
+
+
+
+
+getdensity <- function(x, y){
+  
+  test[(x - locX)^2 + (x - locY)^2 <= (distance)^2, .N]
+  
+  }
+
+
+inds[, count := getdensity(x = meanX, y = meanY), squirrel_id]
+inds[count == 0, type := "none"]
+
+
+#plot the location of all squirrels for that test data
+ggplot(inds)+
+  geom_circle(aes(x0 = meanX, y0 = meanY, r = distance), color = "blue")+
+  geom_point(aes(x = meanX, y = meanY, size = count, color = type))+
+  coord_fixed()+
+  theme_minimal()
+
+
+
+
+#step 1 get the squirrel's avg location
+#step 2 get the number of locations for that squirrel
+#step 3 take all locations that are within the radius
+#step 4 tally that number of locations
+#step 5 subtract the locations that are the same squirrel
+#step 6 calculate density
+
+
+
+
+
+
+
+
+
 
 
 getdensity <- function(x, y){
@@ -68,56 +185,6 @@ test2[, .(density = getdensity(x = locXm, y = locYm))]
 test2[, x := locXm][, y := locYm]
 
 test2[(x - locXm)^2 + (y - locYm)^2 <= (distance)^2, .N, squirrel_id]
-
-
-
-
-# Erin's code to get local densities --------------------------------------
-
-
-#create an empty data frame to store the iterations of your loop in
-neighbours.all <- data.frame()
-
-#subset the census data
-data <- census %>% 
-  filter(year == "2002",
-         !is.na(squirrel_id),
-         !duplicated(squirrel_id)) %>%
-  mutate(local.density = "") #this creates a new column in which to store your calculated local density
-
-n <- length(data$squirrel_id) #This is the length of your data (i.e. the squirrels that you want to create neighbourhoods and calculate density for). You can substitute squirrel_id for any column. This is the data the code below will loop through.
-
-for (i in 1:n) {
-  print(i)
-  neighbours <- subset(census, census$grid == data$grid[i] 
-                       & census$year == data$year[i] 
-                       & census$month == data$month[i] 
-                       & (30*data$locX[i] - 30*census$locX)^2 + (30*data$locY[i] - 30*census$locY)^2 <= (distance)^2) #This selects neighbours in the same grid, year, month and within 130 m of your focal individual.
-  neighbours$Focal_ID <- data$squirrel_id[i] #this creates a column in your new 'neighbours' dataframe so that you can identify which focal individual you just created a neighbourhood for. 
-  neighbours <- subset(neighbours, !neighbours$Focal_ID == neighbours$squirrel_id) #this makes sure your focal squirrel is not included in your neighbours.
-  
-  #Calculate Density (squirrels per hectare: 53,092 m2 = 5.3 hectares)
-  num.indiv <-  length(unique(neighbours$squirrel_id))
-  density <- num.indiv/((pi*distance^2)/10000)
-  
-  #Put it all together
-  data[i,"local.density"] <- density
-  
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
