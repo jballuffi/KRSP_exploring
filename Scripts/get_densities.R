@@ -46,7 +46,7 @@ data[, locX := locX*30][, locY := locY*30]
 #step 5 subtract the locations that are the same squirrel
 #step 6 calculate density
 
-#subset the dataset to test on
+#subset the data set to test on
 test <- data[grid == "SU" & year == 2023]
 
 #randomly pick an individual
@@ -82,29 +82,19 @@ density #squirrels per hectare
 
 
 
-# create function for multi grid and multi years ----------------------------
+# create function to get the number of neighbors ----------------------------
 
-#build function for full dataset
+#build function for full data set
 getneighbors <- function(id){
   #get the x and y locations for that test individual
-  testx <- test3[squirrel_yr_gr == id, locX]
-  testy <- test3[squirrel_yr_gr == id, locY]
-  testyear <- test3[squirrel_yr_gr == id, year]
-  testgrid <- test3[squirrel_yr_gr == id, grid]
+  testx <- data[squirrel_yr_gr == id, locX]
+  testy <- data[squirrel_yr_gr == id, locY]
+  testyear <- data[squirrel_yr_gr == id, year]
+  testgrid <- data[squirrel_yr_gr == id, grid]
   #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
-  count <- test3[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
+  count <- data[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
   return(count) #squirrels per hectare
 }
-
-#duplicate test
-test3 <- data[grid == "SU" | grid == "KL" & year > 2020]
-
-testid2 <- sample(test3$squirrel_yr_gr)
-
-getneighbors(id = testid2)
-
-test3$count <- lapply(test3$squirrel_yr_gr, getneighbors)
-test3$count <- unlist(test3$density)
 
 
 
