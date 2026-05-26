@@ -46,8 +46,7 @@ data[, locX := locX*30][, locY := locY*30]
 #step 5 subtract the locations that are the same squirrel
 #step 6 calculate density
 
-
-#duplicate test
+#subset the dataset to test on
 test <- data[grid == "SU" & year == 2023]
 
 #randomly pick an individual
@@ -74,7 +73,6 @@ testx <- test[squirrel_id == testid, locX]
 testy <- test[squirrel_id == testid, locY]
 
 #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
-test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2]
 count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N] - 1
 count #squirrels
 
@@ -82,52 +80,6 @@ count #squirrels
 density <- count/((pi*radius^2)/10000)
 density #squirrels per hectare
 
-# ^^^ THIS WORKS FOR INDIVIDUALS
-
-#create a test function
-testfun <- function(id){
-  #get the x and y locations for that test individual
-  testx <- test[squirrel_id == id, locX]
-  testy <- test[squirrel_id == id, locY]
-  #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
-  count <- test[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2, .N] - 1
-  return(count) #squirrels per hectare
-  }
-
-testfun(id = testid)
-
-#test function on the entire list of squirrels
-test$count <- lapply(test$squirrel_id, testfun)
-unlist(test$count)
-
-
-
-# create function for one grid but multi years ----------------------------
-
-# #test function
-# fun2 <- function(id){
-#   #get the x and y locations for that test individual
-#   testx <- test2[squirrel_yr == id, locX]
-#   testy <- test2[squirrel_yr == id, locY]
-#   testyear <- test2[squirrel_yr == id, year]
-#   #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
-#   count <- test2[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear, .N] - 1
-#   density <- count/((pi*radius^2)/10000)
-#   return(density) #squirrels per hectare
-# }
-# 
-# #duplicate test
-# test2 <- data2[grid == "SU" & year > 2020]
-# 
-# testidyr <- paste0(testid, "_", 2023)
-# 
-# fun2(id = testidyr)
-# 
-# test2$density <- lapply(test2$squirrel_yr, fun2)
-# 
-# test2[squirrel_yr == testidyr]
-# 
-# 
 
 
 # create function for multi grid and multi years ----------------------------
