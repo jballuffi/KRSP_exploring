@@ -9,6 +9,9 @@ library(dplyr)
 #read in prepped census data
 census <- readRDS("Output/Data/census_full.rds")
 
+#read in PB bucket data
+buckets <- fread("Input/fed_squirrels.csv")
+
 #set distance for local densities
 radius <- 130
 
@@ -30,14 +33,40 @@ data[, squirrel_yr := paste0(squirrel_id, "_", year)]
 data[, squirrel_yr_gr := paste0(squirrel_id, "_", year, "_", grid)]
 
 #remove any cases of duplicate squirrel year/grid
+#most likely from someone censused twice
 data <- data[!duplicated(squirrel_yr_gr)]
 
 #convert spatial locations into meters
 data[, locX := locX*30][, locY := locY*30]
 
+#remove one data point with ?? grid
+data <- data[!grid == "??"]
 
 
-# test on one individual on one grid in one year -----------------------------------------------------------
+
+# merge with bucket info --------------------------------------------------
+
+#remove missing squirrel IDs
+buckets <- buckets[!is.na(squirrel_id_spring)]
+
+#create a col called bucket and remove 
+buckets[, bucket := 1][, bucket_reflo := NULL]
+
+#rename id col
+setnames(buckets, "squirrel_id_spring", "squirrel_id")
+
+#merge with census data
+data2 <- merge(data, buckets, by = c("grid", "year", "squirrel_id"), all.x = TRUE)
+
+#any bucket NAs become zero
+data2[is.na(bucket), bucket := 0]
+
+#make bucket factor
+data2[, bucket := as.factor(bucket)]
+
+
+
+# test on one individual on bucket# test on one individual on one grid in one year -----------------------------------------------------------
 
 #step 1 get the squirrel's location
 #step 2 get the number of locations for that squirrel
@@ -47,7 +76,7 @@ data[, locX := locX*30][, locY := locY*30]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "SU" & year == 2023]
+test <- data2[grid == "SU" & year == 2023]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -87,12 +116,12 @@ density #squirrels per hectare
 #build function for full data set
 getneighbors <- function(id){
   #get the x and y locations for that test individual
-  testx <- data[squirrel_yr_gr == id, locX]
-  testy <- data[squirrel_yr_gr == id, locY]
-  testyear <- data[squirrel_yr_gr == id, year]
-  testgrid <- data[squirrel_yr_gr == id, grid]
+  testx <- data2[squirrel_yr_gr == id, locX]
+  testy <- data2[squirrel_yr_gr == id, locY]
+  testyear <- data2[squirrel_yr_gr == id, year]
+  testgrid <- data2[squirrel_yr_gr == id, grid]
   #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
-  count <- data[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
+  count <- data2[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
   return(count) #squirrels per hectare
 }
 
@@ -101,27 +130,27 @@ getneighbors <- function(id){
 # run function on all data  ------------------------------------------------
 
 #run function on the entire list of squirrel yr grids
-data$neighbors <- lapply(data$squirrel_yr_gr, getneighbors)
-data$neighbors <- unlist(data$neighbors)
+data2$neighbors <- lapply(data2$squirrel_yr_gr, getneighbors)
+data2$neighbors <- unlist(data2$neighbors)
 
 #fix neg 1's (these were cases where there we no neighbors)
-data[neighbors < 0, neighbors := 0]
+data2[neighbors < 0, neighbors := 0]
 
 #convert to densities (squirrels/ha)
-data[, density := neighbors/((pi*radius^2)/10000)]
+data2[, density := neighbors/((pi*radius^2)/10000)]
 
 #subset to cols of interest
-densities <- data[, .(squirrel_id, grid, year, reflo, neighbors, density)]
+densities <- data2[, .(squirrel_id, grid, year, reflo, bucket, neighbors, density)]
 
 
 
 # plot --------------------------------------------------------------------
 
 means <- densities[, .(density = mean(density)), year]
+setorder(means, year)
 
 ggplot(means)+
   geom_path(aes(x = year, y = density, group = 1))
-
 
 ggplot(densities)+
   geom_boxplot(aes(x = grid, y = density))
@@ -129,7 +158,6 @@ ggplot(densities)+
 
 
 # save  --------------------------------------------------------
-
 
 #save prepped data
 saveRDS(densities, "Output/Data/local_densities.rds")
