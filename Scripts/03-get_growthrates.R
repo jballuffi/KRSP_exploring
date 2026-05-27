@@ -20,7 +20,7 @@ con <- krsp_connect(
 lit2 <- as.data.table(tbl(con, "litter") %>% collect())
 
 #take only cols of interest
-lit2 <- lit2[, .(mother_id = squirrel_id, litter_id = id, yr, grid, br, food, ln,
+lit2 <- lit2[, .(mother_id = squirrel_id, litter_id = id, year = yr, grid, br, food, ln,
                bdate = fieldBDate, date1, date2 = tagDt)]
 
 #fix up dates
@@ -35,19 +35,10 @@ juv2 <- as.data.table(tbl(con, "juvenile") %>% collect())
 #this data is only from 2013 - 2025
 
 #take only cols of interest
-juv2 <- juv2[, .(squirrel_id, litter_id, sex, 
-                 #jdate1 = date_created, jdate2 = last_updated, 
-                 weight1 = weight, weight2 = tagWT)]
+juv2 <- juv2[, .(squirrel_id, litter_id, sex, weight1 = weight, weight2 = tagWT)]
 
 #any weights as zero make NA 
 juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
-
-
-
-#WHAT ARE THESE DATES??????
-# juv2[, yr := tstrsplit(jdate1, "-", keep = 1)]
-# juv2[, .N, yr]
-#based on this it I believe that the dates are dates data was entered. 2014 has 12299 entries
 
 
 
@@ -83,6 +74,9 @@ hist(dat2$growthrate)
 
 #anything less than or equal to zero OR greater than 10 make NA
 dat2[growthrate <= 0 | growthrate > 10, growthrate := NA]
+
+#make sex factor
+dat2[, sex := as.factor(sex)]
 
 #look at example analyses 
 #exclude certain litters for growth rate calculations (Dulaney paper and David Fisher paper exclude certain litters)
@@ -120,12 +114,12 @@ basic[is.na(bmonth), bmonth := as.factor(month(date1))]
   theme_bw())
 
 #get average growth rates by year
-annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(yr, food)]
-setorder(annual, yr)
+annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(year, food)]
+setorder(annual, year)
 
 #plot avg annual growth rate over time and by food add
 (annual <- ggplot(annual)+
-  geom_line(aes(x = yr, y = growthrate, color = food), linewidth = 1)+
+  geom_line(aes(x = year, y = growthrate, color = food), linewidth = 1)+
   labs(x = "Year", y = "Growth rate (g/day)")+
   theme_bw())
 
