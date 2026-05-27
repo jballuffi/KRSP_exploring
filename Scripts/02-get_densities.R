@@ -140,7 +140,7 @@ data2[neighbors < 0, neighbors := 0]
 data2[, density := neighbors/((pi*radius^2)/10000)]
 
 #subset to cols of interest
-densities <- data2[, .(squirrel_id, grid, year, reflo, bucket, neighbors, density)]
+densities <- data2[, .(mother_id = squirrel_id, grid, year, reflo, bucket, neighbors, density)]
 
 
 
