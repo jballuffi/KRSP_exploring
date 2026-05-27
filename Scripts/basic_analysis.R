@@ -11,7 +11,7 @@ library(ggeffects)
 # read in prepped data  ----------------------------------------------------
 
 #read in prepped data
-dens <- readRDS("Output/Data/grid_densities.rds")
+dens <- readRDS("Output/Data/local_densities.rds")
 growth <- readRDS("Output/Data/growth_rates.rds")
 
 #merge data by year and grid
