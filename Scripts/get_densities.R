@@ -18,7 +18,7 @@ radius <- 130
 
 #subset census data
 #remove any unknown squirrels and only take from month of may
-data <- census[!is.na(squirrel_id) & month == 5]
+data <- census[!is.na(squirrel_id) & month == 5] #correct to remove NAs
 
 #remove date col
 data[, date := NULL]
@@ -110,14 +110,28 @@ data[neighbors < 0, neighbors := 0]
 #convert to densities (squirrels/ha)
 data[, density := neighbors/((pi*radius^2)/10000)]
 
-
-
-# subset and save  --------------------------------------------------------
-
 #subset to cols of interest
 densities <- data[, .(squirrel_id, grid, year, reflo, neighbors, density)]
 
-#save
+
+
+# plot --------------------------------------------------------------------
+
+means <- densities[, .(density = mean(density)), year]
+
+ggplot(means)+
+  geom_path(aes(x = year, y = density, group = 1))
+
+
+ggplot(densities)+
+  geom_boxplot(aes(x = grid, y = density))
+
+
+
+# save  --------------------------------------------------------
+
+
+#save prepped data
 saveRDS(densities, "Output/Data/local_densities.rds")
 
 
