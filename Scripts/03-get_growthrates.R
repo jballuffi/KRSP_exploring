@@ -30,8 +30,11 @@ lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 #the col ln is litter number. This is an annual number.
 #ln == 2 is the 2nd litter of a female that year, not over her life
 
-#take only first litters for this analysis, as in Delaney paper
-lit2 <- lit2[ln == 1]
+#assume NA is a control
+lit2[is.na(food), food := 0]
+
+#make food factor
+lit2[, food := factor(food)]
 
 
 
@@ -42,7 +45,7 @@ juv2 <- as.data.table(tbl(con, "juvenile") %>% collect())
 #this data is only from 2013 - 2025
 
 #take only cols of interest
-juv2 <- juv2[, .(squirrel_id, litter_id, sex, weight1 = weight, weight2 = tagWT)]
+juv2 <- juv2[, .(squirrel_id, litter_id, sex = factor(sex), weight1 = weight, weight2 = tagWT)]
 
 #any weights as zero make NA 
 juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
@@ -51,12 +54,25 @@ juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
 
 # merge juv2 and lit2 and clean based on weight data -----------------------------------------------------
 
-#merge
+#merge juv and litter data by the litter ID
 dat2 <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
 
 #calculate litter size
 dat2[, littersize := .N, litter_id]
 
+#take only first litters for this analysis, as done by Delaney
+dat2 <- dat2[ln == 1]
+
+#take only cases where we have both measures of weights
+dat2 <- dat2[!(is.na(weight1) | is.na(weight2))]
+
+#THE FOLLOWING WASN'T IN DELANEY
+
+#remove any cases where weight 1 is over 50 g
+dat2 <- dat2[!weight1 > 50]
+
+#remove any cases where weight 2 was over 100 g
+dat2 <- dat2[!weight2 > 100]
 
 
 # calculate growth rates --------------------------------------------------
@@ -82,13 +98,7 @@ hist(dat2$growthrate)
 #anything less than or equal to zero OR greater than 10 make NA
 dat2[growthrate <= 0 | growthrate > 10, growthrate := NA]
 
-#make sex factor
-dat2[, sex := as.factor(sex)]
 
-#look at example analyses 
-#exclude certain litters for growth rate calculations (Dulaney paper and David Fisher paper exclude certain litters)
-#excl
-#first mass over 50 g or 2nd mass was over 100
 
 
 
@@ -96,11 +106,6 @@ dat2[, sex := as.factor(sex)]
 
 basic <- dat2[food == 1 | food == 0 | is.na(food)]
 
-#assume NA is a control
-basic[is.na(food), food := 0]
-
-#make food factor
-basic[, food := as.factor(food)]
 
 #look at a t-test of food add and growth rate
 (foodadd <- ggplot(basic)+
