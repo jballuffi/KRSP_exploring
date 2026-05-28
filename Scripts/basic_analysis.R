@@ -14,21 +14,35 @@ library(ggeffects)
 dens <- readRDS("Output/Data/local_densities.rds")
 growth <- readRDS("Output/Data/growth_rates.rds")
 
-#merge data by year and grid
-dat <- merge(dens, growth, by = c("yr", "grid"), all.y = TRUE)
 
 
+# initial merge and clean -------------------------------------------------
 
-# Further data prep (eventually move this to earlier script) -----------------------------------------------------
+#remove NA growth rates
+growth <- growth[!is.na(growthrate)]
 
-#assume anything with an NA food is a control???
-dat[is.na(food), food := 0]
+#test if there are dup ids in growth rate data
+growth[duplicated(squirrel_id) == TRUE]
+
+#take only moms from density data and remove sex col
+moms <- dens[sex == "F"][, sex := NULL]
+
+#remove duplicated rows of data
+#WHY ARE THESE HERE
+moms <- moms[duplicated(moms) == FALSE]
+
+#merge data by year TRUE#merge data by year and grid
+dat <- merge(moms, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
+
+#check for duplication after merge
+dat[duplicated(squirrel_id) == TRUE]
 
 #make factors
-dat[, br := as.factor(br)][, sex := as.factor(sex)]
+dat[, br := as.factor(br)]
 
-#figure out what to do with litter size
-#we have up to 8! Should be a factor with levels I imagine?
+
+
+# Create litter factor -----------------------------------------------------
 
 #make a new col for litter as a factor
 dat[, litterf := littersize]
@@ -44,6 +58,13 @@ dat[litterf == "6", litterf := "6+"]
 
 #next I will make levels with 
 dat[, litterf := as.factor(litterf)]
+
+
+
+# subset to certain grids and treatments ----------------------------------
+
+dat2 <- 
+
 
 
 
