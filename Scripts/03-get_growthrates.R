@@ -66,8 +66,13 @@ dat2 <- dat2[ln == 1]
 #take only cases where we have both measures of weights
 dat2 <- dat2[!(is.na(weight1) | is.na(weight2))]
 
-#THE FOLLOWING WASN'T IN DELANEY
+#cases where weight 1 and weight 2 are the same.
+dat2 <- dat2[!weight1 == weight2] #this looks to be usually when first nests were missed
 
+#number of cases where weight 1 is bigger than weight 1
+dat2 <- dat2[!weight1 > weight2] #this is a rare scenario
+
+#THE FOLLOWING WASN'T IN DELANEY
 #remove any cases where weight 1 is over 50 g
 dat2 <- dat2[!weight1 > 50]
 
@@ -75,13 +80,8 @@ dat2 <- dat2[!weight1 > 50]
 dat2 <- dat2[!weight2 > 100]
 
 
+
 # calculate growth rates --------------------------------------------------
-
-#cases where weight 1 and weight 2 are the same.
-dat2[weight1 == weight2] #this looks to be usually when first nests were missed
-
-#number of cases where weight 1 is bigger than weight 1
-dat2[weight1 > weight2, .N] #this is a rare scenario
 
 #get time difference
 dat2[, days := as.integer(date2 - date1)]
@@ -95,17 +95,14 @@ dat2[, growthrate := (weight2 - weight1)/days]
 #quick look at distribution
 hist(dat2$growthrate)
 
-#anything less than or equal to zero OR greater than 10 make NA
-dat2[growthrate <= 0 | growthrate > 10, growthrate := NA]
-
-
+#check my work, this should be 0 due to prior cleaning of weights
+dat2[growthrate <= 0 | growthrate > 10, .N]
 
 
 
 # figures -----------------------------------------------------------------
 
-basic <- dat2[food == 1 | food == 0 | is.na(food)]
-
+basic <- dat2[food == 1 | food == 0]
 
 #look at a t-test of food add and growth rate
 (foodadd <- ggplot(basic)+
