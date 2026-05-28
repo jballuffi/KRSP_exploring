@@ -20,11 +20,18 @@ con <- krsp_connect(
 lit2 <- as.data.table(tbl(con, "litter") %>% collect())
 
 #take only cols of interest
-lit2 <- lit2[, .(mother_id = squirrel_id, litter_id = id, year = yr, grid, br, food, ln,
+lit2 <- lit2[, .(mother_id = squirrel_id, litter_id = id,
+                 year = yr, grid, br, food, ln,
                bdate = fieldBDate, date1, date2 = tagDt)]
 
-#fix up dates
+#create dates
 lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
+
+#the col ln is litter number. This is an annual number.
+#ln == 2 is the 2nd litter of a female that year, not over her life
+
+#take only first litters for this analysis, as in Delaney paper
+lit2 <- lit2[ln == 1]
 
 
 
