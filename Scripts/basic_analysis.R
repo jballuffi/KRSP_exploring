@@ -61,13 +61,6 @@ dat[, litterf := as.factor(litterf)]
 
 
 
-# subset to certain grids and treatments ----------------------------------
-
-dat2 <- 
-
-
-
-
 # Get basic summaries -----------------------------------------------------
 
 #How many growth rates?
@@ -78,45 +71,48 @@ dat[!is.na(growthrate), .N, food]
 
 
 
-# subset data by treatment ------------------------------------------------
+# subset data ------------------------------------------------
+
+#list the grids we are interested in
+grids <- c("KL", "SU", "AG", "JO", "LL", "BT")
+foods <- c(1, 0, 18, 19)
+
+#subset to that list of grids and treatments, excluding data where density is missing
+dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
+
+#convert food codes to written treatments
+dat2[food == 0, treatment := "Control"][food == 1, treatment := "Food add"][food == 18, treatment := "Chickadee"][food == 19, treatment := "Rattle"]
+
+#create a table showing sample sizes by categories for non-control grids
+summary <- dat2[!(grid == "SU" | grid == "KL"), .N, by = .(grid, year, treatment)]
+setorder(summary, grid, year)
+
+#save and send to ben
+write.csv(summary, "Output/Data/N_summary_treatments.csv")
+
+#MISSING DATA FROM BT IN 2022???
 
 #subset for different analyses
-control <- dat[food == 0]
+control <- dat[grid == "SU" | grid == "KL"]
 food <- dat[food == 0 | food == 1]
 playback <- dat[food == 18 | food == 19]
 
-#food as factor
-food[, food := as.factor(food)]
-
-#redo playback categories
-playback[food == 18, playback := "Chickadee"]
-playback[food == 19, playback := "Rattle"]
-
-#make playback a factor
-playback[, playback := as.factor(playback)]
 
 
-
-## density analysis --------------------------------------------------------
-
-#look at growth rate in response to litter size and density
-#use the factor version of litter size
-
-
-#flip litter size and density. Categorize density and use that as the factor keep litter size an integer
-
-
-#sample size
-control[!is.na(growthrate), .N]
-
-#sample size by litter size
-control[!is.na(growthrate), .N, litterf]
+## Basic figures --------------------------------------------------------
 
 #growth rate in response to litter size
 (ls <- ggplot(control)+
   geom_boxplot(aes(x = litterf, y = growthrate))+
   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Controls only")+
   theme_minimal())
+
+(ls <- ggplot(food[!is.na(bucket)])+
+    geom_boxplot(aes(x = bucket, y = growthrate))+
+    labs(x = "Bucket", y = "Growth rate (g/day)", subtitle = "Controls + Food Add grids")+
+    theme_minimal())
+
+
 
 #run model for growth ~ litter size x local density
 dmod <- lm(growthrate ~ density*litterf, control)
