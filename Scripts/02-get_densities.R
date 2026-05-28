@@ -140,7 +140,7 @@ data2[neighbors < 0, neighbors := 0]
 data2[, density := neighbors/((pi*radius^2)/10000)]
 
 #subset to cols of interest
-densities <- data2[, .(mother_id = squirrel_id, grid, year, reflo, bucket, neighbors, density)]
+densities <- data2[, .(mother_id = squirrel_id, sex = Sex, grid, year, reflo, bucket, neighbors, density)]
 
 
 
@@ -149,11 +149,17 @@ densities <- data2[, .(mother_id = squirrel_id, grid, year, reflo, bucket, neigh
 means <- densities[, .(density = mean(density)), year]
 setorder(means, year)
 
-ggplot(means)+
-  geom_path(aes(x = year, y = density, group = 1))
+(totaldensity_yr <- 
+  ggplot(means)+
+  geom_path(aes(x = year, y = density, group = 1))+
+  labs(y = "Mean local density (squirrels/ha)", x = "Year")+
+  theme_bw())
 
-ggplot(densities)+
-  geom_boxplot(aes(x = grid, y = density))
+(totaldensity_gr <- 
+  ggplot(densities)+
+  geom_boxplot(aes(x = grid, y = density))+
+  labs(y = "Local density (squrirels/ha", x = "Grid")+
+  theme_bw())
 
 
 
@@ -162,6 +168,8 @@ ggplot(densities)+
 #save prepped data
 saveRDS(densities, "Output/Data/local_densities.rds")
 
-
+#save figs
+ggsave("Output/Figures/local_densities_total_year.jpeg", totaldensity_yr, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/local_densities_total_grid.jpeg", totaldensity_gr, width = 6, height = 4, unit = "in")
 
 
