@@ -9,9 +9,6 @@ library(dplyr)
 #read in prepped census data
 census <- readRDS("Output/Data/census_full.rds")
 
-#read in PB bucket data
-buckets <- fread("Input/fed_squirrels.csv")
-
 #set distance for local densities
 radius <- 130
 
@@ -44,29 +41,10 @@ data <- data[!grid == "??"]
 
 
 
-# merge with bucket info --------------------------------------------------
-
-#remove missing squirrel IDs
-buckets <- buckets[!is.na(squirrel_id_spring)]
-
-#create a col called bucket and remove 
-buckets[, bucket := 1][, bucket_reflo := NULL]
-
-#rename id col
-setnames(buckets, "squirrel_id_spring", "squirrel_id")
-
-#merge with census data
-data2 <- merge(data, buckets, by = c("grid", "year", "squirrel_id"), all.x = TRUE)
-
-#any bucket NAs become zero
-data2[is.na(bucket), bucket := 0]
-
-#make bucket factor
-data2[, bucket := as.factor(bucket)]
 
 
 
-# test on one individual on bucket# test on one individual on one grid in one year -----------------------------------------------------------
+# test on one individual on one grid in one year -----------------------------------------------------------
 
 #step 1 get the squirrel's location
 #step 2 get the number of locations for that squirrel
