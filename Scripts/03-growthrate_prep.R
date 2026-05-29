@@ -53,15 +53,11 @@ lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 #the col ln is litter number. This is an annual number.
 #ln == 2 is the 2nd litter of a female that year, not over her life
 
-#make breeding status a factor
-lit2[, br := factor(br)]
-
 #merge with census data
 lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
 
 #any bucket NAs become zero
 lit2[is.na(bucket), bucket := 0]
-lit2[, bucket := as.factor(bucket)]
 
 #are there cases where not food treatment but has bucket?
 lit2[food == 0 & bucket == 1, unique(year), grid]
@@ -139,7 +135,7 @@ dat2 <- dat2[!is.na(growthrate)]
 
 
 
-# Create litter factor -----------------------------------------------------
+# Make final factors -----------------------------------------------------
 
 #make a new col for litter as a factor
 dat2[, litterf := littersize]
@@ -156,19 +152,18 @@ dat2[litterf == "6", litterf := "6+"]
 #next I will make levels with 
 dat2[, litterf := as.factor(litterf)]
 
+#make NA foods 0
+dat2[is.na(food), food := 0]
+
+#make food, bucket, and breeding status factors
+dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)]
+
 
 
 # Get basic summaries -----------------------------------------------------
 
 #How many growth rates?
 dat2[, .N]
-
-#whats up with this NA foods
-dat2[is.na(food), unique(year), grid]
-
-#make NA foods 0, and redo factor
-dat2[is.na(food), food := 0]
-dat2[, food := factor(food)]
 
 #Get sample size by treatment
 dat2[, .N, food]
