@@ -14,10 +14,20 @@ con <- krsp_connect(
 
 
 
-# later litter data -------------------------------------------------------
+# read in data ------------------------------------------------------------
 
 #get litter data
 lit2 <- as.data.table(tbl(con, "litter") %>% collect())
+
+#get individual juvenile data 
+juv2 <- as.data.table(tbl(con, "juvenile") %>% collect())
+
+#get list of moms with buckets (food add)
+buckets <- fread("Input/fed_squirrels.csv")
+
+
+
+# prep litter data -------------------------------------------------------
 
 #take only cols of interest
 lit2 <- lit2[, .(mother_id = squirrel_id, litter_id = id,
@@ -38,11 +48,7 @@ lit2[, food := factor(food)]
 
 
 
-# later juvenile data -----------------------------------------------------------
-
-#get juvenile data 
-juv2 <- as.data.table(tbl(con, "juvenile") %>% collect())
-#this data is only from 2013 - 2025
+# prep juvenile data -----------------------------------------------------------
 
 #take only cols of interest
 juv2 <- juv2[, .(squirrel_id, litter_id, sex = factor(sex), weight1 = weight, weight2 = tagWT)]
@@ -78,6 +84,28 @@ dat2 <- dat2[!weight1 > 50]
 
 #remove any cases where weight 2 was over 100 g
 dat2 <- dat2[!weight2 > 100]
+
+
+
+# merge with bucket info --------------------------------------------------
+
+#remove missing squirrel IDs
+buckets <- buckets[!is.na(squirrel_id_spring)]
+
+#create a col called bucket and remove 
+buckets[, bucket := 1][, bucket_reflo := NULL]
+
+#rename id col
+setnames(buckets, "squirrel_id_spring", "squirrel_id")
+
+#merge with census data
+data2 <- merge(data, buckets, by = c("grid", "year", "squirrel_id"), all.x = TRUE)
+
+#any bucket NAs become zero
+data2[is.na(bucket), bucket := 0]
+
+#make bucket factor
+data2[, bucket := as.factor(bucket)]
 
 
 
@@ -181,6 +209,7 @@ setorder(annual, year)
 # save ---------------------------------------------------
 
 saveRDS(dat2, "Output/Data/growth_rates.rds")
+
 ggsave("Output/Figures/GR_foodadd.jpeg", foodadd, width = 3, height = 4, unit = "in")
 ggsave("Output/Figures/GR_birthmonth.jpeg", birthmonth, width = 6, height = 4, unit = "in")
 ggsave("Output/Figures/GR_annual.jpeg", annualplot, width = 6, height = 4, unit = "in")
