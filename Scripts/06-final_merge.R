@@ -42,22 +42,32 @@ foods <- c(1, 0, 18, 19)
 #subset to that list of grids and treatments, excluding data where density is missing
 dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
 
+#redo factor of food
+dat2[, food := factor(food)]
+
+#create treatment col
+dat2[food == 0, treatment := "Control"][food == 1, treatment := "Food add"][food == 18, treatment := "Chickadee"][food == 19, treatment := "Rattle"]
+
+#make treatment factor
+dat2[, treatment := factor(treatment)]
 
 
 
-#subset for different analyses
-control <- dat2[grid == "SU" | grid == "KL"] #just controls
-food <- dat2[food == 0 | food == 1]          #just food add and controls
-playback <- dat2[food == 18 | food == 19]    #just playback experiment
+# create summary ----------------------------------------------------------
 
-
-
-
-
+#summary by treatment
+dat2[, .N, by = .(treatment)]
 
 #create a table showing sample sizes by categories for non-control grids
 summary <- dat2[!(grid == "SU" | grid == "KL"), .N, by = .(grid, year, treatment)]
 setorder(summary, grid, year)
+
+
+
+# save --------------------------------------------------------------------
+
+#save final data
+saveRDS(dat2, "Output/Data/final_data.rds")
 
 #save and send to ben
 write.csv(summary, "Output/Data/N_summary_treatments.csv")
