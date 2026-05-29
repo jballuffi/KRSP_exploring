@@ -17,10 +17,10 @@ con <- krsp_connect(
 # read in data ------------------------------------------------------------
 
 #get litter data
-lit2 <- as.data.table(tbl(con, "litter") %>% collect())
+lit <- as.data.table(tbl(con, "litter") %>% collect())
 
 #get individual juvenile data 
-juv2 <- as.data.table(tbl(con, "juvenile") %>% collect())
+juv <- as.data.table(tbl(con, "juvenile") %>% collect())
 
 #get list of moms with buckets (food add)
 buckets <- fread("Input/fed_squirrels.csv")
@@ -30,60 +30,60 @@ buckets <- fread("Input/fed_squirrels.csv")
 # prep litter data -------------------------------------------------------
 
 #take only cols of interest
-lit2 <- lit2[, .(mother_id = squirrel_id, litter_id = id,
+lit <- lit[, .(mother_id = squirrel_id, litter_id = id,
                  year = yr, grid, br, food, ln,
                bdate = fieldBDate, date1, date2 = tagDt)]
 
 #create dates
-lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
+lit[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 
 #the col ln is litter number. This is an annual number.
 #ln == 2 is the 2nd litter of a female that year, not over her life
 
 #assume NA is a control
-lit2[is.na(food), food := 0]
+lit[is.na(food), food := 0]
 
 #make food factor
-lit2[, food := factor(food)]
+lit[, food := factor(food)]
 
 
 
 # prep juvenile data -----------------------------------------------------------
 
 #take only cols of interest
-juv2 <- juv2[, .(squirrel_id, litter_id, sex = factor(sex), weight1 = weight, weight2 = tagWT)]
+juv <- juv[, .(squirrel_id, litter_id, sex = factor(sex), weight1 = weight, weight2 = tagWT)]
 
 #any weights as zero make NA 
-juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
+juv[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
 
 
 
 # merge juv2 and lit2 and clean based on weight data -----------------------------------------------------
 
 #merge juv and litter data by the litter ID
-dat2 <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
+dat <- merge(lit, juv, by = "litter_id", all.y = TRUE)
 
 #calculate litter size
-dat2[, littersize := .N, litter_id]
+dat[, littersize := .N, litter_id]
 
 #take only first litters for this analysis, as done by Delaney
-dat2 <- dat2[ln == 1]
+dat <- dat[ln == 1]
 
 #take only cases where we have both measures of weights
-dat2 <- dat2[!(is.na(weight1) | is.na(weight2))]
+dat <- dat[!(is.na(weight1) | is.na(weight2))]
 
 #remove cases where weight 1 and weight 2 are the same.
-dat2 <- dat2[!weight1 == weight2] #this looks to be usually when first nests were missed
+dat <- dat[!weight1 == weight2] #this looks to be usually when first nests were missed
 
 #remove cases where weight 1 is bigger than weight 1
-dat2 <- dat2[!weight1 > weight2] #this is a rare scenario
+dat <- dat[!weight1 > weight2] #this is a rare scenario
 
 #THE FOLLOWING WASN'T IN DELANEY
 #remove any cases where weight 1 is over 50 g
-dat2 <- dat2[!weight1 > 50]
+dat <- dat[!weight1 > 50]
 
 #remove any cases where weight 2 was over 100 g
-dat2 <- dat2[!weight2 > 100]
+dat <- dat[!weight2 > 100]
 
 
 
