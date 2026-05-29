@@ -27,44 +27,71 @@ buckets <- fread("Input/fed_squirrels.csv")
 
 
 
-# prep litter data -------------------------------------------------------
+# prep bucket info --------------------------------------------------------
+
+#remove missing squirrel IDs
+buckets <- buckets[!is.na(squirrel_id_spring)]
+
+#create a col called bucket and remove 
+buckets[, bucket := 1][, bucket_reflo := NULL]
+
+#rename id col
+setnames(buckets, "squirrel_id_spring", "mother_id")
+
+
+
+# prep litter data and merge with bucket list -------------------------------------------------------
 
 #take only cols of interest
-lit <- lit[, .(mother_id = squirrel_id, litter_id = id,
+lit2 <- lit[, .(mother_id = squirrel_id, litter_id = id,
                  year = yr, grid, br, food, ln,
                bdate = fieldBDate, date1, date2 = tagDt)]
 
 #create dates
-lit[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
+lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 
 #the col ln is litter number. This is an annual number.
 #ln == 2 is the 2nd litter of a female that year, not over her life
 
-#assume NA is a control
-lit[is.na(food), food := 0]
+#make breeding status a factor
+lit2[, br := factor(br)]
 
-#make food factor
-lit[, food := factor(food)]
+#merge with census data
+lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
+
+#any bucket NAs become zero
+lit2[is.na(bucket), bucket := 0]
+lit2[, bucket := as.factor(bucket)]
+
+#are there cases where not food treatment but has bucket?
+lit2[food == 0 & bucket == 1, unique(year), grid]
+#yes... why is this?
+
+#fix food add treatment so all squirrels during certain years and in certain grids are correctly labeled as food add
+#these years are taken from Ben's instructions on google doc
+lit2[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
+lit2[grid == "JO" & (year >= 2006 & year <= 2014), food := 1]
+lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
 
 
 # prep juvenile data -----------------------------------------------------------
 
 #take only cols of interest
-juv <- juv[, .(squirrel_id, litter_id, sex = factor(sex), weight1 = weight, weight2 = tagWT)]
+juv2 <- juv[, .(squirrel_id, litter_id, sex = factor(sex), weight1 = weight, weight2 = tagWT)]
 
 #any weights as zero make NA 
-juv[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
-
-
-
-# merge juv2 and lit2 and clean based on weight data -----------------------------------------------------
-
-#merge juv and litter data by the litter ID
-dat <- merge(lit, juv, by = "litter_id", all.y = TRUE)
+juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
 
 #calculate litter size
-dat[, littersize := .N, litter_id]
+juv2[, littersize := .N, litter_id]
+
+
+
+# merge juvenile and litter data and clean based on weight data -----------------------------------------------------
+
+#merge juv and litter data by the litter ID
+dat <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
 
 #take only first litters for this analysis, as done by Delaney
 dat <- dat[ln == 1]
@@ -85,27 +112,8 @@ dat <- dat[!weight1 > 50]
 #remove any cases where weight 2 was over 100 g
 dat <- dat[!weight2 > 100]
 
-
-
-# merge with bucket info --------------------------------------------------
-
-#remove missing squirrel IDs
-buckets <- buckets[!is.na(squirrel_id_spring)]
-
-#create a col called bucket and remove 
-buckets[, bucket := 1][, bucket_reflo := NULL]
-
-#rename id col
-setnames(buckets, "squirrel_id_spring", "squirrel_id")
-
-#merge with census data
-data2 <- merge(data, buckets, by = c("grid", "year", "squirrel_id"), all.x = TRUE)
-
-#any bucket NAs become zero
-data2[is.na(bucket), bucket := 0]
-
-#make bucket factor
-data2[, bucket := as.factor(bucket)]
+#remove duplicate squirrels
+dat2 <- dat[!duplicated(squirrel_id) == TRUE]
 
 
 
@@ -123,17 +131,11 @@ dat2[, growthrate := (weight2 - weight1)/days]
 #quick look at distribution
 hist(dat2$growthrate)
 
-#check my work, this should be 0 due to prior cleaning of weights
+#checking my work. This should be 0 due to prior cleaning of weights
 dat2[growthrate <= 0 | growthrate > 10, .N]
 
 #remove NA growth rates
 dat2 <- dat2[!is.na(growthrate)]
-
-#test if there are dup ids in growth rate data
-dat2[duplicated(squirrel_id) == TRUE]
-
-#make factors
-dat2[, br := as.factor(br)]
 
 
 
@@ -161,6 +163,13 @@ dat2[, litterf := as.factor(litterf)]
 #How many growth rates?
 dat2[, .N]
 
+#whats up with this NA foods
+dat2[is.na(food), unique(year), grid]
+
+#make NA foods 0, and redo factor
+dat2[is.na(food), food := 0]
+dat2[, food := factor(food)]
+
 #Get sample size by treatment
 dat2[, .N, food]
 
@@ -168,6 +177,7 @@ dat2[, .N, food]
 
 # save ---------------------------------------------------
 
+#save final growth rate
 saveRDS(dat2, "Output/Data/growth_rates.rds")
 
 
