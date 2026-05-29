@@ -10,64 +10,14 @@ library(ggeffects)
 
 # read in prepped data  ----------------------------------------------------
 
-#read in prepped data
-dens <- readRDS("Output/Data/local_densities.rds")
-growth <- readRDS("Output/Data/growth_rates.rds")
 
 
 
-# initial merge and clean -------------------------------------------------
+# Base model --------------------------------------------------------------
 
-#take only moms from density data and remove sex col
-moms <- dens[sex == "F"][, sex := NULL]
+#this model is Growth Rate ~ Local Density x Litter Size
 
-#remove duplicated rows of data
-#WHY ARE THESE HERE
-moms <- moms[duplicated(moms) == FALSE]
-
-#merge data by year TRUE#merge data by year and grid
-dat <- merge(moms, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
-
-#check for duplication after merge
-dat[duplicated(squirrel_id) == TRUE]
-
-
-
-# subset data ------------------------------------------------
-
-#list the grids we are interested in
-grids <- c("KL", "SU", "AG", "JO", "LL", "BT")
-foods <- c(1, 0, 18, 19)
-
-#subset to that list of grids and treatments, excluding data where density is missing
-dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
-
-#convert food codes to written treatments
-dat2[food == 0, treatment := "Control"][food == 1, treatment := "Food add"][food == 18, treatment := "Chickadee"][food == 19, treatment := "Rattle"]
-
-#create a table showing sample sizes by categories for non-control grids
-summary <- dat2[!(grid == "SU" | grid == "KL"), .N, by = .(grid, year, treatment)]
-setorder(summary, grid, year)
-
-#save and send to ben
-write.csv(summary, "Output/Data/N_summary_treatments.csv")
-
-#MISSING DATA FROM BT IN 2022???
-
-#subset for different analyses
-control <- dat[grid == "SU" | grid == "KL"]
-food <- dat[food == 0 | food == 1]
-playback <- dat[food == 18 | food == 19]
-
-
-
-## Basic figures --------------------------------------------------------
-
-
-
-
-#run model for growth ~ litter size x local density
-dmod <- lm(growthrate ~ density*litterf, control)
+bmod <- lm(growthrate ~ density*litterf, dat2)
 summary(dmod)
 
 #very low explanatory power
