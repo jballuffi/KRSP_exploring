@@ -10,103 +10,79 @@ library(ggeffects)
 
 # read in prepped data  ----------------------------------------------------
 
+#read in data from merge script
+dat <- readRDS("Output/Data/final_data.rds")
+
+#subset for different analyses
+control <- dat[grid == "SU" | grid == "KL"] #just controls
+food <- dat[food == 1]                      #just food add grids
+playback <- dat[food == 18 | food == 19]    #just playback experiment
 
 
 
 # Base model --------------------------------------------------------------
 
 #this model is Growth Rate ~ Local Density x Litter Size
-
-bmod <- lm(growthrate ~ density*litterf, dat2)
-summary(dmod)
+bmod <- lm(growthrate ~ density*litterf, control)
+summary(bmod)
 
 #very low explanatory power
-rsq(dmod)
-danova <- anova(dmod)
+rsq(bmod)
+danova <- anova(bmod)
 
 #get effects table
-deffs <- as.data.table(ggpredict(dmod, terms = c("density", "litterf")))
+base_effs <- as.data.table(ggpredict(bmod, terms = c("density", "litterf")))
 
 #plot results from model
-(d <- ggplot()+
+(b <- ggplot()+
   geom_point(aes(x = density, y = growthrate, color = litterf), alpha = 0.2, data = control)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = deffs)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = deffs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs)+
   scale_fill_discrete(guide = NULL)+
-  labs(x = "Local density (ind/grid)", y = "Growth rate (g/day)", subtitle = "Controls only")+
+  labs(x = "Local density (ind/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL only")+
   theme_bw())
 
-#this is using a rough idea of density, just the total number of squirrels known on the grid that year.
-#probably need a more local assessment? Number of neighbors for example?
 
 
-
-# Analysis for effect of food add -----------------------------------------
-
-#sample size
-food[!is.na(growthrate), .N]
-
-#sample size by litter size
-food[!is.na(growthrate), .N, food]
-
-#sample size by litter size
-food[!is.na(growthrate), .N, littersize]
+# Analysis for effect of having a bucket -----------------------------------------
 
 #make model for growth ~ litter size * food add
 #use the integer version of litter size
-fmod <- lm(growthrate ~ littersize*food, food)
+fmod <- lm(growthrate ~ density*litterf*bucket, food)
 
 #summaries
 summary(fmod)
-rsq(fmod)
-fanova <- anova(fmod)
 
 #get effects table for model
-feffs <- as.data.table(ggpredict(fmod, terms = c("littersize", "food")))
+feffs <- as.data.table(ggpredict(fmod, terms = c("density", "litterf", "bucket")))
 
-(f <- ggplot()+
-  geom_point(aes(x = littersize, y = growthrate, color = food), alpha = 0.2, food)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = feffs)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = feffs)+
+(f <- ggplot(feffs)+
+  #geom_point(aes(x = littersize, y = growthrate, color = food), alpha = 0.2, data = food)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
   scale_fill_discrete(guide = NULL)+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Controls + Food Add only")+
+  labs(x = "Local density (ind/ha)", y = "Growth rate (g/day)", subtitle = "Controls + Food Add")+
+  facet_wrap(~facet)+
   theme_bw()
   )
   
 
 
-# Analysis for playback experiment ----------------------------------------
+# Analysis for playback ----------------------------------------
 
-#samplesize
-playback[!is.na(growthrate), .N]
-playback[!is.na(growthrate), .N, playback]
-
-
-ggplot(playback)+
-  geom_boxplot(aes(x = playback, y = growthrate))+
-  theme_bw()
-
-ggplot(playback)+
-  geom_point(aes(x = density, y = growthrate, color = playback))+
-  theme_bw()
-
-#need to fix local density before I can incorporate it into a model with playback
-#for now will only focus on litter size and playback
-
-pmod <- lm(growthrate ~ littersize*playback, playback)
+pmod <- lm(growthrate ~ density*litterf*treatment, playback)
 summary(pmod)
-rsq(pmod)
-panova <- anova(pmod)
 
 #get effects table for model
-peffs <- as.data.table(ggpredict(pmod, terms = c("littersize", "playback")))
+peffs <- as.data.table(ggpredict(pmod, terms = c("density", "litterf", "treatment")))
 
-(p <- ggplot()+
-    geom_point(aes(x = littersize, y = growthrate, color = playback), alpha = 0.3, playback)+
-    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = peffs)+
-    geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = peffs)+
+(p <- ggplot(peffs)+
+    #geom_point(aes(x = littersize, y = growthrate, color = playback), alpha = 0.3, playback)+
+    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+    geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
     scale_fill_discrete(guide = NULL)+
-    labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Callback experimenet")+
+    labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Callback experiment")+
+    facet_wrap(~facet)+
     theme_bw()
   )
 
