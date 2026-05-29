@@ -18,12 +18,6 @@ growth <- readRDS("Output/Data/growth_rates.rds")
 
 # initial merge and clean -------------------------------------------------
 
-#remove NA growth rates
-growth <- growth[!is.na(growthrate)]
-
-#test if there are dup ids in growth rate data
-growth[duplicated(squirrel_id) == TRUE]
-
 #take only moms from density data and remove sex col
 moms <- dens[sex == "F"][, sex := NULL]
 
@@ -36,38 +30,6 @@ dat <- merge(moms, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
 #check for duplication after merge
 dat[duplicated(squirrel_id) == TRUE]
-
-#make factors
-dat[, br := as.factor(br)]
-
-
-
-# Create litter factor -----------------------------------------------------
-
-#make a new col for litter as a factor
-dat[, litterf := littersize]
-
-#first I will set anything 6 and above as being one category
-dat[litterf >= 6, litterf := 6]
-
-#make litter size a character
-dat[, litterf := as.character(litterf)]
-
-#change litters of 6 to 6+
-dat[litterf == "6", litterf := "6+"]
-
-#next I will make levels with 
-dat[, litterf := as.factor(litterf)]
-
-
-
-# Get basic summaries -----------------------------------------------------
-
-#How many growth rates?
-dat[!is.na(growthrate), .N]
-
-#Get sample size by treatment
-dat[!is.na(growthrate), .N, food]
 
 
 
@@ -101,16 +63,6 @@ playback <- dat[food == 18 | food == 19]
 
 ## Basic figures --------------------------------------------------------
 
-#growth rate in response to litter size
-(ls <- ggplot(control)+
-  geom_boxplot(aes(x = litterf, y = growthrate))+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Controls only")+
-  theme_minimal())
-
-(ls <- ggplot(food[!is.na(bucket)])+
-    geom_boxplot(aes(x = bucket, y = growthrate))+
-    labs(x = "Bucket", y = "Growth rate (g/day)", subtitle = "Controls + Food Add grids")+
-    theme_minimal())
 
 
 

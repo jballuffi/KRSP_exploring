@@ -66,10 +66,10 @@ dat2 <- dat2[ln == 1]
 #take only cases where we have both measures of weights
 dat2 <- dat2[!(is.na(weight1) | is.na(weight2))]
 
-#cases where weight 1 and weight 2 are the same.
+#remove cases where weight 1 and weight 2 are the same.
 dat2 <- dat2[!weight1 == weight2] #this looks to be usually when first nests were missed
 
-#number of cases where weight 1 is bigger than weight 1
+#remove cases where weight 1 is bigger than weight 1
 dat2 <- dat2[!weight1 > weight2] #this is a rare scenario
 
 #THE FOLLOWING WASN'T IN DELANEY
@@ -97,6 +97,44 @@ hist(dat2$growthrate)
 
 #check my work, this should be 0 due to prior cleaning of weights
 dat2[growthrate <= 0 | growthrate > 10, .N]
+
+#remove NA growth rates
+dat2 <- dat2[!is.na(growthrate)]
+
+#test if there are dup ids in growth rate data
+dat2[duplicated(squirrel_id) == TRUE]
+
+#make factors
+dat2[, br := as.factor(br)]
+
+
+
+# Create litter factor -----------------------------------------------------
+
+#make a new col for litter as a factor
+dat2[, litterf := littersize]
+
+#first I will set anything 6 and above as being one category
+dat2[litterf >= 6, litterf := 6]
+
+#make litter size a character
+dat2[, litterf := as.character(litterf)]
+
+#change litters of 6 to 6+
+dat2[litterf == "6", litterf := "6+"]
+
+#next I will make levels with 
+dat2[, litterf := as.factor(litterf)]
+
+
+
+# Get basic summaries -----------------------------------------------------
+
+#How many growth rates?
+dat2[, .N]
+
+#Get sample size by treatment
+dat2[, .N, food]
 
 
 
@@ -127,10 +165,16 @@ annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(year, f
 setorder(annual, year)
 
 #plot avg annual growth rate over time and by food add
-(annual <- ggplot(annual)+
+(annualplot <- ggplot(annual)+
   geom_line(aes(x = year, y = growthrate, color = food), linewidth = 1)+
   labs(x = "Year", y = "Growth rate (g/day)")+
   theme_bw())
+
+#growth rate in response to litter size
+(ls <- ggplot(basic)+
+    geom_boxplot(aes(x = litterf, y = growthrate))+
+    labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Controls only")+
+    theme_minimal())
 
 
 
@@ -139,6 +183,6 @@ setorder(annual, year)
 saveRDS(dat2, "Output/Data/growth_rates.rds")
 ggsave("Output/Figures/GR_foodadd.jpeg", foodadd, width = 3, height = 4, unit = "in")
 ggsave("Output/Figures/GR_birthmonth.jpeg", birthmonth, width = 6, height = 4, unit = "in")
-ggsave("Output/Figures/GR_annual.jpeg", annual, width = 6, height = 4, unit = "in")
-
+ggsave("Output/Figures/GR_annual.jpeg", annualplot, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 6, height = 4, unit = "in")
 
