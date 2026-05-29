@@ -41,9 +41,6 @@ data <- data[!grid == "??"]
 
 
 
-
-
-
 # test on one individual on one grid in one year -----------------------------------------------------------
 
 #step 1 get the squirrel's location
@@ -54,7 +51,7 @@ data <- data[!grid == "??"]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data2[grid == "SU" & year == 2023]
+test <- data[grid == "SU" & year == 2023]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -94,12 +91,12 @@ density #squirrels per hectare
 #build function for full data set
 getneighbors <- function(id){
   #get the x and y locations for that test individual
-  testx <- data2[squirrel_yr_gr == id, locX]
-  testy <- data2[squirrel_yr_gr == id, locY]
-  testyear <- data2[squirrel_yr_gr == id, year]
-  testgrid <- data2[squirrel_yr_gr == id, grid]
+  testx <- data[squirrel_yr_gr == id, locX]
+  testy <- data[squirrel_yr_gr == id, locY]
+  testyear <- data[squirrel_yr_gr == id, year]
+  testgrid <- data[squirrel_yr_gr == id, grid]
   #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
-  count <- data2[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
+  count <- data[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
   return(count) #squirrels per hectare
 }
 
@@ -108,17 +105,17 @@ getneighbors <- function(id){
 # run function on all data  ------------------------------------------------
 
 #run function on the entire list of squirrel yr grids
-data2$neighbors <- lapply(data2$squirrel_yr_gr, getneighbors)
-data2$neighbors <- unlist(data2$neighbors)
+data$neighbors <- lapply(data$squirrel_yr_gr, getneighbors)
+data$neighbors <- unlist(data$neighbors)
 
 #fix neg 1's (these were cases where there we no neighbors)
-data2[neighbors < 0, neighbors := 0]
+data[neighbors < 0, neighbors := 0]
 
 #convert to densities (squirrels/ha)
-data2[, density := neighbors/((pi*radius^2)/10000)]
+data[, density := neighbors/((pi*radius^2)/10000)]
 
 #subset to cols of interest
-densities <- data2[, .(mother_id = squirrel_id, sex = Sex, grid, year, reflo, bucket, neighbors, density)]
+densities <- data[, .(mother_id = squirrel_id, sex = Sex, grid, year, reflo, neighbors, density)]
 
 
 
