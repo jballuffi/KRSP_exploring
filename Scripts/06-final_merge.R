@@ -45,12 +45,6 @@ dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
 #redo factor of food
 dat2[, food := factor(food)]
 
-#create treatment col
-dat2[food == 0, treatment := "Control"][food == 1, treatment := "Food add"][food == 18, treatment := "Chickadee"][food == 19, treatment := "Rattle"]
-
-#make treatment factor
-dat2[, treatment := factor(treatment)]
-
 
 
 # create summary ----------------------------------------------------------

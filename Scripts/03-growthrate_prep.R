@@ -155,8 +155,11 @@ dat2[, litterf := as.factor(litterf)]
 #make NA foods 0
 dat2[is.na(food), food := 0]
 
+#create treatment col
+dat2[food == 0, treatment := "Control"][food == 1, treatment := "Food add"][food == 18, treatment := "Chickadee"][food == 19, treatment := "Rattle"]
+
 #make food, bucket, and breeding status factors
-dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)]
+dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)][, treatment := factor(treatment)]
 
 
 
