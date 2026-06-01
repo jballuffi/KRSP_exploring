@@ -7,7 +7,7 @@ library(ggplot2)
 
 #read in data prepped from previous script
 densities <- readRDS("Output/Data/local_densities.rds")
-
+radius <- 130
 
 
 # plot --------------------------------------------------------------------
