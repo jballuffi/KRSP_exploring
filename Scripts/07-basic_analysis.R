@@ -13,6 +13,9 @@ library(ggeffects)
 #read in data from merge script
 dat <- readRDS("Output/Data/final_data.rds")
 
+#for now change LL in 2012 to food add
+dat[grid == "LL" & year == 2012, food == 1]
+
 #subset for different analyses
 control <- dat[grid == "SU" | grid == "KL"] #just controls
 food <- dat[food == 1]                      #just food add grids
@@ -41,6 +44,26 @@ base_effs <- as.data.table(ggpredict(bmod, terms = c("density", "litterf")))
   scale_fill_discrete(guide = NULL)+
   labs(x = "Local density (ind/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL only")+
   theme_bw())
+
+
+
+# Add in treatment --------------------------------------------------------
+
+
+tmod <- lm(growthrate ~ density*litterf*treatment, dat)
+summary(tmod)
+
+
+#get effects table
+treatment_effs <- as.data.table(ggpredict(tmod, terms = c("density", "litterf", "treatment")))
+
+ggplot(treatment_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  facet_wrap(~facet)
+
+
+
 
 
 
