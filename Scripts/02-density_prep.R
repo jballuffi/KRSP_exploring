@@ -62,13 +62,13 @@ test[is.na(testsubject), testsubject := "no"]
 testcols <- c("yes" = "red", "no" = "grey")
 
 #plot the location of all squirrels for that test data with the test individual highlighted
-ggplot(test)+
+(testfig <- ggplot(test)+
   geom_circle(aes(x0 = locX, y0 = locY, r = radius, color = testsubject))+
   geom_point(aes(x = locX, y = locY, color = testsubject), size = 3)+
   scale_color_manual(guide = NULL, values = testcols)+
   labs(x = "X coordinate (m)", y = "Y coordinate (m)")+
   coord_fixed()+
-  theme_minimal()
+  theme_minimal())
 
 #get the x and y locations for that test individual
 testx <- test[squirrel_id == testid, locX]
@@ -122,4 +122,5 @@ densities <- data[, .(mother_id = squirrel_id, sex = Sex, grid, year, reflo, nei
 #save prepped data
 saveRDS(densities, "Output/Data/local_densities.rds")
 
-
+#save test figure
+ggsave("Output/Figures/local_density_visual.jpeg", testfig, width = 6, height = 4, unit = "in")
