@@ -31,24 +31,31 @@ growth[, bmonth := as.factor(month(bdate))]
 
 # figures for treatments of interest --------------------------------------
 
+#take only food and control and playbacks only
 basic <- growth[food == 1 | food == 0 | food == 18 | food == 19]
 
+#plot growth rate in response to these treatments
+(treatment <- ggplot(basic)+
+    geom_boxplot(aes(x = treatment, y = growthrate))+
+    labs(x = "Grid Treatment", y = "Growth rate (g/day)")+
+    theme_bw())
+
 #get average growth rates by year
-annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(year, food)]
+annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(year, treatment)]
 setorder(annual, year)
 
 #plot avg annual growth rate over time and by food add
 (annualplot <- ggplot(annual)+
-    geom_line(aes(x = year, y = growthrate, color = food), linewidth = 1)+
-    labs(x = "Year", y = "Growth rate (g/day)", subtitle = "Control and Food only")+
+    geom_line(aes(x = year, y = growthrate, color = treatment), linewidth = 1)+
+    labs(x = "Year", y = "Growth rate (g/day)")+
     theme_bw())
-
-
 
 
 
 # save --------------------------------------------------------------------
 
 ggsave("Output/Figures/GR_birthmonth.jpeg", birthmonth, width = 6, height = 4, unit = "in")
-ggsave("Output/Figures/GR_annual.jpeg", annualplot, width = 6, height = 4, unit = "in")
 ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 6, height = 4, unit = "in")
+
+ggsave("Output/Figures/GR_treatment.jpeg", treatment, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/GR_annual.jpeg", annualplot, width = 6, height = 4, unit = "in")
