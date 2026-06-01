@@ -27,7 +27,7 @@ setorder(means, year)
 (totaldensity_gr <- 
     ggplot(densities)+
     geom_boxplot(aes(x = grid, y = density))+
-    labs(y = "Local density (squrirels/ha", x = "Grid")+
+    labs(y = "Local density (squrirels/ha)", x = "Grid")+
     theme_bw())
 
 
