@@ -37,7 +37,7 @@ basic <- growth[food == 1 | food == 0 | food == 18 | food == 19]
 #plot growth rate in response to these treatments
 (treatment <- ggplot(basic)+
     geom_boxplot(aes(x = treatment, y = growthrate))+
-    labs(x = "Grid Treatment", y = "Growth rate (g/day)")+
+    labs(x = "Grid Treatment", y = "Growth rate (g/day)", subtitle = "Treatments 0, 1, 18 and 19")+
     theme_bw())
 
 #get average growth rates by year
@@ -47,7 +47,7 @@ setorder(annual, year)
 #plot avg annual growth rate over time and by food add
 (annualplot <- ggplot(annual)+
     geom_line(aes(x = year, y = growthrate, color = treatment), linewidth = 1)+
-    labs(x = "Year", y = "Growth rate (g/day)")+
+    labs(x = "Year", y = "Growth rate (g/day)", subtitle = "Treatments 0, 1, 18 and 19")+
     theme_bw())
 
 
