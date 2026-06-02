@@ -50,11 +50,12 @@ lit2 <- lit[, .(mother_id = squirrel_id, litter_id = id,
 #create dates
 lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 
-#the col ln is litter number. This is an annual number.
-#ln == 2 is the 2nd litter of a female that year, not over her life
-
-#merge with census data
+#merge litter and buckets
 lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
+
+
+
+# Assign grid treatments --------------------------------------------------
 
 #are there cases where not food treatment but has bucket?
 lit2[food == 0 & bucket == 1, unique(year), grid]
