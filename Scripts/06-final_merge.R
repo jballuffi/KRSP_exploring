@@ -42,9 +42,6 @@ foods <- c(1, 0, 18, 19)
 #subset to that list of grids and treatments, excluding data where density is missing
 dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
 
-#create treatment col
-dat2[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
-
 #redo factors
 dat2[, food := factor(food)][, treatment := factor(treatment)]
 

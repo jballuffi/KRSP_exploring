@@ -68,7 +68,7 @@ lit2[grid == "JO" & (year >= 2006 & year <= 2014), food := 1]
 lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
 #UNSURE HERE for now change LL in 2012 to food add
-dat[grid == "LL" & year == 2012, food := 1]         ## DOUBLE CHECK
+lit2[grid == "LL" & year == 2012, food := 1]         ## DOUBLE CHECK
 
 
 
@@ -147,8 +147,11 @@ dat2[is.na(food), food := 0]
 #if bucket is NA and on a food add grid, make bucket 0
 dat2[food == 1 & is.na(bucket), bucket := 0]
 
+#create treatment col
+dat2[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
+
 #make food, bucket, and breeding status factors
-dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)]
+dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)][, treatment := factor(treatment)]
 
 
 
