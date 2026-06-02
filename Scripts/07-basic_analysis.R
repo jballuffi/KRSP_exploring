@@ -8,13 +8,11 @@ library(ggpubr)
 library(ggeffects)
 
 
+
 # read in prepped data  ----------------------------------------------------
 
 #read in data from merge script
 dat <- readRDS("Output/Data/final_data.rds")
-
-#for now change LL in 2012 to food add
-dat[grid == "LL" & year == 2012, food == 1]
 
 #subset for different analyses
 control <- dat[grid == "SU" | grid == "KL"] #just controls
@@ -23,7 +21,7 @@ playback <- dat[food == 18 | food == 19]    #just playback experiment
 
 
 
-# Base model --------------------------------------------------------------
+# MODEL 1: control only model --------------------------------------------------------------
 
 #this model is Growth Rate ~ Local Density x Litter Size
 bmod <- lm(growthrate ~ density*litterf, control)
@@ -41,13 +39,14 @@ base_effs <- as.data.table(ggpredict(bmod, terms = c("density", "litterf")))
   geom_point(aes(x = density, y = growthrate, color = litterf), alpha = 0.2, data = control)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs)+
+  scale_color_discrete(name = "Litter size")+
   scale_fill_discrete(guide = NULL)+
-  labs(x = "Local density (ind/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL only")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL only")+
   theme_bw())
 
 
 
-# Add in treatment --------------------------------------------------------
+# Add in grid treatment --------------------------------------------------------
 
 
 tmod <- lm(growthrate ~ density*litterf*treatment, dat)
