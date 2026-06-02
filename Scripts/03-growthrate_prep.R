@@ -136,33 +136,19 @@ dat2 <- dat2[!is.na(growthrate)]
 
 
 
-# Make final factors -----------------------------------------------------
+# Finalize treatments and factors -----------------------------------------------------
 
-#make a new col for litter as a factor
-dat2[, litterf := littersize]
-
-#first I will set anything 6 and above as being one category
-dat2[litterf >= 6, litterf := 6]
-
-#make litter size a character
-dat2[, litterf := as.character(litterf)]
-
-#change litters of 6 to 6+
-dat2[litterf == "6", litterf := "6+"]
-
-#next I will make levels with 
-dat2[, litterf := as.factor(litterf)]
+#categorize litter size into a 4-part factor
+dat2[, litterf := cut(littersize, breaks = 4, labels = c("1-2", "2-3", "5-6", "7-8"))]
 
 #make NA foods 0
 dat2[is.na(food), food := 0]
 
-#create treatment col
-dat2[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
-
-dat2[!food == 1]
+#if bucket is NA and on a food add grid, make bucket 0
+dat2[food == 1 & is.na(bucket), bucket := 0]
 
 #make food, bucket, and breeding status factors
-dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)][, treatment := factor(treatment)]
+dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)]
 
 
 
