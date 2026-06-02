@@ -20,7 +20,7 @@ Below is the results from the control model. This was a test to see the effects 
 
 First, tested litter size and density as an interaction. Litter size was categorized into 4 categories but control grids didn't have the largest category.
 
-```{r sourcing, include = TRUE}
+```{r fig1, include = TRUE}
 
 #this model is Growth Rate ~ Litter Size x Local Density
 bmod <- lm(growthrate ~ litterf*density, control)
@@ -41,7 +41,7 @@ ggplot()+
 
 Next, tested litter size and density as a non-interacting effect.
 
-```{r sourcing, include = FALSE}
+```{r fig2, include = TRUE}
 
 #this model is Growth Rate ~ Litter Size x Local Density
 bmod2 <- lm(growthrate ~ litterf + density, control)
@@ -64,7 +64,7 @@ ggplot()+
 
 Next, looked at the interacting effect of treatment on the grid level. This was either control, food add, or rattle. Did not account for bucket.
 
-```{r sourcing, include = TRUE}
+```{r fig3, include = TRUE}
 
 #this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
 gmod <- lm(growthrate ~ litterf + density*treatment_grid, dat)
@@ -85,14 +85,10 @@ ggplot(grid_effs)+
 
 Lastly, looked at the interacting effect of treatment on the individual level. This was either control, bucket, or rattle. Individuals on food add grids that didn't have buckets were marked as control. This is subject to change of course. Could make bucket a nested factor within grid treatment, or categorize squirrels on food add grids differently based on bucket status.
 
-```{r sourcing, include = TRUE}
+```{r fig 4, include = TRUE}
 
 #make model for growth ~ litter size * food add
 imod <- lm(growthrate ~ litterf + density*treatment_ind, dat)
-
-#summaries
-summary(imod)
-anova(imod)
 
 #get effects table for model
 ind_effs <- as.data.table(ggpredict(imod, terms = c("density", "litterf", "treatment_ind")))
