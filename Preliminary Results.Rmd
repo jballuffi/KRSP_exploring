@@ -25,10 +25,10 @@ source("Scripts/07-basic_analysis.R")
 
 ## Growth Rate Summary Plots
 
-![Growth rate (g/day) of first litter juveniles in response to litter size. Data includes all years and all treatment grids (n = `r growth[, .N]`).](Output/Figures/GR_littersize.jpeg)
+![Growth rate (g/day) of first litter juveniles in response to categories of litter size. Data includes all years and all treatment grids (n = `r growth[, .N]`).](Output/Figures/GR_littersize.jpeg)
 
 ![Growth rate (g/day) of first litter juveniles in response to birth month. Data includes all years and all treatments (n = `r growth[, .N]`).](Output/Figures/GR_birthmonth.jpeg)
 
-![Growth rate (g/day) of first litter juveniles in response to one of four grid treatments, control (n = `r growth[food == 0, .N]`), food add (n = `r growth[food == 1, .N]`), rattle playback (n = `r growth[food == 19, .N]`), or chickadee playback (n = `r growth[food == 18, .N]`).](Output/Figures/GR_treatment.jpeg)
+![Growth rate (g/day) of first litter juveniles in response to one of four grid treatments, control (n = `r basic[treatment == "control", .N]`), food add (n = `r basic[treatment == "Food add", .N]`), or rattle playback (n = `r basic[treatment == "Rattle", .N]`).](Output/Figures/GR_treatment.jpeg)
 
-![Average annual growth rates (g/day) of first litter juveniles, grouped by grid treatment which here included control (green; n = `r growth[food == 0, .N]`), food add (blue; n = `r growth[food == 1, .N]`), rattle playback (purple; n = `r growth[food == 19, .N]`), or chickadee playback (red; n = `r growth[food == 18, .N]`).](Output/Figures/GR_annual.jpeg)
+![Average annual growth rates (g/day) of first litter juveniles, grouped by grid treatment which here included control (red; n = `r basic[treatment == "control", .N]`), food add (green; n = `r basic[treatment == "Food add", .N]`), or rattle playback (blue; n = `r basic[treatment == "Rattle", .N]`).](Output/Figures/GR_annual.jpeg)
