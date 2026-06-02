@@ -1,0 +1,111 @@
+---
+title: "Preliminary_results"
+author: "Juliana Balluffi-Fry"
+date: "2026-06-02"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r sourcing, include=FALSE}
+source("Scripts/07-basic_analysis.R")
+```
+
+
+## Preliminary Analysis
+
+Below is the results from the control model. This was a test to see the effects of litter size and local density on growth rates using control grids (KL and SU) only.
+
+First, tested litter size and density as an interaction. Litter size was categorized into 4 categories but control grids didn't have the largest category.
+
+```{r sourcing, include = TRUE}
+
+#this model is Growth Rate ~ Litter Size x Local Density
+bmod <- lm(growthrate ~ litterf*density, control)
+
+#get effects table
+base_effs <- as.data.table(ggpredict(bmod, terms = c("density", "litterf")))
+
+#plot
+ggplot()+
+  geom_point(aes(x = density, y = growthrate, color = litterf), alpha = 0.2, data = control)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs)+
+  scale_color_discrete(name = "Litter size")+
+  scale_fill_discrete(name = "Litter size")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL, interacting")+
+  theme_bw()
+```
+
+Next, tested litter size and density as a non-interacting effect.
+
+```{r sourcing, include = FALSE}
+
+#this model is Growth Rate ~ Litter Size x Local Density
+bmod2 <- lm(growthrate ~ litterf + density, control)
+
+#get effects table
+base_effs2 <- as.data.table(ggpredict(bmod2, terms = c("density", "litterf")))
+
+#plot
+ggplot()+
+    geom_point(aes(x = density, y = growthrate, color = litterf), alpha = 0.2, data = control)+
+    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs2)+
+    geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs2)+
+    scale_color_discrete(name = "Litter size")+
+    scale_fill_discrete(name = "Litter size")+
+    labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL, non-interacting")+
+    theme_bw()
+```
+
+\^ To me, this is evidence that litter size does not need to be an interacting factor. It can also be included as either a factor or integer. I played around with both. For ease I continued to used the 4-category factor in the next tests that included treatments.
+
+Next, looked at the interacting effect of treatment on the grid level. This was either control, food add, or rattle. Did not account for bucket.
+
+```{r sourcing, include = TRUE}
+
+#this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
+gmod <- lm(growthrate ~ litterf + density*treatment_grid, dat)
+
+#get effects table
+grid_effs <- as.data.table(ggpredict(gmod, terms = c("density", "litterf", "treatment_grid")))
+
+ggplot(grid_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "Litter size")+
+  scale_fill_discrete(name = "Litter size")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
+  facet_wrap(~facet)+
+  theme_bw()
+
+```
+
+Lastly, looked at the interacting effect of treatment on the individual level. This was either control, bucket, or rattle. Individuals on food add grids that didn't have buckets were marked as control. This is subject to change of course. Could make bucket a nested factor within grid treatment, or categorize squirrels on food add grids differently based on bucket status.
+
+```{r sourcing, include = TRUE}
+
+#make model for growth ~ litter size * food add
+imod <- lm(growthrate ~ litterf + density*treatment_ind, dat)
+
+#summaries
+summary(imod)
+anova(imod)
+
+#get effects table for model
+ind_effs <- as.data.table(ggpredict(imod, terms = c("density", "litterf", "treatment_ind")))
+
+ggplot(ind_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "Litter size")+
+  scale_fill_discrete(name = "Litter size")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
+  facet_wrap(~facet)+
+  theme_bw()
+  
+```
+
+A little confusing because it re-ordered the panels, with bucket coming first here.
