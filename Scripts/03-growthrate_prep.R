@@ -56,9 +56,6 @@ lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 #merge with census data
 lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
 
-#any bucket NAs become zero
-lit2[is.na(bucket), bucket := 0]
-
 #are there cases where not food treatment but has bucket?
 lit2[food == 0 & bucket == 1, unique(year), grid]
 #yes... why is this?
@@ -68,6 +65,9 @@ lit2[food == 0 & bucket == 1, unique(year), grid]
 lit2[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
 lit2[grid == "JO" & (year >= 2006 & year <= 2014), food := 1]
 lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
+
+#UNSURE HERE for now change LL in 2012 to food add
+dat[grid == "LL" & year == 2012, food := 1]         ## DOUBLE CHECK
 
 
 
@@ -156,7 +156,9 @@ dat2[, litterf := as.factor(litterf)]
 dat2[is.na(food), food := 0]
 
 #create treatment col
-dat2[food == 0, treatment := "Control"][food == 1, treatment := "Food add"][food == 18, treatment := "Chickadee"][food == 19, treatment := "Rattle"]
+dat2[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
+
+dat2[!food == 1]
 
 #make food, bucket, and breeding status factors
 dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)][, treatment := factor(treatment)]
