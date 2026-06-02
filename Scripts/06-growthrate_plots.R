@@ -11,6 +11,8 @@ growth <- readRDS("Output/Data/growth_rates.rds")
 #make birth month col as a factor
 growth[, bmonth := as.factor(month(bdate))]
 
+#in future: remake these with the final dataset. Whatever that ends up being
+
 
 
 # figures for all data ----------------------------------------------------
