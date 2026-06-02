@@ -25,14 +25,18 @@ dat[is.na(treatment_ind), treatment_ind := treatment_grid]
 dat[, treatment_ind := factor(treatment_ind)]
 
 #make a 4-cat treatment
-dat[, treatment_bucket := paste0(treatment, "_", bucket)]
+dat[, treatment_bucket := factor(paste0(treatment_grid, "_", bucket))]
+
+#sample size
+dat[, .N, treatment_grid]
+dat[, .N, treatment_ind]
+dat[, .N, treatment_bucket]
+
 
 #subset for different analyses
 control <- dat[grid == "SU" | grid == "KL"] #just controls
 food <- dat[food == 1]                      #just food add grids
 playback <- dat[food == 18 | food == 19]    #just playback experiment
-
-#do i need to make NA bucket a 0?
 
 
 
@@ -109,7 +113,6 @@ ggplot(grid_effs)+
 
 
 
-
 # MODEL 4: Individual Treatment -----------------------------------------
 
 #make model for growth ~ litter size * food add
@@ -130,4 +133,27 @@ ggplot(ind_effs)+
   labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
   facet_wrap(~facet)+
   theme_bw()
-  
+
+
+
+# MODEL 5: Individual Treatment -----------------------------------------
+
+#make model for growth ~ litter size * food add
+tbmod <- lm(growthrate ~ litterf + density*treatment_bucket, dat)
+
+#summaries
+summary(tbmod)
+anova(tbmod)
+
+#get effects table for model
+tb_effs <- as.data.table(ggpredict(tbmod, terms = c("density", "litterf", "treatment_bucket")))
+
+ggplot(tb_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "Litter size")+
+  scale_fill_discrete(name = "Litter size")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
+  facet_wrap(~facet)+
+  theme_bw()
+
