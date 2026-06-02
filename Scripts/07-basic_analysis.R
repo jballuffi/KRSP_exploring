@@ -88,17 +88,21 @@ ggplot()+
 # MODEL 3: Grid Treatment --------------------------------------------------------
 
 #this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
-tmod <- lm(growthrate ~ littersize + density*treatment_grid, dat)
+tmod <- lm(growthrate ~ litterf + density*treatment_grid, dat)
 summary(tmod)
 anova(tmod)
 
 #get effects table
-grid_effs <- as.data.table(ggpredict(tmod, terms = c("density", "littersize", "treatment_grid")))
+grid_effs <- as.data.table(ggpredict(tmod, terms = c("density", "litterf", "treatment_grid")))
 
 ggplot(grid_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  facet_wrap(~facet)
+  scale_color_discrete(name = "Litter size")+
+  scale_fill_discrete(name = "Litter size")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
+  facet_wrap(~facet)+
+  theme_bw()
 
 
 
@@ -107,20 +111,21 @@ ggplot(grid_effs)+
 
 #make model for growth ~ litter size * food add
 #use the integer version of litter size
-imod <- lm(growthrate ~ littersize + density*treatment_ind, dat)
+imod <- lm(growthrate ~ litterf + density*treatment_ind, dat)
 
 #summaries
 summary(imod)
 anova(imod)
 
 #get effects table for model
-ind_effs <- as.data.table(ggpredict(imod, terms = c("littersize", "density", "treatment_ind")))
+ind_effs <- as.data.table(ggpredict(imod, terms = c("density", "litterf", "treatment_ind")))
 
 ggplot(ind_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_fill_discrete(guide = NULL)+
-  labs(x = "Local density (ind/ha)", y = "Growth rate (g/day)", subtitle = "Controls + Food Add")+
+  scale_color_discrete(name = "Litter size")+
+  scale_fill_discrete(name = "Litter size")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
   facet_wrap(~facet)+
   theme_bw()
   
