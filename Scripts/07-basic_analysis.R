@@ -136,7 +136,7 @@ ggplot(ind_effs)+
 
 
 
-# MODEL 5: Individual Treatment -----------------------------------------
+# MODEL 5: Grid_Bucket Treatment -----------------------------------------
 
 #make model for growth ~ litter size * food add
 tbmod <- lm(growthrate ~ litterf + density*treatment_bucket, dat)
@@ -153,7 +153,7 @@ ggplot(tb_effs)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
   scale_color_discrete(name = "Litter size")+
   scale_fill_discrete(name = "Litter size")+
-  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Grid_Bucket")+
   facet_wrap(~facet)+
   theme_bw()
 

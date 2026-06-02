@@ -105,3 +105,31 @@ ggplot(ind_effs)+
 ```
 
 A little confusing because it re-ordered the panels, with bucket coming first here.
+
+
+Lastly, I integrated grid treatment and bucket into one treatment.
+
+Control + no bucket = regular density + no food
+Food add + no bucket = high density + no food
+Food add + bucket = high density + food
+Rattle + no bucket = percieved high density + no food
+
+```{r fig 5, include = TRUE}
+
+#make model for growth ~ litter size * food add
+tbmod <- lm(growthrate ~ litterf + density*treatment_bucket, dat)
+
+#get effects table for model
+tb_effs <- as.data.table(ggpredict(tbmod, terms = c("density", "litterf", "treatment_bucket")))
+
+ggplot(tb_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "Litter size")+
+  scale_fill_discrete(name = "Litter size")+
+  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Grid_Bucket")+
+  facet_wrap(~facet)+
+  theme_bw()
+  
+```
+
