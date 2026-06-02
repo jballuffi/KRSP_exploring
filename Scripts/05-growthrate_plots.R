@@ -25,7 +25,7 @@ growth[, bmonth := as.factor(month(bdate))]
 (ls <- ggplot(growth)+
     geom_boxplot(aes(x = litterf, y = growthrate))+
     labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "All treatments")+
-    theme_minimal())
+    theme_bw())
 
 
 
