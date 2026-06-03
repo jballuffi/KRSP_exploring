@@ -19,15 +19,27 @@ growth <- readRDS("Output/Data/growth_rates.rds")
 #take only moms from density data and remove sex col
 moms <- dens[sex == "F"][, sex := NULL]
 
-#remove duplicated rows of data
-#WHY ARE THESE HERE
-moms <- moms[duplicated(moms) == FALSE]
-
 #merge data by mother id, year and grid
 dat <- merge(moms, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
 #check for duplication after merge
 dat[duplicated(squirrel_id) == TRUE]
+
+
+
+# Finalize treatments and factors -----------------------------------------------------
+
+#make NA foods 0
+dat[is.na(food), food := 0]
+
+#if bucket is NA and on a food add grid, make bucket 0
+dat[food == 1 & is.na(bucket), bucket := 0]
+
+#create treatment col
+dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
+
+#make food, bucket, and breeding status factors
+dat[, br := factor(br)][, bucket := factor(bucket)]
 
 
 
@@ -45,7 +57,7 @@ dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
 #redo factors
 dat2[, food := factor(food)][, treatment := factor(treatment)]
 
-
+#remove problematic years
 
 # create summary ----------------------------------------------------------
 
