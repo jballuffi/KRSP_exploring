@@ -57,7 +57,14 @@ dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
 #redo factors
 dat2[, food := factor(food)][, treatment := factor(treatment)]
 
-#remove problematic years
+
+
+
+#remove bad years
+
+
+
+
 
 # create summary ----------------------------------------------------------
 
