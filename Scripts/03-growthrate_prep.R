@@ -58,17 +58,17 @@ lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
 # Assign grid treatments --------------------------------------------------
 
 #are there cases where not food treatment but has bucket?
-lit2[food == 0 & bucket == 1, unique(year), grid]
+lit2[food == 0 & bucket == 1, .N, by = .(grid, year)]
 #yes... why is this?
 
-#fix food add treatment so all squirrels during certain years and in certain grids are correctly labeled as food add
-#these years are taken from Ben's instructions on google doc
-lit2[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
-lit2[grid == "JO" & (year >= 2006 & year <= 2014), food := 1]
-lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
-
-#UNSURE HERE for now change LL in 2012 to food add
-lit2[grid == "LL" & year == 2012, food := 1]         ## DOUBLE CHECK
+# #fix food add treatment so all squirrels during certain years and in certain grids are correctly labeled as food add
+# #these years are taken from Ben's instructions on google doc
+# lit2[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
+# lit2[grid == "JO" & (year >= 2006 & year <= 2014), food := 1]
+# lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
+# 
+# #UNSURE HERE for now change LL in 2012 to food add
+# lit2[grid == "LL" & year == 2012, food := 1]         ## DOUBLE CHECK
 
 
 
@@ -133,25 +133,6 @@ dat2[growthrate <= 0 | growthrate > 10, .N]
 
 #remove NA growth rates
 dat2 <- dat2[!is.na(growthrate)]
-
-
-
-# Finalize treatments and factors -----------------------------------------------------
-
-#categorize litter size into a 4-part factor
-dat2[, litterf := cut(littersize, breaks = 4, labels = c("1-2", "2-3", "5-6", "7-8"))]
-
-#make NA foods 0
-dat2[is.na(food), food := 0]
-
-#if bucket is NA and on a food add grid, make bucket 0
-dat2[food == 1 & is.na(bucket), bucket := 0]
-
-#create treatment col
-dat2[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
-
-#make food, bucket, and breeding status factors
-dat2[, food := factor(food)][, br := factor(br)][, bucket := factor(bucket)][, treatment := factor(treatment)]
 
 
 
