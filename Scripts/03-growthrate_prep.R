@@ -55,23 +55,6 @@ lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
 
 
 
-# Assign grid treatments --------------------------------------------------
-
-#are there cases where not food treatment but has bucket?
-lit2[food == 0 & bucket == 1, .N, by = .(grid, year)]
-#yes... why is this?
-
-# #fix food add treatment so all squirrels during certain years and in certain grids are correctly labeled as food add
-# #these years are taken from Ben's instructions on google doc
-# lit2[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
-# lit2[grid == "JO" & (year >= 2006 & year <= 2014), food := 1]
-# lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
-# 
-# #UNSURE HERE for now change LL in 2012 to food add
-# lit2[grid == "LL" & year == 2012, food := 1]         ## DOUBLE CHECK
-
-
-
 # prep juvenile data -----------------------------------------------------------
 
 #take only cols of interest
@@ -110,7 +93,7 @@ dat <- dat[!weight1 > 50]
 dat <- dat[!weight2 > 100]
 
 #remove duplicate squirrels
-dat2 <- dat[!duplicated(squirrel_id) == TRUE]
+dat2 <- dat[!duplicated(squirrel_id) == TRUE] ##WHY?
 
 
 
