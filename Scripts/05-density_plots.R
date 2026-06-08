@@ -6,10 +6,8 @@ library(data.table)
 library(ggplot2)
 
 #read in data prepped from previous script
-densities <- readRDS("Output/Data/local_densities.rds")
-radius <- 130
+densities <- readRDS("Output/Data/final_data.rds")
 
-#in future: remake these with the final dataset. Whatever that ends up being
 
 
 # plot --------------------------------------------------------------------
