@@ -41,6 +41,8 @@ dat[, br := factor(br)][, bucket := factor(bucket)]
 #are there cases where not food treatment but has bucket?
 dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
 
+#create a category for density
+dat[, densityf := cut(density, 4)]
 
 
 # remove data from grid/years that would be problematic ------------------------------------------------
