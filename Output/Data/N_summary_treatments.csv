@@ -1,38 +1,38 @@
 "","grid","year","treatment","N"
 "1","AG",2004,"Control",30
-"2","AG",2005,"Food add",101
-"3","AG",2006,"Food add",84
-"4","AG",2007,"Food add",88
-"5","AG",2008,"Food add",109
-"6","AG",2009,"Food add",89
-"7","AG",2010,"Food add",57
-"8","AG",2011,"Food add",59
-"9","AG",2012,"Food add",72
-"10","AG",2013,"Food add",121
-"11","AG",2014,"Food add",118
-"12","AG",2015,"Food add",112
-"13","AG",2016,"Food add",80
-"14","AG",2017,"Food add",165
-"15","AG",2018,"Control",58
-"16","BT",2016,"Control",13
-"17","BT",2017,"Control",10
-"18","BT",2018,"Control",9
-"19","BT",2019,"Control",6
-"20","BT",2020,"Control",9
-"21","BT",2021,"Control",6
-"22","BT",2023,"Control",3
-"23","JO",2006,"Food add",55
-"24","JO",2007,"Food add",82
-"25","JO",2008,"Food add",89
-"26","JO",2009,"Food add",85
-"27","JO",2010,"Food add",68
-"28","JO",2011,"Food add",24
-"29","JO",2012,"Food add",58
-"30","JO",2013,"Food add",118
-"31","JO",2014,"Food add",79
-"32","JO",2015,"Food add",40
-"33","JO",2016,"Food add",2
-"34","JO",2017,"Control",2
+"2","AG",2005,"Food add",100
+"3","AG",2005,"Control",1
+"4","AG",2006,"Control",80
+"5","AG",2006,"Food add",4
+"6","AG",2007,"Food add",88
+"7","AG",2008,"Control",109
+"8","AG",2009,"Food add",68
+"9","AG",2009,"Control",21
+"10","AG",2010,"Control",57
+"11","AG",2011,"Control",59
+"12","AG",2012,"Control",72
+"13","AG",2013,"Food add",121
+"14","AG",2014,"Food add",105
+"15","AG",2014,"Control",13
+"16","AG",2015,"Food add",109
+"17","AG",2015,"Control",3
+"18","AG",2016,"Food add",80
+"19","AG",2017,"Food add",165
+"20","AG",2018,"Control",58
+"21","BT",2018,"Control",9
+"22","BT",2019,"Control",6
+"23","BT",2020,"Control",9
+"24","BT",2021,"Control",6
+"25","BT",2023,"Control",3
+"26","JO",2006,"Control",55
+"27","JO",2007,"Food add",82
+"28","JO",2008,"Control",89
+"29","JO",2009,"Food add",85
+"30","JO",2010,"Control",68
+"31","JO",2011,"Control",24
+"32","JO",2012,"Control",58
+"33","JO",2013,"Control",118
+"34","JO",2014,"Control",79
 "35","JO",2018,"Control",2
 "36","JO",2018,"Rattle",53
 "37","JO",2019,"Rattle",13
@@ -40,25 +40,11 @@
 "39","JO",2021,"Rattle",9
 "40","JO",2022,"Rattle",28
 "41","JO",2023,"Control",23
-"42","LL",1989,"Control",9
-"43","LL",1990,"Control",3
-"44","LL",1991,"Control",21
-"45","LL",1991,"Food add",22
-"46","LL",1992,"Control",54
-"47","LL",1992,"Food add",10
-"48","LL",1993,"Control",29
-"49","LL",1993,"Food add",26
-"50","LL",1994,"Food add",18
-"51","LL",1994,"Control",27
-"52","LL",1995,"Control",25
-"53","LL",1996,"Control",14
-"54","LL",1997,"Control",24
-"55","LL",1999,"Control",16
-"56","LL",2003,"Food add",14
-"57","LL",2006,"Food add",39
-"58","LL",2007,"Food add",108
-"59","LL",2008,"Food add",140
-"60","LL",2009,"Food add",95
-"61","LL",2010,"Food add",44
-"62","LL",2011,"Food add",39
-"63","LL",2012,"Food add",27
+"42","LL",2006,"Control",39
+"43","LL",2007,"Food add",108
+"44","LL",2008,"Control",56
+"45","LL",2008,"Food add",84
+"46","LL",2009,"Food add",90
+"47","LL",2009,"Control",5
+"48","LL",2010,"Control",44
+"49","LL",2011,"Control",39

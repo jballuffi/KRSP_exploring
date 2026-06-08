@@ -57,8 +57,6 @@ dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
 #test bucket issue again
 dat2[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
 
-dat2[grid == "LL", .N, year]
-
 #exclude BT and JO 2015 - 2017 due to cort experiment
 dat2 <- dat2[!((grid == "BT" | grid == "JO") & (year <= 2017 & year >= 2015))]
 
@@ -75,19 +73,19 @@ dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 # lit2[grid == "JO" & (year > 2006 & year <= 2014), food := 1]
 # lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
-
-#test bucket issue again
-dat2[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
-
-
-
-#redo factors
+#make food and treatment factors
 dat2[, food := factor(food)][, treatment := factor(treatment)]
 
 
 
+# current summaries -------------------------------------------------------
 
-# create summary ----------------------------------------------------------
+#test bucket issue again
+bucketissues <- dat2[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
+setorder(bucketissues, grid, year)
+
+foodaddsample <- dat2[food == 1, .N, by = .(grid, year)]
+setorder(foodaddsample, grid, year)
 
 #summary by treatment
 dat2[, .N, by = .(treatment)]
