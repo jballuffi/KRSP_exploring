@@ -6,12 +6,10 @@ library(ggplot2)
 library(data.table)
 
 #read in growth rate data
-growth <- readRDS("Output/Data/growth_rates.rds") 
+growth <- readRDS("Output/Data/final_data.rds") 
 
 #make birth month col as a factor
 growth[, bmonth := as.factor(month(bdate))]
-
-#in future: remake these with the final dataset. Whatever that ends up being
 
 
 
@@ -25,7 +23,8 @@ growth[, bmonth := as.factor(month(bdate))]
 
 #growth rate in response to litter size
 (ls <- ggplot(growth)+
-    geom_boxplot(aes(x = litterf, y = growthrate))+
+    geom_point(aes(x = littersize, y = growthrate))+
+    geom_smooth(aes(x = littersize, y = growthrate), method = "lm")+
     labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "All treatments")+
     theme_bw())
 
@@ -33,17 +32,14 @@ growth[, bmonth := as.factor(month(bdate))]
 
 # figures for treatments of interest --------------------------------------
 
-#take only food and control and playbacks only
-basic <- growth[food == 1 | food == 0 | food == 18 | food == 19]
-
 #plot growth rate in response to these treatments
-(treatment <- ggplot(basic)+
+(treatment <- ggplot(growth)+
     geom_boxplot(aes(x = treatment, y = growthrate, fill = bucket), alpha = 0.6)+
     labs(x = "Grid Treatment", y = "Growth rate (g/day)", subtitle = "Treatments 0, 1, 18 and 19")+
     theme_bw())
 
 #get average growth rates by year
-annual <- basic[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(year, treatment)]
+annual <- growth[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(year, treatment)]
 setorder(annual, year)
 
 #plot avg annual growth rate over time and by food add
