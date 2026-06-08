@@ -26,16 +26,16 @@ dat <- merge(moms, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
 # Finalize treatments and factors -----------------------------------------------------
 
-#make NA foods 0
+#if food is NA, make foods 0
 dat[is.na(food), food := 0]
 
-#if bucket is NA and on a food add grid, make bucket 0
-dat[food == 1 & is.na(bucket), bucket := 0]
+#if bucket is NA, make bucket 0
+dat[is.na(bucket), bucket := 0]
 
-#create treatment col
+#create treatment col based on food col.
 dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
 
-#make food, bucket, and breeding status factors
+#make factors
 dat[, br := factor(br)][, bucket := factor(bucket)]
 
 #are there cases where not food treatment but has bucket?
@@ -73,7 +73,7 @@ dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 # lit2[grid == "JO" & (year > 2006 & year <= 2014), food := 1]
 # lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
-#make food and treatment factors
+#make factors
 dat2[, food := factor(food)][, treatment := factor(treatment)]
 
 
