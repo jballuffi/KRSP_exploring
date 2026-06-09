@@ -2,8 +2,8 @@
 
 # load library and read in data -------------------------------------------
 
-library(data.table)
-library(ggplot2)
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
 
 #read in data prepped from previous script
 densities <- readRDS("Output/Data/final_data.rds")

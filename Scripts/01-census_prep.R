@@ -1,7 +1,10 @@
 
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
+#add in this
 library(tidyverse)
-library(krsp)
-library (lubridate)
+
 
 
 #connect with database

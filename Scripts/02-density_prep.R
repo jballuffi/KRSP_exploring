@@ -1,16 +1,10 @@
 
-library(ggplot2)
-library(data.table)
-library(lubridate)
-library(ggforce)
-library(dplyr)
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
 
 
 #read in prepped census data
 census <- readRDS("Output/Data/census_full.rds")
-
-#set distance for local densities
-radius <- 130
 
 
 

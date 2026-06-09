@@ -1,11 +1,6 @@
 
-
-library(ggplot2)
-library(data.table)
-library(lubridate)
-library(rsq)
-library(ggpubr)
-library(ggeffects)
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
 
 
 

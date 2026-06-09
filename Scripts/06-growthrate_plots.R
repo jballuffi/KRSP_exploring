@@ -2,8 +2,9 @@
 
 # load library and read in prepped data -----------------------------------
 
-library(ggplot2)
-library(data.table)
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
 
 #read in growth rate data
 growth <- readRDS("Output/Data/final_data.rds") 
