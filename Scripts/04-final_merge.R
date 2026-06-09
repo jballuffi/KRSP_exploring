@@ -47,6 +47,8 @@ dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
 #create a category for density
 dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
 
+#MAKE MAST YEAR COL YES OR NO
+dat
 
 
 # remove data from grid/years that would be problematic ------------------------------------------------
