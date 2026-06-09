@@ -47,7 +47,7 @@ lit2 <- lit[, .(mother_id = squirrel_id, litter_id = id,
                bdate = fieldBDate, date1, date2 = tagDt)]
 
 #create dates
-lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
+lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)][, bjulian := yday(bdate)]
 
 #merge litter and buckets
 lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
