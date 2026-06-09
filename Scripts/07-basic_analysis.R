@@ -43,7 +43,7 @@ playback <- dat[food == 18 | food == 19]    #just playback experiment
 # MODEL 1: Control Only with litter size as interaction --------------------------------------------------------------
 
 #this model is Growth Rate ~ Litter Size x Local Density
-bmod <- lm(growthrate ~ litterf*density, control)
+bmod <- lm(growthrate ~ littersize*densityf, control)
 summary(bmod)
 
 #very low explanatory power
@@ -51,63 +51,36 @@ rsq(bmod)
 danova <- anova(bmod)
 
 #get effects table
-base_effs <- as.data.table(ggpredict(bmod, terms = c("density", "litterf")))
+base_effs <- as.data.table(ggpredict(bmod, terms = c("littersize", "densityf")))
 
 #plot results from model
 ggplot()+
-  geom_point(aes(x = density, y = growthrate, color = litterf), alpha = 0.2, data = control)+
+  geom_point(aes(x = littersize, y = growthrate, color = densityf), alpha = 0.2, data = control)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs)+
-  scale_color_discrete(name = "Litter size")+
-  scale_fill_discrete(name = "Litter size")+
-  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL, interacting")+
+  scale_color_discrete(name = "Density (ind/ha)")+
+  scale_fill_discrete(name = "Density (ind/ha)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "SU and KL only")+
   theme_bw()
 
-
-
-# MODEL 2: Control Only with not interaction --------------------------------------------------------------
-
-#this model is Growth Rate ~ Litter Size x Local Density
-bmod2 <- lm(growthrate ~ litterf + density, control)
-summary(bmod2)
-
-#very low explanatory power
-rsq(bmod2)
-danova <- anova(bmod2)
-
-#get effects table
-base_effs2 <- as.data.table(ggpredict(bmod2, terms = c("density", "litterf")))
-
-#plot results from model
-ggplot()+
-    geom_point(aes(x = density, y = growthrate, color = litterf), alpha = 0.2, data = control)+
-    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs2)+
-    geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs2)+
-    scale_color_discrete(name = "Litter size")+
-    scale_fill_discrete(name = "Litter size")+
-    labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "SU and KL, non-interacting")+
-    theme_bw()
-
-
-#this tells me that litter size doesn't need to be an interaction. It mainly just changes the intercept.
 
 
 # MODEL 3: Grid Treatment --------------------------------------------------------
 
 #this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
-gmod <- lm(growthrate ~ litterf + density*treatment_grid, dat)
+gmod <- lm(growthrate ~ littersize*densityf*treatment_grid, dat)
 summary(gmod)
 anova(gmod)
 
 #get effects table
-grid_effs <- as.data.table(ggpredict(gmod, terms = c("density", "litterf", "treatment_grid")))
+grid_effs <- as.data.table(ggpredict(gmod, terms = c("littersize", "densityf", "treatment_grid")))
 
 ggplot(grid_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Litter size")+
-  scale_fill_discrete(name = "Litter size")+
-  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
+  scale_color_discrete(name = "Density (ind/ha)")+
+  scale_fill_discrete(name = "Density (ind/ha)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
   facet_wrap(~facet)+
   theme_bw()
 
@@ -116,21 +89,21 @@ ggplot(grid_effs)+
 # MODEL 4: Individual Treatment -----------------------------------------
 
 #make model for growth ~ litter size * food add
-imod <- lm(growthrate ~ litterf + density*treatment_ind, dat)
+imod <- lm(growthrate ~ littersize*densityf*treatment_ind, dat)
 
 #summaries
 summary(imod)
 anova(imod)
 
 #get effects table for model
-ind_effs <- as.data.table(ggpredict(imod, terms = c("density", "litterf", "treatment_ind")))
+ind_effs <- as.data.table(ggpredict(imod, terms = c("littersize", "densityf", "treatment_ind")))
 
 ggplot(ind_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Litter size")+
-  scale_fill_discrete(name = "Litter size")+
-  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
+  scale_color_discrete(name = "Density (ind/ha)")+
+  scale_fill_discrete(name = "Density (ind/ha)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
   facet_wrap(~facet)+
   theme_bw()
 
@@ -139,21 +112,21 @@ ggplot(ind_effs)+
 # MODEL 5: Grid_Bucket Treatment -----------------------------------------
 
 #make model for growth ~ litter size * food add
-tbmod <- lm(growthrate ~ litterf + density*treatment_bucket, dat)
+tbmod <- lm(growthrate ~ littersize*densityf*treatment_bucket, dat)
 
 #summaries
 summary(tbmod)
 anova(tbmod)
 
 #get effects table for model
-tb_effs <- as.data.table(ggpredict(tbmod, terms = c("density", "litterf", "treatment_bucket")))
+tb_effs <- as.data.table(ggpredict(tbmod, terms = c("littersize", "densityf", "treatment_bucket")))
 
 ggplot(tb_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Litter size")+
-  scale_fill_discrete(name = "Litter size")+
-  labs(x = "Local density (squirrels/ha)", y = "Growth rate (g/day)", subtitle = "Grid_Bucket")+
+  scale_color_discrete(name = "Density (ind/ha)")+
+  scale_fill_discrete(name = "Density (ind/ha)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid_Bucket")+
   facet_wrap(~facet)+
   theme_bw()
 
