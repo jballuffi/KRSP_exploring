@@ -26,6 +26,9 @@ dat <- merge(moms, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
 # Finalize treatments and factors -----------------------------------------------------
 
+#remove dat
+dat <- dat[!is.na(density)]
+
 #if food is NA, make foods 0
 dat[is.na(food), food := 0]
 
@@ -42,7 +45,8 @@ dat[, br := factor(br)][, bucket := factor(bucket)]
 dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
 
 #create a category for density
-dat[, densityf := cut(density, 4)]
+dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
+
 
 
 # remove data from grid/years that would be problematic ------------------------------------------------
@@ -54,7 +58,7 @@ grids <- c("KL", "SU", "AG", "JO", "LL", "BT")
 foods <- c(1, 0, 18, 19)
 
 #subset to that list of grids and treatments, excluding data where density is missing
-dat2 <- dat[grid %in% grids & food %in% foods & !is.na(density)]
+dat2 <- dat[grid %in% grids & food %in% foods]
 
 #test bucket issue again
 dat2[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
