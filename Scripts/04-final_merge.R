@@ -86,6 +86,12 @@ dat2 <- dat2[!(grid == "AG" & year == 2019)]
 #exclude LL prior to 2006 and from 2012
 dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 
+#make grid-year
+dat2[, gridyear := paste0(grid, "-", year)]
+
+#standardive covariates by grid-year
+dat2[, bjulian_std := scale(bjulian), gridyear]
+dat2[, littersize_std := scale(littersize), gridyear]
 
 # #fix food add treatment so all squirrels during certain years and in certain grids are correctly labeled as food add
 # #these years are taken from Ben's instructions on google doc
