@@ -43,7 +43,7 @@ summary(bmod)
 
 #very low explanatory power
 rsq(bmod)
-danova <- anova(bmod)
+anova(bmod)
 
 #get effects table
 base_effs <- as.data.table(ggpredict(bmod, terms = c("littersize", "densityf")))
@@ -60,7 +60,7 @@ ggplot()+
 
 
 
-# MODEL 3: Grid Treatment --------------------------------------------------------
+# MODEL 2: Grid Treatment --------------------------------------------------------
 
 #this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
 gmod <- lm(growthrate ~ littersize*densityf*treatment_grid, dat)
@@ -81,7 +81,7 @@ ggplot(grid_effs)+
 
 
 
-# MODEL 4: Individual Treatment -----------------------------------------
+# MODEL 3: Individual Treatment -----------------------------------------
 
 #make model for growth ~ litter size * food add
 imod <- lm(growthrate ~ littersize*densityf*treatment_ind, dat)
@@ -104,7 +104,7 @@ ggplot(ind_effs)+
 
 
 
-# MODEL 5: Grid_Bucket Treatment -----------------------------------------
+# MODEL 4: Grid_Bucket Treatment -----------------------------------------
 
 #make model for growth ~ litter size * food add
 tbmod <- lm(growthrate ~ littersize*densityf*treatment_bucket, dat)
