@@ -11,16 +11,20 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #read in prepped data
 dens <- readRDS("Output/Data/local_densities.rds")
 growth <- readRDS("Output/Data/growth_rates.rds")
+moms <- readRDS("Output/Data/mom_lives.rds")
 
 
 
-# initial merge and clean -------------------------------------------------
+# initial merge -------------------------------------------------
 
 #take only moms from density data and remove sex col
-moms <- dens[sex == "F"][, sex := NULL]
+dens <- dens[sex == "F"][, sex := NULL]
 
 #merge data by mother id, year and grid
-dat <- merge(moms, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
+m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
+
+#merge in mom age and lifespan
+dat <- merge(m1, moms, by = c("grid", "mother_id"), all.x = TRUE)
 
 
 
@@ -48,10 +52,18 @@ dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
 dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
 
 #MAKE MAST YEAR COL YES OR NO
-dat
+dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
+
+#get everyone's first year of the playback experiment
+firstrattles <- dat[food == 19, .(rattle1 = min(year)), mother_id]
+
+#merge this info in and pull number of years into rattle experiment
+dat <- merge(dat, firstrattles, by = "mother_id", all.x = TRUE)
+dat[food == 19, rattle_length := year - rattle1]
 
 
-# remove data from grid/years that would be problematic ------------------------------------------------
+
+# remove data from grid/years that would be problematic --TRUE# remove data from grid/years that would be problematic ------------------------------------------------
 
 #list the grids we are interested in
 grids <- c("KL", "SU", "AG", "JO", "LL", "BT")

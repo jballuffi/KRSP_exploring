@@ -4,3 +4,6 @@ radius <- 130
 
 #mast years
 mast_years <- c(1993, 1998, 2005, 2010, 2014, 2019, 2022)
+
+#year when rattle playbacks started
+playback_year <- 2018
