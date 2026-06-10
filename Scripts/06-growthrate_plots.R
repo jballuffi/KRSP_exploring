@@ -16,17 +16,18 @@ growth[, bmonth := as.factor(month(bdate))]
 
 # figures for all data ----------------------------------------------------
 
-#look at growth rate in response to birth month and food add
-(birthmonth <- ggplot(growth)+
-   geom_boxplot(aes(x = bmonth, y = growthrate))+
-   labs(x = "Birth month", y = "Growth rate (g/day)", subtitle = "All treatments")+
-   theme_bw())
-
 #growth rate in response to litter size
 (ls <- ggplot(growth)+
-    geom_point(aes(x = littersize, y = growthrate))+
-    geom_smooth(aes(x = littersize, y = growthrate), method = "lm")+
-    labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "All treatments")+
+   geom_point(aes(x = littersize, y = growthrate))+
+   geom_smooth(aes(x = littersize, y = growthrate), method = "lm")+
+   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "All treatments")+
+   theme_bw())
+
+#look at growth rate in response to birth month and food add
+(birthmonth <- ggplot(growth)+
+    geom_point(aes(x = bjulian, y = growthrate))+
+    geom_smooth(aes(x = bjulian, y = growthrate), method = "lm")+
+    labs(x = "Birthday (Julian day)", y = "Growth rate (g/day)", subtitle = "All treatments")+
     theme_bw())
 
 
@@ -38,6 +39,7 @@ growth[, bmonth := as.factor(month(bdate))]
     geom_boxplot(aes(x = treatment, y = growthrate, fill = bucket), alpha = 0.6)+
     labs(x = "Grid Treatment", y = "Growth rate (g/day)", subtitle = "Treatments 0, 1, 18 and 19")+
     theme_bw())
+
 
 #get average growth rates by year
 annual <- growth[, .(growthrate = mean(growthrate, na.rm = TRUE)), by = .(year, treatment)]
