@@ -16,6 +16,13 @@ densities <- readRDS("Output/Data/final_data.rds")
 means <- densities[, .(density = mean(density)), year]
 setorder(means, year)
 
+#plot density by grid
+(totaldensity_gr <- 
+    ggplot(densities)+
+    geom_boxplot(aes(x = grid, y = density))+
+    labs(y = "Local density (squrirels/ha)", x = "Grid")+
+    theme_bw())
+
 #plot mean density by year
 (totaldensity_yr <- 
     ggplot(means)+
@@ -23,12 +30,6 @@ setorder(means, year)
     labs(y = "Mean local density (squirrels/ha)", x = "Year")+
     theme_bw())
 
-#plot density by grid
-(totaldensity_gr <- 
-    ggplot(densities)+
-    geom_boxplot(aes(x = grid, y = density))+
-    labs(y = "Local density (squrirels/ha)", x = "Grid")+
-    theme_bw())
 
 
 # save --------------------------------------------------------------------
