@@ -34,7 +34,7 @@ pb[, year := year(date)]
 #test bucket issue again, where they have bucket but listed as control
 bucketissues <- dat[food == 0 & bucket == 1, .(grid, year, mother_id, reflo)] #WHY?
 setorder(bucketissues, grid, year)
-bucketissues[, problematic := "yes"]
+#bucketissues[, problematic := "yes"]
 
 #remove duplicates (probably because it by juvenile not litter)
 bucketissues <- unique(bucketissues)
@@ -47,4 +47,8 @@ setorder(pb2, grid, year, reflo)
 nopb <- pb2[pb_rem == 0 & pb == 0]
 setorder(nopb, grid, year, reflo)
 nopb[, length(unique(mother_id)), by = .(grid, year)]
+
+
+write.csv(bucketissues, "Output/Data/food_and_bucket_issues.csv")
+
 
