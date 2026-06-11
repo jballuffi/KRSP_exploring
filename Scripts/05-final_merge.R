@@ -30,8 +30,10 @@ dat <- merge(m1, moms, by = c("grid", "mother_id"), all.x = TRUE)
 
 # Finalize treatments and factors -----------------------------------------------------
 
-#remove dat
-dat <- dat[!is.na(density)]
+#correct for food add based on grid and year
+dat[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
+dat[grid == "JO" & (year > 2006 & year <= 2014), food := 1]
+dat[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
 #if food is NA, make foods 0
 dat[is.na(food), food := 0]
@@ -39,14 +41,8 @@ dat[is.na(food), food := 0]
 #if bucket is NA, make bucket 0
 dat[is.na(bucket), bucket := 0]
 
-#create treatment col based on food col.
-dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
-
-#make factors
-dat[, br := factor(br)][, bucket := factor(bucket)]
-
 #are there cases where not food treatment but has bucket?
-dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
+dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #Just LL 2012 which we will remove
 
 #create a category for density
 dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
@@ -61,9 +57,17 @@ firstrattles <- dat[food == 19, .(rattle1 = min(year)), mother_id]
 dat <- merge(dat, firstrattles, by = "mother_id", all.x = TRUE)
 dat[food == 19, rattle_length := year - rattle1]
 
+#create treatment col based on food col.
+dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
+
+#make factors
+dat[, br := factor(br)][, bucket := factor(bucket)]
 
 
-# remove data from grid/years that would be problematic --TRUE# remove data from grid/years that would be problematic ------------------------------------------------
+# clear out bad data ------------------------------------------------
+
+#remove any rows without density
+dat2 <- dat[!is.na(density)]
 
 #list the grids we are interested in
 grids <- c("KL", "SU", "AG", "JO", "LL", "BT")
@@ -72,10 +76,7 @@ grids <- c("KL", "SU", "AG", "JO", "LL", "BT")
 foods <- c(1, 0, 18, 19)
 
 #subset to that list of grids and treatments, excluding data where density is missing
-dat2 <- dat[grid %in% grids & food %in% foods]
-
-#test bucket issue again
-dat2[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
+dat2 <- dat2[grid %in% grids & food %in% foods]
 
 #exclude BT and JO 2015 - 2017 due to cort experiment
 dat2 <- dat2[!((grid == "BT" | grid == "JO") & (year <= 2017 & year >= 2015))]
@@ -89,15 +90,9 @@ dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 #make grid-year
 dat2[, gridyear := paste0(grid, "-", year)]
 
-#standardive covariates by grid-year
+#standardize covariates by grid-year
 dat2[, bjulian_std := scale(bjulian), gridyear]
 dat2[, littersize_std := scale(littersize), gridyear]
-
-# #fix food add treatment so all squirrels during certain years and in certain grids are correctly labeled as food add
-# #these years are taken from Ben's instructions on google doc
-# lit2[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
-# lit2[grid == "JO" & (year > 2006 & year <= 2014), food := 1]
-# lit2[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
 #make factors
 dat2[, food := factor(food)][, treatment := factor(treatment)]
@@ -105,10 +100,6 @@ dat2[, food := factor(food)][, treatment := factor(treatment)]
 
 
 # current summaries -------------------------------------------------------
-
-#test bucket issue again
-bucketissues <- dat2[food == 0 & bucket == 1, .N, by = .(grid, year)] #WHY?
-setorder(bucketissues, grid, year)
 
 foodaddsample <- dat2[food == 1, .N, by = .(grid, year)]
 setorder(foodaddsample, grid, year)

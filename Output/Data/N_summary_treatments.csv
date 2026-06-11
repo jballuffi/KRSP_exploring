@@ -1,50 +1,43 @@
 "","grid","year","treatment","N"
 "1","AG",2004,"Control",30
-"2","AG",2005,"Food add",100
-"3","AG",2005,"Control",1
-"4","AG",2006,"Control",80
-"5","AG",2006,"Food add",4
-"6","AG",2007,"Food add",88
-"7","AG",2008,"Control",109
-"8","AG",2009,"Food add",68
-"9","AG",2009,"Control",21
-"10","AG",2010,"Control",57
-"11","AG",2011,"Control",59
-"12","AG",2012,"Control",72
-"13","AG",2013,"Food add",121
-"14","AG",2014,"Food add",105
-"15","AG",2014,"Control",13
-"16","AG",2015,"Food add",109
-"17","AG",2015,"Control",3
-"18","AG",2016,"Food add",80
-"19","AG",2017,"Food add",165
-"20","AG",2018,"Control",58
-"21","BT",2018,"Control",9
-"22","BT",2019,"Control",6
-"23","BT",2020,"Control",9
-"24","BT",2021,"Control",6
-"25","BT",2023,"Control",3
-"26","JO",2006,"Control",55
-"27","JO",2007,"Food add",82
-"28","JO",2008,"Control",89
-"29","JO",2009,"Food add",85
-"30","JO",2010,"Control",68
-"31","JO",2011,"Control",24
-"32","JO",2012,"Control",58
-"33","JO",2013,"Control",118
-"34","JO",2014,"Control",79
-"35","JO",2018,"Control",2
-"36","JO",2018,"Rattle",53
-"37","JO",2019,"Rattle",13
-"38","JO",2020,"Rattle",34
-"39","JO",2021,"Rattle",9
-"40","JO",2022,"Rattle",28
-"41","JO",2023,"Control",23
-"42","LL",2006,"Control",39
-"43","LL",2007,"Food add",108
-"44","LL",2008,"Control",56
-"45","LL",2008,"Food add",84
-"46","LL",2009,"Food add",90
-"47","LL",2009,"Control",5
-"48","LL",2010,"Control",44
-"49","LL",2011,"Control",39
+"2","AG",2005,"Food add",101
+"3","AG",2006,"Food add",84
+"4","AG",2007,"Food add",88
+"5","AG",2008,"Food add",109
+"6","AG",2009,"Food add",89
+"7","AG",2010,"Food add",57
+"8","AG",2011,"Food add",59
+"9","AG",2012,"Food add",72
+"10","AG",2013,"Food add",121
+"11","AG",2014,"Food add",118
+"12","AG",2015,"Food add",112
+"13","AG",2016,"Food add",80
+"14","AG",2017,"Food add",165
+"15","AG",2018,"Control",58
+"16","BT",2018,"Control",9
+"17","BT",2019,"Control",6
+"18","BT",2020,"Control",9
+"19","BT",2021,"Control",6
+"20","BT",2023,"Control",3
+"21","JO",2006,"Control",55
+"22","JO",2007,"Food add",82
+"23","JO",2008,"Food add",89
+"24","JO",2009,"Food add",85
+"25","JO",2010,"Food add",68
+"26","JO",2011,"Food add",24
+"27","JO",2012,"Food add",58
+"28","JO",2013,"Food add",118
+"29","JO",2014,"Food add",79
+"30","JO",2018,"Control",2
+"31","JO",2018,"Rattle",53
+"32","JO",2019,"Rattle",13
+"33","JO",2020,"Rattle",34
+"34","JO",2021,"Rattle",9
+"35","JO",2022,"Rattle",28
+"36","JO",2023,"Control",23
+"37","LL",2006,"Food add",39
+"38","LL",2007,"Food add",108
+"39","LL",2008,"Food add",140
+"40","LL",2009,"Food add",95
+"41","LL",2010,"Food add",44
+"42","LL",2011,"Food add",39
