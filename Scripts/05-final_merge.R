@@ -26,12 +26,43 @@ m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 #merge in mom age and lifespan
 dat <- merge(m1, moms, by = c("grid", "mother_id"), all.x = TRUE)
 
+
+
+# calculate additional co variates and standardize -------------------------
+
 #calculate mother age
 dat[, mother_age := year - mother_byear]
 
+#make grid-year
+dat[, gridyear := paste0(grid, "-", year)]
+
+#MAKE MAST YEAR COL YES OR NO
+dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
+
+#create a category for density
+dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
+
+#standardize density globally
+dat[, density_std := scale(density), year]
+
+#create a category for density
+dat[, densityf_std := cut(round(density_std, 1), breaks = 4)]
+
+#standardize cones globally
+### next step ^
+
+#standardize birth date by grid year
+dat[, bjulian_std := scale(bjulian), gridyear]
+
+#standardize litter size by grid year
+dat[, littersize_std := scale(littersize), gridyear]
+
+#standardize growth rate by grid year
+dat[, growthrate_std := scale(growthrate), gridyear]
 
 
-# Finalize treatments -----------------------------------------------------
+
+# Correct issues with treatment -----------------------------------------------------
 
 #correct for food add based on grid and year
 dat[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
@@ -47,11 +78,12 @@ dat[is.na(bucket), bucket := 0]
 #are there cases where not food treatment but has bucket?
 dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #Just LL 2012 which we will remove
 
-#create a category for density
-dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
+#create treatment col based on food col.
+dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
 
-#MAKE MAST YEAR COL YES OR NO
-dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
+
+
+# Additional info for Rattle treatment ------------------------------------
 
 #get everyone's first year of the playback experiment
 firstrattles <- dat[food == 19, .(rattle1 = min(year)), mother_id]
@@ -59,12 +91,6 @@ firstrattles <- dat[food == 19, .(rattle1 = min(year)), mother_id]
 #merge this info in and pull number of years into rattle experiment
 dat <- merge(dat, firstrattles, by = "mother_id", all.x = TRUE)
 dat[food == 19, rattle_length := year - rattle1]
-
-#create treatment col based on food col.
-dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
-
-#make factors
-dat[, br := factor(br)][, bucket := factor(bucket)]
 
 
 
@@ -91,15 +117,15 @@ dat2 <- dat2[!(grid == "AG" & year == 2019)]
 #exclude LL prior to 2006 and from 2012
 dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 
-#make grid-year
-dat2[, gridyear := paste0(grid, "-", year)]
 
-#standardize covariates by grid-year
-dat2[, bjulian_std := scale(bjulian), gridyear]
-dat2[, littersize_std := scale(littersize), gridyear]
+
+# finalize what are factors -----------------------------------------------
 
 #make factors
 dat2[, food := factor(food)][, treatment := factor(treatment)]
+
+#make factors
+dat2[, br := factor(br)][, bucket := factor(bucket)]
 
 
 
