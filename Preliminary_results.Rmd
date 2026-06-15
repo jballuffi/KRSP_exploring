@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r sourcing, include=FALSE}
-source("Scripts/07-basic_analysis.R")
+source("Scripts/08-basic_analysis.R")
 ```
 
 

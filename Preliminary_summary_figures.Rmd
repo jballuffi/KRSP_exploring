@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r sourcing, include=FALSE}
-source("Scripts/05-density_plots.R")
-source("Scripts/06-growthrate_plots.R")
+source("Scripts/06-density_plots.R")
+source("Scripts/07-growthrate_plots.R")
 ```
 
 ## Density Summary Plots
