@@ -26,9 +26,12 @@ m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 #merge in mom age and lifespan
 dat <- merge(m1, moms, by = c("grid", "mother_id"), all.x = TRUE)
 
+#calculate mother age
+dat[, mother_age := year - mother_byear]
 
 
-# Finalize treatments and factors -----------------------------------------------------
+
+# Finalize treatments -----------------------------------------------------
 
 #correct for food add based on grid and year
 dat[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
@@ -62,6 +65,7 @@ dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Foo
 
 #make factors
 dat[, br := factor(br)][, bucket := factor(bucket)]
+
 
 
 # clear out bad data ------------------------------------------------
