@@ -19,7 +19,7 @@ con <- krsp_connect(
 cones <- as.data.table(tbl(con, "cones") %>% collect())
 
 #take cols of interest
-cones <- cones[, .(grid = Grid, year = Year, tree_id, N = as.integer(NumNew))]
+cones <- cones[, .(grid = Grid, year = as.integer(Year), tree_id, N = as.integer(NumNew))]
 
 
 
