@@ -28,9 +28,6 @@ cones <- cones[, .(grid = Grid, year = as.integer(Year), tree_id, N = as.integer
 #doesn't seem to be any data until 1988
 cones <- cones[year > 1987]
 
-#take only grids of interest (list of grids is in R/variables.R)
-cones <- cones[grid %in% grids]
-
 #log transform cone count plus 1 (because of zeros)
 cones[, Nlog := log(N + 1)]
 
