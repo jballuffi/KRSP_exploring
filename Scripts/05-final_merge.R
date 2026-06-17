@@ -99,13 +99,7 @@ dat[food == 19, rattle_length := year - rattle1]
 #remove any rows without density
 dat2 <- dat[!is.na(density)]
 
-#list the grids we are interested in
-grids <- c("KL", "SU", "AG", "JO", "LL", "BT")
-
-#list the treatments we are interested in 
-foods <- c(1, 0, 18, 19)
-
-#subset to that list of grids and treatments, excluding data where density is missing
+#subset to grids and treatments of interest (found in R/variables.R)
 dat2 <- dat2[grid %in% grids & food %in% foods]
 
 #exclude BT and JO 2015 - 2017 due to cort experiment
