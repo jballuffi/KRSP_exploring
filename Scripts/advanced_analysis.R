@@ -18,12 +18,15 @@ dat <- readRDS("Output/Data/final_data.rds")
 
 
 #this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
-mod <- lmer(growthrate ~ littersize*density*treatment +
-               mother_age + 
-               sex + 
-               mast + 
-               bjulian + 
-               (1|gridyear), dat)
+mod <- lmer(growthrate ~ 
+              littersize*density*treatment +
+              mother_age + 
+              sex + 
+              mast + 
+              bjulian + 
+              (1|mother_id/litter_id) +
+              (1|year), 
+            dat)
 
 
 summary(mod)
