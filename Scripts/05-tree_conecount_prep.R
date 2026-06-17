@@ -37,9 +37,12 @@ cones[, Nlog := log(N + 1)]
 #get avg cone count by grid and year
 cones_avg <- cones[, .(cones_tree = mean(Nlog, na.rm = TRUE)), by = .(year, grid)]
 
+#lag this value to get t-1
+cones_avg[, cones_tree_prev := lag(cones_tree), grid]
+
 #plot
 ggplot(cones_avg)+
-  geom_path(aes(x = year, y = cones_tree, color = grid, group = grid))
+  geom_path(aes(x = year, y = cones_tree_prev, color = grid, group = grid))
 
 
 
