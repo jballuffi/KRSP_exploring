@@ -79,7 +79,7 @@ ggplot(grid_effs)+
 Next, incorporate bucket. Looking at only food add and control grids.
 
 
-```{r fig 4, include = TRUE}
+```{r fig 3, include = TRUE}
 
 #make model for growth ~ litter size * food add
 tbmod <- lm(growthrate ~ littersize*density*treatment_food, food)
@@ -100,4 +100,39 @@ ggplot(tb_effs)+
   theme_bw()
   
 ```
+
+```{r fig 4, include = TRUE}
+
+#build off previous model, making it a mixed model with additional co variates 
+tbmod <- lm(growthrate ~ littersize*density*treatment_food, food)
+
+#this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
+mixmod <- lmer(growthrate ~ 
+              littersize*density*treatment_food +
+              mother_age + 
+              mother_age^2 +
+              sex + 
+              mast + 
+              bjulian + 
+              (1|mother_id/litter_id) +
+              (1|year), 
+            food)
+
+#summaries
+anova(mixmod)
+
+#get effects table for model
+mix_effs <- as.data.table(ggpredict(mixmod, terms = c("littersize", "density", "treatment_food")))
+
+ggplot(mix_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "Density (ind/ha)")+
+  scale_fill_discrete(name = "Density (ind/ha)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
+  facet_wrap(~facet)+
+  theme_bw()
+  
+```
+
 
