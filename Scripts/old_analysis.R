@@ -9,27 +9,27 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #read in data from merge script
 dat <- readRDS("Output/Data/final_data.rds")
 
-#change name of treatment
-setnames(dat, "treatment", "treatment_grid")
-
-#make an ind treatment (either control, rattle, or has bucket)
-dat[, treatment_ind := bucket]
-dat[treatment_ind == 1, treatment_ind := "Bucket"]
-dat[treatment_ind == 0, treatment_ind := "Control"]
-dat[is.na(treatment_ind), treatment_ind := treatment_grid]
-dat[, treatment_ind := factor(treatment_ind)]
-
-#make a 4-cat treatment
-dat[, treatment_bucket := factor(paste0(treatment_grid, "_", bucket))]
-
-#sample size
-dat[, .N, treatment_grid]
-dat[, .N, treatment_ind]
-dat[, .N, treatment_bucket]
+# #change name of treatment
+# setnames(dat, "treatment", "treatment_grid")
+# 
+# #make an ind treatment (either control, rattle, or has bucket)
+# dat[, treatment_ind := bucket]
+# dat[treatment_ind == 1, treatment_ind := "Bucket"]
+# dat[treatment_ind == 0, treatment_ind := "Control"]
+# dat[is.na(treatment_ind), treatment_ind := treatment_grid]
+# dat[, treatment_ind := factor(treatment_ind)]
+# 
+# #make a 4-cat treatment
+# dat[, treatment_bucket := factor(paste0(treatment_grid, "_", bucket))]
+# 
+# #sample size
+# dat[, .N, treatment_grid]
+# dat[, .N, treatment_ind]
+# dat[, .N, treatment_bucket]
 
 
 #subset for different analyses
-control <- dat[grid == "SU" | grid == "KL"] #just controls
+control <- dat[treatment == 0] #just controls
 food <- dat[food == 1]                      #just food add grids
 playback <- dat[food == 18 | food == 19]    #just playback experiment
 
