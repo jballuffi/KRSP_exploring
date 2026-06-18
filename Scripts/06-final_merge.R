@@ -88,6 +88,12 @@ dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #Just LL 2012 which we will
 #create treatment col based on food col.
 dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
 
+#make a treatment+bucket
+dat[treatment == "Control", treatment_food := "Control"]
+dat[treatment == "Food add" & bucket == 1, treatment_food := "Bucket"]
+dat[treatment == "Food add" & bucket == 0, treatment_food := "No Bucket"]
+unique(dat$treatment_food)
+
 
 
 # Additional info for Rattle treatment ------------------------------------
@@ -123,10 +129,12 @@ dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 # finalize what are factors -----------------------------------------------
 
 #make factors
-dat2[, food := factor(food)][, treatment := factor(treatment)]
+dat2[, food := factor(food)][, treatment := factor(treatment)][, bucket := factor(bucket)]
 
 #make factors
-dat2[, br := factor(br)][, bucket := factor(bucket)]
+dat2[, br := factor(br)]
+
+dat2[, mast := factor(mast)]
 
 
 
