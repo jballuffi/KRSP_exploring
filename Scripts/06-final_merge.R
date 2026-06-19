@@ -12,6 +12,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 dens <- readRDS("Output/Data/local_densities.rds")
 growth <- readRDS("Output/Data/growth_rates.rds")
 moms <- readRDS("Output/Data/mom_lives.rds")
+trees <- readRDS("Output/Data/tree_cone_counts.rds")
 
 
 
@@ -23,12 +24,15 @@ dens <- dens[sex == "F"][, sex := NULL]
 #merge data by mother id, year and grid
 m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
+#merge with tree cone counts
+m2 <- merge(m1, trees[, .(grid, year, cones_tree_prev)], by = c("year", "grid"), all.x = TRUE)
+
 #merge in mom age and lifespan
-dat <- merge(m1, moms, by = c("grid", "mother_id"), all.x = TRUE)
+dat <- merge(m2, moms, by = c("grid", "mother_id"), all.x = TRUE)
 
 
 
-# calculate additional co variates and standardize -------------------------
+# create additional factors or co variates -------------------------
 
 #calculate mother age
 dat[, mother_age := year - mother_byear]
@@ -39,17 +43,18 @@ dat[, gridyear := paste0(grid, "-", year)]
 #MAKE MAST YEAR COL YES OR NO
 dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
 
-#create a category for density
-dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
+# #create a category for density
+# dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
+
+
+
+# standardize continuous variables ----------------------------------------
 
 #standardize density globally
 dat[, density_std := scale(density), year]
 
-#create a category for density
-dat[, densityf_std := cut(round(density_std, 1), breaks = 4)]
-
 #standardize cones globally
-### next step ^
+dat[, cones_tree_std := scale(cones_tree_prev), year]
 
 #standardize birth date by grid year
 dat[, bjulian_std := scale(bjulian), gridyear]
@@ -60,6 +65,8 @@ dat[, littersize_std := scale(littersize), gridyear]
 #standardize growth rate by grid year
 dat[, growthrate_std := scale(growthrate), gridyear]
 
+#standardize mother age by grid year
+dat[, mother_age_std := scale(mother_age), gridyear]
 
 
 # Correct issues with treatment -----------------------------------------------------
@@ -81,6 +88,12 @@ dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #Just LL 2012 which we will
 #create treatment col based on food col.
 dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
 
+#make a treatment+bucket
+dat[treatment == "Control", treatment_food := "Control"]
+dat[treatment == "Food add" & bucket == 1, treatment_food := "Bucket"]
+dat[treatment == "Food add" & bucket == 0, treatment_food := "No Bucket"]
+unique(dat$treatment_food)
+
 
 
 # Additional info for Rattle treatment ------------------------------------
@@ -99,13 +112,7 @@ dat[food == 19, rattle_length := year - rattle1]
 #remove any rows without density
 dat2 <- dat[!is.na(density)]
 
-#list the grids we are interested in
-grids <- c("KL", "SU", "AG", "JO", "LL", "BT")
-
-#list the treatments we are interested in 
-foods <- c(1, 0, 18, 19)
-
-#subset to that list of grids and treatments, excluding data where density is missing
+#subset to grids and treatments of interest (found in R/variables.R)
 dat2 <- dat2[grid %in% grids & food %in% foods]
 
 #exclude BT and JO 2015 - 2017 due to cort experiment
@@ -122,10 +129,12 @@ dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 # finalize what are factors -----------------------------------------------
 
 #make factors
-dat2[, food := factor(food)][, treatment := factor(treatment)]
+dat2[, food := factor(food)][, treatment := factor(treatment)][, bucket := factor(bucket)]
 
 #make factors
-dat2[, br := factor(br)][, bucket := factor(bucket)]
+dat2[, br := factor(br)]
+
+dat2[, mast := factor(mast)]
 
 
 

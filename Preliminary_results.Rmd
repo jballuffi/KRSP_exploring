@@ -10,7 +10,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r sourcing, include=FALSE}
-source("Scripts/08-basic_analysis.R")
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
+#read in finalized data
+dat <- readRDS("Output/Data/final_data.rds")
+
+#subset for different analyses
+control <- dat[food == 0] #just controls
+food <- dat[!is.na(treatment_food)]  #just food add and control grids
+
+
 ```
 
 
@@ -23,15 +33,14 @@ First, tested litter size and density as an interaction. Litter size was categor
 ```{r fig1, include = TRUE}
 
 #this model is Growth Rate ~ Litter Size x Local Density
-bmod <- lm(growthrate ~ littersize*densityf, control)
+bmod <- lm(growthrate ~ littersize*density, control)
 anova(bmod)
 
 #get effects table
-base_effs <- as.data.table(ggpredict(bmod, terms = c("littersize", "densityf")))
+base_effs <- as.data.table(ggpredict(bmod, terms = c("littersize", "density")))
 
 #plot results from model
 ggplot()+
-  geom_point(aes(x = littersize, y = growthrate, color = densityf), alpha = 0.2, data = control)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs)+
   scale_color_discrete(name = "Density (ind/ha)")+
@@ -47,11 +56,11 @@ Next, looked at the interacting effect of treatment on the grid level. This was 
 ```{r fig2, include = TRUE}
 
 #this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
-gmod <- lm(growthrate ~ littersize*densityf*treatment_grid, dat)
+gmod <- lm(growthrate ~ littersize*density*treatment, dat)
 anova(gmod)
 
 #get effects table
-grid_effs <- as.data.table(ggpredict(gmod, terms = c("littersize", "densityf", "treatment_grid")))
+grid_effs <- as.data.table(ggpredict(gmod, terms = c("littersize", "density", "treatment")))
 
 ggplot(grid_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
@@ -64,59 +73,96 @@ ggplot(grid_effs)+
 
 ```
 
-Lastly, looked at the interacting effect of treatment on the individual level. This was either control, bucket, or rattle. Individuals on food add grids that didn't have buckets were marked as control. This is subject to change of course. Could make bucket a nested factor within grid treatment, or categorize squirrels on food add grids differently based on bucket status.
+Next, incorporate bucket. Looking at only food add and control grids.
+
 
 ```{r fig 3, include = TRUE}
-
+# look at treatment for just food add grids, incorporating bucket
 #make model for growth ~ litter size * food add
-imod <- lm(growthrate ~ littersize*densityf*treatment_ind, dat)
-
-#summaries
-anova(imod)
-
-#get effects table for model
-ind_effs <- as.data.table(ggpredict(imod, terms = c("littersize", "densityf", "treatment_ind")))
-
-ggplot(ind_effs)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Density (ind/ha)")+
-  scale_fill_discrete(name = "Density (ind/ha)")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Individual Treatment")+
-  facet_wrap(~facet)+
-  theme_bw()
-  
-```
-
-A little confusing because it re-ordered the panels, with bucket coming first here.
-
-
-Lastly, I integrated grid treatment and bucket into one treatment.
-
-Control + no bucket = regular density + no food
-Food add + no bucket = high density + no food
-Food add + bucket = high density + food
-Rattle + no bucket = percieved high density + no food
-
-```{r fig 4, include = TRUE}
-
-#make model for growth ~ litter size * food add
-tbmod <- lm(growthrate ~ littersize*densityf*treatment_bucket, dat)
+tbmod <- lm(growthrate ~ littersize*density*treatment_food, food)
 
 #summaries
 anova(tbmod)
 
 #get effects table for model
-tb_effs <- as.data.table(ggpredict(tbmod, terms = c("littersize", "densityf", "treatment_bucket")))
+tb_effs <- as.data.table(ggpredict(tbmod, terms = c("littersize", "density", "treatment_food")))
 
 ggplot(tb_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
   scale_color_discrete(name = "Density (ind/ha)")+
   scale_fill_discrete(name = "Density (ind/ha)")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid_Bucket")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
   facet_wrap(~facet)+
   theme_bw()
   
+```
+
+```{r fig 4, include = TRUE}
+
+#build off the previous base model and incorporate random effects (same as delaney) and other covariates
+mixmod <- lmer(growthrate ~ 
+              littersize*density*treatment_food +
+              mother_age + 
+              mother_age^2 +
+              sex + 
+              mast + 
+              cones_tree_prev +
+              bjulian + 
+              (1|mother_id/litter_id) +
+              (1|year), 
+            food)
+
+#summaries
+anova(mixmod)
+
+#get effects table for model
+mix_effs <- as.data.table(ggpredict(mixmod, terms = c("littersize", "density", "treatment_food")))
+
+ggplot(mix_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "Density (ind/ha)")+
+  scale_fill_discrete(name = "Density (ind/ha)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
+  facet_wrap(~facet)+
+  theme_bw()
+  
+```
+
+```{r fig 5, include = TRUE}
+
+#same model as above but using standardized variables
+
+mixmod2 <- lmer(growthrate ~ 
+              littersize_std*density_std*treatment_food +
+              mother_age_std +
+              mother_age_std^2 + 
+              sex + 
+              mast + 
+              cones_tree_std +
+              bjulian_std + 
+              (1|mother_id/litter_id) +
+              (1|year), 
+            food)
+
+#summaries
+anova(mixmod2)
+
+#get effects table for model
+mix_effs2 <- as.data.table(ggpredict(mixmod2, terms = c("littersize_std", "density_std", "treatment_food")))
+
+ggplot(mix_effs2)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "Density (ind/ha)")+
+  scale_fill_discrete(name = "Density (ind/ha)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
+  facet_wrap(~facet)+
+  theme_bw()
+  
+ggplot(food)+
+  geom_point(aes(x = cones_tree_std, y = growthrate_std))
+
 ```
 
