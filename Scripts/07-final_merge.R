@@ -13,6 +13,7 @@ dens <- readRDS("Output/Data/local_densities.rds")
 growth <- readRDS("Output/Data/growth_rates.rds")
 moms <- readRDS("Output/Data/mom_lives.rds")
 trees <- readRDS("Output/Data/tree_cone_counts.rds")
+cones <- readRDS("Output/Data/cone_cache.rds")
 
 
 
@@ -27,8 +28,11 @@ m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 #merge with tree cone counts
 m2 <- merge(m1, trees[, .(grid, year, cones_tree_prev)], by = c("year", "grid"), all.x = TRUE)
 
+#merge with cone cache data
+m3 <- merge(m2, cones, by = c("mother_id", "year", "grid"), all.x = TRUE)
+
 #merge in mom age and lifespan
-dat <- merge(m2, moms, by = c("grid", "mother_id"), all.x = TRUE)
+dat <- merge(m3, moms, by = c("grid", "mother_id"), all.x = TRUE)
 
 
 
@@ -56,6 +60,9 @@ dat[, density_std := scale(density), year]
 #standardize cones globally
 dat[, cones_tree_std := scale(cones_tree_prev), year]
 
+#standardize cone cache globally
+dat[, cache_std := scale(cache_prev), year]
+
 #standardize birth date by grid year
 dat[, bjulian_std := scale(bjulian), gridyear]
 
@@ -67,6 +74,7 @@ dat[, growthrate_std := scale(growthrate), gridyear]
 
 #standardize mother age by grid year
 dat[, mother_age_std := scale(mother_age), gridyear]
+
 
 
 # Correct issues with treatment -----------------------------------------------------
