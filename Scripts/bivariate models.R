@@ -1,7 +1,9 @@
 
 
 #source the R folder to load any packages and functions
-lapply(dir('R', '*.R', full.names = TRUE), source)
+#lapply(dir('R', '*.R', full.names = TRUE), source)
+
+library(data.table)
 
 #read in finalized data
 dat <- readRDS("Output/Data/final_data.rds")
@@ -12,7 +14,6 @@ food <- dat[food == 0 | food == 1]  #just food add and control grids
 
 #library(MCMCglmm) #used by delaney, bayesian approach
 #library(mcglm) #frequentist approach
-library(brms) #bayesian approach
 
 
 #formula:
@@ -20,7 +21,7 @@ library(brms) #bayesian approach
 
 
 
-# frequentist and not mixed -----------------------------------------------
+# frequentest and not mixed -----------------------------------------------
 
 #using base R to get an idea of things but can't use random effects with cbind
 biv_lm <- lm(cbind(littersize, growthrate) ~ treatment_food*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast, data = food)
@@ -33,6 +34,7 @@ summary(biv_lm)
 
 # bayesian approach with random effects -----------------------------------
 
+library(brms) #bayesian approach
 
 f_continuous <- bf(
   growthrate ~ treatment_food*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast 
@@ -50,7 +52,8 @@ bivariate_mixed_model <- brm(
   chains = 4,
   cores = 4, # Parallel processing
   iter = 3000,
-  warmup = 1500
+  warmup = 1500,
+  backend = "cmdstanr"
 )
 
 
