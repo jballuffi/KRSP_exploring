@@ -67,18 +67,6 @@ biv_lm <- lm(cbind(littersize, growthrate) ~ treatment_food*cones_tree_prev*dens
 # 3. View the full summary
 summary(biv_lm)
 
-#get effects table for model
-biv_lm_effs <- as.data.table(ggpredict(biv_lm, terms = c("density", "cones_tree_prev", "treatment_food")))
-
-ggplot(mix_efoodggplot(mix_effs)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "log(tree cones)")+
-  scale_fill_discrete(name = "log(tree cones)")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Treatment")+
-  facet_wrap(~facet)+
-  theme_bw()
-  
 ```
 
 
