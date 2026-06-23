@@ -17,8 +17,8 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 dat <- readRDS("Output/Data/final_data.rds")
 
 #subset for different analyses
-control <- dat[food == 0] #just controls
-food <- dat[!is.na(treatment_food)]  #just food add and control grids
+control <- dat[grid == "SU" | grid == "KL"] #just controls
+food <- dat[food == 0 | food == 1]  #just food add and control grids
 
 
 ```
@@ -98,71 +98,4 @@ ggplot(tb_effs)+
   
 ```
 
-```{r fig 4, include = TRUE}
-
-#build off the previous base model and incorporate random effects (same as delaney) and other covariates
-mixmod <- lmer(growthrate ~ 
-              littersize*density*treatment_food +
-              mother_age + 
-              mother_age^2 +
-              sex + 
-              mast + 
-              cones_tree_prev +
-              bjulian + 
-              (1|mother_id/litter_id) +
-              (1|year), 
-            food)
-
-#summaries
-anova(mixmod)
-
-#get effects table for model
-mix_effs <- as.data.table(ggpredict(mixmod, terms = c("littersize", "density", "treatment_food")))
-
-ggplot(mix_effs)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Density (ind/ha)")+
-  scale_fill_discrete(name = "Density (ind/ha)")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
-  facet_wrap(~facet)+
-  theme_bw()
-  
-```
-
-```{r fig 5, include = TRUE}
-
-#same model as above but using standardized variables
-
-mixmod2 <- lmer(growthrate ~ 
-              littersize_std*density_std*treatment_food +
-              mother_age_std +
-              mother_age_std^2 + 
-              sex + 
-              mast + 
-              cones_tree_std +
-              bjulian_std + 
-              (1|mother_id/litter_id) +
-              (1|year), 
-            food)
-
-#summaries
-anova(mixmod2)
-
-#get effects table for model
-mix_effs2 <- as.data.table(ggpredict(mixmod2, terms = c("littersize_std", "density_std", "treatment_food")))
-
-ggplot(mix_effs2)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Density (ind/ha)")+
-  scale_fill_discrete(name = "Density (ind/ha)")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
-  facet_wrap(~facet)+
-  theme_bw()
-  
-ggplot(food)+
-  geom_point(aes(x = cones_tree_std, y = growthrate_std))
-
-```
 
