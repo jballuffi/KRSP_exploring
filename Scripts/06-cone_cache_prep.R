@@ -9,6 +9,7 @@
 library (tidyverse)
 library (krsp)
 library (lubridate)
+library(data.table)
 
 # Connection #
 
@@ -86,18 +87,22 @@ midden_cones<-midden_cones %>%
 # Link flastall #
 #################
 
-midden_cones<-midden_cones %>% 
+midden_cones <- midden_cones %>% 
 left_join(flastall, by="squirrel_id")
 
 
 
-################
-# Example Plot #
-################
+# take what you want from this and save --------------------------------------------
 
-midden_cones %>% 
-  filter(grid %in% c("KL", "SU"),
-         sex %in% c("F", "M")) %>% 
-  ggplot(aes(x=year, y = log10(cache_size_total+1), colour = sex, group = squirrel_id)) + 
-  geom_line()+
-  scale_x_continuous(breaks=seq(2007,2018,1))
+#convert to data.table
+cones <- as.data.table(midden_cones)
+
+#get last year's cache size and log + 1
+cones[, cache_prev := log(lag(cache_size_total, n = 1) + 1)] #what is the unit here?
+
+#subset to cols of interest
+cones <- cones[, .(year, grid, squirrel_id, sex, cache_prev)]
+
+#save
+saveRDS(cones, "Output/Data/cone_cache.rds")
+
