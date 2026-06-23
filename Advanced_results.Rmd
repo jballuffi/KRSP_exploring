@@ -1,0 +1,86 @@
+---
+title: "Analysis 1"
+author: "Juliana Balluffi-Fry"
+date: "2026-06-23"
+output: word_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r sourcing, include = TRUE}
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
+#read in finalized data
+dat <- readRDS("Output/Data/final_data.rds")
+
+#subset for different analyses
+food <- dat[food == 0 | food == 1]  #just food add and control grids
+
+```
+
+
+
+```{r basic linear mixed model using non-standardized variables, include = TRUE}
+
+#build off the previous base model and incorporate random effects (same as delaney) and other covariates
+mixmod <- lmer(growthrate ~ 
+              littersize*treatment_food*cones_tree_prev +
+              density +
+              mother_age + 
+              mother_age^2 +
+              sex + 
+              mast + 
+              (1|mother_id/litter_id) +
+              (1|year), 
+            food)
+
+#summaries
+anova(mixmod)
+
+#get effects table for model
+mix_effs <- as.data.table(ggpredict(mixmod, terms = c("littersize", "cones_tree_prev", "treatment_food")))
+
+ggplot(mix_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "log(tree cones)")+
+  scale_fill_discrete(name = "log(tree cones)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Treatment")+
+  facet_wrap(~facet)+
+  theme_bw()
+  
+```
+
+
+```{r bivariate response model, include = TRUE}
+
+#formula:
+# growth rate-litter size ~ treatment_food*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast + random effects
+
+#using base R to get an idea of things but can't use random effects with cbind
+biv_lm <- lm(cbind(littersize, growthrate) ~ treatment_food*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast, data = food)
+
+# 3. View the full summary
+summary(biv_lm)
+
+#get effects table for model
+biv_lm_effs <- as.data.table(ggpredict(biv_lm, terms = c("density", "cones_tree_prev", "treatment_food")))
+
+ggplot(mix_efoodggplot(mix_effs)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+  scale_color_discrete(name = "log(tree cones)")+
+  scale_fill_discrete(name = "log(tree cones)")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Treatment")+
+  facet_wrap(~facet)+
+  theme_bw()
+  
+```
+
+
+
+
