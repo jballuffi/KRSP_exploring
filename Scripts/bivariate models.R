@@ -34,7 +34,11 @@ summary(biv_lm)
 
 
 #Bayesian approach
-library(brms) 
+library(brms)
+library(cmdstanr)
+# check_cmdstan_toolchain()
+# install_cmdstan(cores = 2)
+# set_cmdstan_path(PATH_TO_CMDSTAN)
 
 f_continuous <- bf(
   growthrate ~ treatment_food*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast 
@@ -46,14 +50,16 @@ f_ordinal <- bf(
   + (1|mother_id) + (1|litter_id) + (1|year), 
   family = cumulative("logit"))
 
+
+
 bivariate_mixed_model <- brm(
   formula = f_continuous + f_ordinal,
   data = food,
   chains = 2,
   cores = 2, # Parallel processing
   iter = 200,
-  warmup = 100
-  #,backend = "cmdstanr"
+  warmup = 100,
+  backend = "cmdstanr"
 )
 
 
