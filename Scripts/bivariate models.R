@@ -4,6 +4,16 @@
 #lapply(dir('R', '*.R', full.names = TRUE), source)
 
 library(data.table)
+#library(MCMCglmm) #used by delaney, bayesian approach
+#library(mcglm) #frequentist approach
+
+#Bayesian approach
+library(brms)
+# library(cmdstanr)
+# check_cmdstan_toolchain()
+# install_cmdstan(cores = 2)
+#set_cmdstan_path(PATH_TO_CMDSTAN)
+
 
 #read in finalized data
 dat <- readRDS("Output/Data/final_data.rds")
@@ -11,14 +21,16 @@ dat <- readRDS("Output/Data/final_data.rds")
 #subset for different analyses
 food <- dat[food == 0 | food == 1]  #just food add and control grids
 
+cacheyears <- dat[!is.na(cache_prev), unique(year)]  #get years with cache size data
+cache <- dat[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long term control grids
+
+rattleyears <- dat[food == 19, unique(year)] #get years with rattles
+rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of rattle playbacks but 
 
 #in this script I am using brm package to run the bivariate response mixed model. It uses Bayesian stats I believe.
 #brm requires Rtools45 and this was a headache to figure out. I was stuck in a "Stan-loop" whatever that means
 #it's now installed on my work laptop we will see how it works.
 #alternative approach is to use the MCMCglmm package that delaney cited
-
-#library(MCMCglmm) #used by delaney, bayesian approach
-#library(mcglm) #frequentist approach
 
 
 
@@ -32,13 +44,6 @@ food <- dat[food == 0 | food == 1]  #just food add and control grids
 biv_lm <- lm(cbind(littersize, growthrate) ~ treatment_food*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast, data = food)
 summary(biv_lm)
 
-
-#Bayesian approach
-library(brms)
-library(cmdstanr)
-# check_cmdstan_toolchain()
-# install_cmdstan(cores = 2)
-# set_cmdstan_path(PATH_TO_CMDSTAN)
 
 f_continuous <- bf(
   growthrate ~ treatment_food*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast 
@@ -58,12 +63,14 @@ bivariate_mixed_model <- brm(
   chains = 2,
   cores = 2, # Parallel processing
   iter = 200,
-  warmup = 100,
-  backend = "cmdstanr"
+  warmup = 150
+  #backend = "cmdstanr"
 )
 
 
 summary(bivariate_mixed_model)
+
+saveRDS(bivariate_mixed_model, "Output/Models/foodtreatment_model.rds")
 
 
 
@@ -74,8 +81,29 @@ summary(bivariate_mixed_model)
 #Fixed effects include part date, conestm-1, local density, female age, female age^2, grid, local density x conestm1. 
 #Random effects: Grid/Year/Female/Litter. Not including part date as it is inconsistently available.
 
+#growth rate OR litter size ~ cachecones*treecones*density + mother_age + mother_age^2 + sex + mast + (1|mother_id) + (1|litter_id) + (1|year)
 
+c_continuous <- bf(
+  growthrate ~ cache_prev*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast 
+  + (1|mother_id) + (1|litter_id) + (1|year), 
+  family = gaussian())
 
+c_ordinal <- bf(
+  littersize ~ cache_prev*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast 
+  + (1|mother_id) + (1|litter_id) + (1|year), 
+  family = cumulative("logit"))
+
+biv_cache_model <- brm(
+  formula = c_continuous + c_ordinal,
+  data = cache,
+  chains = 2,
+  cores = 2, # Parallel processing
+  iter = 200,
+  warmup = 150
+)
+
+summary(biv_cache_model)
+saveRDS(biv_cache_model, "Output/Models/cache_model.rds")
 
 
 
@@ -85,7 +113,24 @@ summary(bivariate_mixed_model)
 #Fixed effects include part date, conestm-1, local density, playbacks heard, female age, female age^2, grid, local density x conestm1, playbacks heard x conestm1. 
 #Random effects: Grid/Year/Female/Litter. Not including part date as it is inconsistently available.
 
+r_continuous <- bf(
+  growthrate ~ treatment*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast 
+  + (1|mother_id) + (1|litter_id) + (1|year), 
+  family = gaussian())
 
+r_ordinal <- bf(
+  littersize ~ treatment*cones_tree_prev*density + mother_age + mother_age^2 + sex + mast 
+  + (1|mother_id) + (1|litter_id) + (1|year), 
+  family = cumulative("logit"))
 
+biv_rattle_model <- brm(
+  formula = c_continuous + c_ordinal,
+  data = rattle,
+  chains = 2,
+  cores = 2, # Parallel processing
+  iter = 200,
+  warmup = 150
+)
 
-
+summary(biv_rattle_model)
+saveRDS(biv_rattle_model, "Output/Models/rattle_model.rds")
