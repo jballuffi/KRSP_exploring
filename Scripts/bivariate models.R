@@ -51,11 +51,9 @@ f_continuous <- bf(
   family = gaussian())
 
 f_ordinal <- bf(
-  littersize_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  littersize ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
   + (1|mother_id) + (1|litter_id) + (1|year), 
   family = cumulative("logit"))
-
-
 
 #this takes 16 min on work computer and that makes sense because it's very complicated (bella)
 biv_food_model <- brm(
@@ -74,7 +72,7 @@ summary(biv_food_model)
 
 saveRDS(biv_food_model, "Output/Models/foodtreatment_model.rds")
 
-test <- readRDS("Output/Models/foodtreatment_model.rds")
+#test <- readRDS("Output/Models/foodtreatment_model.rds")
 
 
 #output: posterior distribution is density plot of probabilities, distribution of probabilities
@@ -122,23 +120,24 @@ saveRDS(biv_cache_model, "Output/Models/cache_model.rds")
 #Random effects: Grid/Year/Female/Litter. Not including part date as it is inconsistently available.
 
 r_continuous <- bf(
-  growthrate_std ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  growthrate_std ~ treatment*cones_tree_std*density_std + sex + mast 
   + (1|mother_id) + (1|litter_id) + (1|year), 
   family = gaussian())
 
 r_ordinal <- bf(
-  littersize_std ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  littersize ~ treatment*cones_tree_std*density_std + sex + mast 
   + (1|mother_id) + (1|litter_id) + (1|year), 
   family = cumulative("logit"))
 
 biv_rattle_model <- brm(
-  formula = c_continuous + c_ordinal,
+  formula = r_continuous + r_ordinal,
   data = rattle,
   chains = 2,
   cores = 2, # Parallel processing
   iter = 200,
   warmup = 50
 )
+
 
 summary(biv_rattle_model)
 saveRDS(biv_rattle_model, "Output/Models/rattle_model.rds")
