@@ -36,7 +36,7 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 
 test_model <- brm(
-  formula = growthrate_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + sex + mast,
+  formula = growthrate_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + sex + mast + (1|mother_id) + (1|year),
   data = food,
   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
   cores = 2, # Parallel processing, dependent on computer you are using
@@ -53,10 +53,11 @@ plot(test_model)
 
 conditional_effects(test_model)
 
-post_test <- posterior_epred(test_model)
+posterior_epred(test_model)
 
 pp_check(test_model)
 
+mcmc_plot(test_model, type = "trace")
 
 
 
