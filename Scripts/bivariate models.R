@@ -4,11 +4,9 @@
 #lapply(dir('R', '*.R', full.names = TRUE), source)
 
 library(data.table)
-#library(MCMCglmm) #used by delaney, bayesian approach
-#library(mcglm) #frequentist approach
-
-#Bayesian approach
 library(brms)
+library(tidybayes)
+library(dplyr)
 # library(cmdstanr)
 # check_cmdstan_toolchain()
 # install_cmdstan(cores = 2)
@@ -34,6 +32,34 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 
 
+# test model for learning bayesian  ---------------------------------------
+
+
+test_model <- brm(
+  formula = growthrate_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + sex + mast,
+  data = food,
+  chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
+  cores = 2, # Parallel processing, dependent on computer you are using
+  iter = 200, #how many times are you going to sample, bella says 1000
+  warmup = 50 #if model is having a hard time to converge this will help, having some is good.
+  #backend = "cmdstanr" #bella uses this
+)
+
+summary(test_model)
+#when I run without standardized variables the Rhats are way above 1.
+#when I run with standardized variables the Rhats are all 1
+
+plot(test_model)
+
+conditional_effects(test_model)
+
+post_test <- posterior_epred(test_model)
+
+pp_check(test_model)
+
+
+
+
 # ANALYSIS 1 -----------------------------------
 
 #formula:
@@ -54,6 +80,8 @@ f_ordinal <- bf(
   littersize ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
   + (1|mother_id) + (1|litter_id) + (1|year), 
   family = cumulative("logit"))
+
+
 
 #this takes 16 min on work computer and that makes sense because it's very complicated (bella)
 biv_food_model <- brm(
@@ -141,3 +169,22 @@ biv_rattle_model <- brm(
 
 summary(biv_rattle_model)
 saveRDS(biv_rattle_model, "Output/Models/rattle_model.rds")
+
+
+
+
+
+# look at models ----------------------------------------------------------
+
+
+fmod <- readRDS("Output/Models/foodtreatment_model.rds")
+cmod <- readRDS("Output/Models/cache_model.rds")
+rmod <- readRDS("Output/Models/rattle_model.rds")
+
+
+
+summary(fmod)
+
+
+
+
