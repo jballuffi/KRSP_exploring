@@ -32,7 +32,7 @@ m2 <- merge(m1, trees[, .(grid, year, cones_tree_prev)], by = c("year", "grid"),
 m3 <- merge(m2, cones, by = c("mother_id", "year", "grid"), all.x = TRUE)
 
 #merge in mom age and lifespan
-dat <- merge(m3, moms, by = c("grid", "mother_id"), all.x = TRUE)
+dat <- merge(m3, moms, by = c("mother_id"), all.x = TRUE)
 
 
 
