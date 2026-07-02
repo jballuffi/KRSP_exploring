@@ -77,6 +77,24 @@ dat[, mother_age_std := scale(mother_age), gridyear]
 
 
 
+
+# rattle treatment  -------------------------------------------------------
+
+rats <- dat[food == 18 | food == 19]
+
+dat[grid == "BT", unique(year)]
+
+#up until this point the plan was to only use KL, SU, AG, JO, LL, BT
+#should I go back and try to include SX from 2010? No data from RR. 
+#no data for BT before 2016
+#we can make back of AG rattle in 2010, but its currently listed as all food add.
+#I don't see any of those reflocs in the data, but there are a lot of NA reflocs for that year in AG that don't have densities.
+#do you have the IDs and years of squirrels who were in the rattle experiment? This is the easiest way
+#no data for BT 2010
+#no indication of rattle playback for KL but doesn't matter much since its chickadee I guess. Could add 2010 KL into the rattle test if we find this data 
+
+
+
 # Correct issues with treatment -----------------------------------------------------
 
 #correct for food add based on grid and year
