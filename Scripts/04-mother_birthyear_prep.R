@@ -21,6 +21,10 @@ squirrel <- as.data.table(tbl(con, "squirrel") %>% collect())
 #get pedigree data
 pedigree <- as.data.table(tbl(con, "pedigree_clean") %>% collect())
 
+#get individual juvenile data 
+juv <- as.data.table(tbl(con, "juvenile") %>% collect())
+
+
 #make date format
 squirrel[, trap_date := ymd(trap_date)]
 
