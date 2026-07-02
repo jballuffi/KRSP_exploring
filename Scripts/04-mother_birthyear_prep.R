@@ -14,41 +14,47 @@ con <- krsp_connect(
   password = Sys.getenv("krsp_password")
 )
 
-#get litter data
-squirrel <- as.data.table(tbl(con, "squirrel") %>% collect())
-#might want to try trapping datasheet to get total lifespan if birthday unknown
-
-#get pedigree data
-pedigree <- as.data.table(tbl(con, "pedigree_clean") %>% collect())
+#for total life span either take this data or take trapping data
+#squirrel <- as.data.table(tbl(con, "squirrel") %>% collect())
 
 #get individual juvenile data 
 juv <- as.data.table(tbl(con, "juvenile") %>% collect())
 
-
-#make date format
-squirrel[, trap_date := ymd(trap_date)]
-
-#subset squirrel
-moms <- squirrel[sex == "F", .(mother_id = id, grid = gr, mother_last = year(trap_date))]
-
-#subset pedigree data
-mombirths <- pedigree[sex == "F", .(mother_id = squirrel_id, mother_byear = byear)]
+#get litter data
+lit <- as.data.table(tbl(con, "litter") %>% collect())
 
 
 
-# merge info about moms  ----------------------------------
+# subset data --------------------------------------------------------------
 
-#this will have birth year and last trapped
-momlives <- merge(moms, mombirths, by = "mother_id", all.x = TRUE)
+#subset juvenile data to just mom id and litter id
+juv2 <- juv[sex == "F", .(mother_id = squirrel_id, litter_id)]
 
-#calc lifespan based on last year trapped
-momlives[, mother_lifespan := mother_last - mother_byear]
+#take only cols of interest
+lit2 <- lit[, .(litter_id = id, mother_byear = yr)]
 
-#any lifespan less than 0, make zero. Some sort of error
-momlives[mother_lifespan < 0, mother_lifespan := 0]
+# #make date format in squirrel
+# squirrel[, trap_date := ymd(trap_date)]
+# 
+# #subset squirrel data to just females and 
+# moms <- squirrel[sex == "F", .(mother_id = id, mother_last = year(trap_date))]
 
-#look at lifespans
-hist(momlives$mother_lifespan)
+
+
+# merge info to get mom birth years  ----------------------------------
+
+#merge with juv data to get litter id
+momlives <- merge(juv2, lit2, by = "litter_id", all.x = TRUE)
+
+# #merge with litter data to get birth year
+# momlives <- merge(momlives, lit2, by = "litter_id", all.x = TRUE)
+# 
+# #calc lifespan based on last year trapped
+# momlives[, mother_lifespan := mother_last - mother_byear]
+
+
+#look at NA for birth year
+momlives[is.na(mother_byear), .N]
 
 
 
