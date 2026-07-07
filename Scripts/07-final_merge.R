@@ -181,6 +181,28 @@ setorder(summary, grid, year)
 
 
 
+
+# get amount of missing data ----------------------------------------------
+
+#growth rate, litter size, tree cone, midden cone, mother birth year
+
+#make function to count NAs using the sum function
+getNA <- function(x){
+  NAcount <- sum(is.na(x))
+  return(NAcount)
+}
+
+#collect number of missing data by year and grid
+missingdata <- 
+  dat2[, .(growthrate = getNA(growthrate), 
+         littersize = getNA(littersize), 
+         cones_tree = getNA(cones_tree_prev), 
+         cache_prev = getNA(cache_prev), 
+         mother_byear = getNA(mother_byear)),
+     by = .(year, grid)]
+
+
+
 # save --------------------------------------------------------------------
 
 #save final data
@@ -189,4 +211,5 @@ saveRDS(dat2, "Output/Data/final_data.rds")
 #save and send to ben
 write.csv(summary, "Output/Data/N_summary_treatments.csv")
 
-
+#save output of missing data
+write.csv(missingdata, "Output/Data/Missing_data_summary.csv")
