@@ -16,9 +16,22 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #read in finalized data
 dat <- readRDS("Output/Data/final_data.rds")
 
-#subset for different analyses
-control <- dat[grid == "SU" | grid == "KL"] #just controls
+#get median density?
+med_density <- dat[, median(density)]
+
+#categorize density based on median
+dat[density >= med_density, density_cat := "high"]
+dat[density < med_density, density_cat := "low"]
+
+#make control only data set
+control <- dat[grid == "SU" | grid == "KL"]
+
+#make food treatment data set
 food <- dat[food == 0 | food == 1]  #just food add and control grids
+
+#make rattle experiment data set
+rattleyears <- dat[food == 19, unique(year)] #get years with rattles
+rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of rattle playbacks but Agnes
 
 
 ```
@@ -26,72 +39,74 @@ food <- dat[food == 0 | food == 1]  #just food add and control grids
 
 ## Preliminary Analysis
 
-Below is the results from the control model. This was a test to see the effects of litter size and local density on growth rates using control grids (KL and SU) only.
-
-First, tested litter size and density as an interaction. Litter size was categorized into 4 categories but control grids didn't have the largest category.
+Below is the basic relationship between growth rate, litter size, and density.
 
 ```{r fig1, include = TRUE}
 
-#this model is Growth Rate ~ Litter Size x Local Density
-bmod <- lm(growthrate ~ littersize*density, control)
+#this model is Growth Rate ~ Litter Size x Local Density Category
+bmod <- lm(growthrate ~ littersize*density_cat, control)
 anova(bmod)
 
 #get effects table
-base_effs <- as.data.table(ggpredict(bmod, terms = c("littersize", "density")))
+base_effs <- as.data.table(ggpredict(bmod, terms = c("littersize", "density_cat")))
 
-#plot results from model
+#plot regressions on top of raw data
 ggplot()+
+  geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = control)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs)+
-  scale_color_discrete(name = "Density (ind/ha)")+
-  scale_fill_discrete(name = "Density (ind/ha)")+
+  scale_color_discrete(name = "Density")+
+  scale_fill_discrete(name = "Density")+
   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "SU and KL only")+
   theme_bw()
 
 ```
 
 
-Next, looked at the interacting effect of treatment on the grid level. This was either control, food add, or rattle. Did not account for bucket.
+Next, same thing but using the food data set. Add in food treatment as factor.
 
 ```{r fig2, include = TRUE}
 
-#this model is Growth Rate ~ Litter Size x Density x Grid-level Treatment
-gmod <- lm(growthrate ~ littersize*density*treatment, dat)
-anova(gmod)
+#this model is Growth Rate ~ Litter Size x Density Category x Food Treatment
+fmod <- lm(growthrate ~ littersize*density_cat*treatment_food, food)
+anova(fmod)
 
 #get effects table
-grid_effs <- as.data.table(ggpredict(gmod, terms = c("littersize", "density", "treatment")))
+food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat", "treatment_food")))
 
-ggplot(grid_effs)+
+#plot regressions on top of raw data
+ggplot(food_effs)+
+  geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = food)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Density (ind/ha)")+
-  scale_fill_discrete(name = "Density (ind/ha)")+
+  scale_color_discrete(name = "Density")+
+  scale_fill_discrete(name = "Density")+
   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
   facet_wrap(~facet)+
   theme_bw()
 
 ```
 
-Next, incorporate bucket. Looking at only food add and control grids.
+Lastly, same thing but for the rattle data set. Incorporate rattle treatment.
 
 
 ```{r fig 3, include = TRUE}
-# look at treatment for just food add grids, incorporating bucket
-#make model for growth ~ litter size * food add
-tbmod <- lm(growthrate ~ littersize*density*treatment_food, food)
+# make model for growth ~ litter size * density category * rattle treatment
+rmod <- lm(growthrate ~ littersize*density_cat*treatment, rattle)
 
-#summaries
-anova(tbmod)
+#summary
+anova(rmod)
 
 #get effects table for model
-tb_effs <- as.data.table(ggpredict(tbmod, terms = c("littersize", "density", "treatment_food")))
+rat_effs <- as.data.table(ggpredict(rmod, terms = c("littersize", "density_cat", "treatment")))
 
-ggplot(tb_effs)+
+#plot regressions over raw data
+ggplot(rat_effs)+
+  geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = rattle)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Density (ind/ha)")+
-  scale_fill_discrete(name = "Density (ind/ha)")+
+  scale_color_discrete(name = "Density")+
+  scale_fill_discrete(name = "Density")+
   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
   facet_wrap(~facet)+
   theme_bw()
