@@ -195,7 +195,8 @@ getNA <- function(x){
 #collect number of missing data by year and grid
 missingdata <- 
   dat2[, .(growthrate = getNA(growthrate), 
-         littersize = getNA(littersize), 
+         littersize = getNA(littersize),
+         density = getNA(density),
          cones_tree = getNA(cones_tree_prev), 
          cache_prev = getNA(cache_prev), 
          mother_byear = getNA(mother_byear)),
