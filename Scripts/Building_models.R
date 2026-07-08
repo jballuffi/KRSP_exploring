@@ -61,6 +61,17 @@ mcmc_plot(test_model, type = "trace")
 
 
 
+
+
+#rerun at home, remove sex (?) from litter size and try a different family
+
+#family = zero_truncated_poisson())
+
+#do we really want to standardize the response variables?
+
+#instead of standardizing growth rate use family = lognormal() or family = Gamma(link = "log")
+
+
 # ANALYSIS 1 -----------------------------------
 
 #formula:
@@ -72,7 +83,7 @@ f_continuous <- bf(
   family = gaussian())
 
 f_ordinal <- bf(
-  littersize ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  littersize ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = cumulative("logit"))
 
@@ -111,7 +122,7 @@ c_continuous <- bf(
   family = gaussian())
 
 c_ordinal <- bf(
-  littersize ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  littersize ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = cumulative("logit"))
 
@@ -141,7 +152,7 @@ r_continuous <- bf(
   family = gaussian())
 
 r_ordinal <- bf(
-  littersize ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  littersize ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = cumulative("logit"))
 
