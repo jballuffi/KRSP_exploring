@@ -139,12 +139,12 @@ saveRDS(biv_cache_model, "Output/Models/cache_model.rds")
 #HITTING ERRORS HERE. ISSUES WITH VARIABLES. I THINK IT'S MOTHER AGE
 
 r_continuous <- bf(
-  growthrate_std ~ treatment*cones_tree_std*density_std + sex + mast 
+  growthrate_std ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 r_ordinal <- bf(
-  littersize ~ treatment*cones_tree_std*density_std + sex + mast 
+  littersize ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = cumulative("logit"))
 
@@ -160,21 +160,6 @@ biv_rattle_model <- brm(
 
 summary(biv_rattle_model)
 saveRDS(biv_rattle_model, "Output/Models/rattle_model.rds")
-
-
-
-
-
-# look at models ----------------------------------------------------------
-
-
-fmod <- readRDS("Output/Models/foodtreatment_model.rds")
-cmod <- readRDS("Output/Models/cache_model.rds")
-rmod <- readRDS("Output/Models/rattle_model.rds")
-
-
-
-summary(fmod)
 
 
 
