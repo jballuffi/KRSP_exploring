@@ -91,8 +91,6 @@ biv_food_model <- brm(
 
 summary(biv_food_model)
 
-saveRDS(biv_food_model, "Output/Models/foodtreatment_model.rds")
-
 #output: posterior distribution is density plot of probabilities, distribution of probabilities
 #frequentist: point estimate with standard error bars
 
@@ -127,7 +125,6 @@ biv_cache_model <- brm(
 )
 
 summary(biv_cache_model)
-saveRDS(biv_cache_model, "Output/Models/cache_model.rds")
 
 
 
@@ -159,8 +156,13 @@ biv_rattle_model <- brm(
 
 
 summary(biv_rattle_model)
+
+
+
+# save models -------------------------------------------------------------
+
+saveRDS(biv_food_model, "Output/Models/foodtreatment_model.rds")
+saveRDS(biv_cache_model, "Output/Models/cache_model.rds")
 saveRDS(biv_rattle_model, "Output/Models/rattle_model.rds")
-
-
 
 
