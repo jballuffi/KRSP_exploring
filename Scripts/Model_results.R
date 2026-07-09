@@ -10,6 +10,8 @@ rattle_mod <- readRDS("Output/Models/rattle_model.rds")
 
 
 summary(food_mod)
+summary(cache_mod)
+summary(rattle_mod)
 
 conditional_effects(food_mod)
 
