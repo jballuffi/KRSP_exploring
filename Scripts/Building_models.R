@@ -31,39 +31,38 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 
 # test model for learning bayesian  ---------------------------------------
+# 
+# 
+# test_model <- brm(
+#   formula = growthrate_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + sex + mast 
+#   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
+#   data = food,
+#   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
+#   cores = 2, # Parallel processing, dependent on computer you are using
+#   iter = 200, #how many times are you going to sample, bella says 1000
+#   warmup = 50 #if model is having a hard time to converge this will help, having some is good.
+#   #backend = "cmdstanr" #bella uses this
+# )
+# 
+# summary(test_model)
+# #when I run without standardized variables the Rhats are way above 1.
+# #when I run with standardized variables the Rhats are all 1
+# 
+# plot(test_model)
+# 
+# 
+# conditional_effects(test_model)
+# 
+# posterior_epred(test_model)
+# 
+# pp_check(test_model)
+# 
+# mcmc_plot(test_model, type = "trace")
+# 
 
 
-test_model <- brm(
-  formula = growthrate_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + sex + mast 
-  + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  data = food,
-  chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
-  cores = 2, # Parallel processing, dependent on computer you are using
-  iter = 200, #how many times are you going to sample, bella says 1000
-  warmup = 50 #if model is having a hard time to converge this will help, having some is good.
-  #backend = "cmdstanr" #bella uses this
-)
-
-summary(test_model)
-#when I run without standardized variables the Rhats are way above 1.
-#when I run with standardized variables the Rhats are all 1
-
-plot(test_model)
 
 
-conditional_effects(test_model)
-
-posterior_epred(test_model)
-
-pp_check(test_model)
-
-mcmc_plot(test_model, type = "trace")
-
-
-
-
-
-#rerun at home, remove sex (?) from litter size and try a different family
 
 #family = zero_truncated_poisson())
 
@@ -78,9 +77,9 @@ mcmc_plot(test_model, type = "trace")
 # growth rate OR litter size ~ treatment*tree cones*density + mother age + mother age^2 + sex + mast
 
 f_continuous <- bf(
-  growthrate_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  growthrate ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  family = gaussian())
+  family = Gamma(link = "log"))
 
 f_ordinal <- bf(
   littersize ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
@@ -117,9 +116,9 @@ summary(biv_food_model)
 
 #look at colinearity between cache and cones of prev years
 c_continuous <- bf(
-  growthrate_std ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  growthrate ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  family = gaussian())
+  family = Gamma(link = "log"))
 
 c_ordinal <- bf(
   littersize ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
@@ -144,12 +143,11 @@ summary(biv_cache_model)
 #2018-2020 data from JO (rattle playbacks) vs. controls (BT, KL, SU) to assess social cues 
 #of density on co-variance between litter size and offspring growth.
 
-#HITTING ERRORS HERE. ISSUES WITH VARIABLES. I THINK IT'S MOTHER AGE
 
 r_continuous <- bf(
-  growthrate_std ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  growthrate ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  family = gaussian())
+  family = Gamma(link = "log"))
 
 r_ordinal <- bf(
   littersize ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
