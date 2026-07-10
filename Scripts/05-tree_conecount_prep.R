@@ -34,8 +34,31 @@ cones[, Nlog := log(N + 1)]
 #get avg cone count by grid and year
 cones_avg <- cones[, .(cones_tree = mean(Nlog, na.rm = TRUE)), by = .(year, grid)]
 
-#lag this value to get t-1
+#lag this value to get t-1, or last year's cones count
 cones_avg[, cones_tree_prev := lag(cones_tree), grid]
+
+
+
+# Use Jo for BT when BT is missing (2018 + 2023) --------------------------
+
+#what years do we have prev cone count for BT
+cones_avg[!is.na(cones_tree_prev) & grid == "BT", unique(year)]
+
+#get prev cone count from Jo for those years
+JO2018 <- cones_avg[grid == "JO" & year == 2018, cones_tree_prev]
+JO2023 <- cones_avg[grid == "JO" & year == 2023, cones_tree_prev]
+
+#use those values to make a short data frame for missing BT years
+BTgap <- data.table(
+  grid = "BT",
+  year = c(2018, 2023),
+  cones_tree_prev = c(JO2018, JO2023)
+)
+
+#merge back with data
+cones_avg <- rbind(cones_avg, BTgap, fill = TRUE)
+
+setorder(cones_avg, grid, year)
 
 #plot
 ggplot(cones_avg)+
