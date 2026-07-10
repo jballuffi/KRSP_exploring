@@ -16,13 +16,17 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #read in finalized data
 dat <- readRDS("Output/Data/final_data.rds")
 
-#get different density levels
+#get density quantiles
 dens25Q <- dat[, round(quantile(density)[2], 2)]
 dens75Q <- dat[, round(quantile(density)[4], 2)]
 
+#categorize density based on quantiles
 dat[density < dens25Q, density_cat := "low"]
 dat[density > dens25Q & density < dens75Q, density_cat := "medium"]
 dat[density > dens75Q, density_cat := "high"]
+
+#make factor with levels
+dat[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 
 #make control only data set
 control <- dat[grid == "SU" | grid == "KL"]
