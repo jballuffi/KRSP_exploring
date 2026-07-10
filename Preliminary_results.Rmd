@@ -16,12 +16,13 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #read in finalized data
 dat <- readRDS("Output/Data/final_data.rds")
 
-#get median density?
-med_density <- dat[, median(density)]
+#get different density levels
+dens25Q <- dat[, round(quantile(density)[2], 2)]
+dens75Q <- dat[, round(quantile(density)[4], 2)]
 
-#categorize density based on median
-dat[density >= med_density, density_cat := "high"]
-dat[density < med_density, density_cat := "low"]
+dat[density < dens25Q, density_cat := "low"]
+dat[density > dens25Q & density < dens75Q, density_cat := "medium"]
+dat[density > dens75Q, density_cat := "high"]
 
 #make control only data set
 control <- dat[grid == "SU" | grid == "KL"]
@@ -47,25 +48,20 @@ Below is the basic relationship between growth rate, litter size, and density.
 bmod <- lm(growthrate ~ littersize*density_cat, control)
 anova(bmod)
 
-#get effects table
-base_effs <- as.data.table(ggpredict(bmod, terms = c("littersize", "density_cat")))
-
 #plot regressions on top of raw data
-ggplot()+
-  geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = control)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2, data = base_effs)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1, data = base_effs)+
-  scale_color_discrete(name = "Density")+
-  scale_fill_discrete(name = "Density")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "SU and KL only")+
-  theme_bw()
+ggplot(control, aes(x = littersize, y = growthrate, group = interaction(density_cat))) +
+  geom_point(alpha = 0.3, aes(color = density_cat)) +
+  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
+  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
+  theme_minimal()
 
 ```
 
 
 Next, same thing but using the food data set. Add in food treatment as factor.
 
-```{r fig2, include = TRUE}
+
+```{r food mod, include = FALSE}
 
 #this model is Growth Rate ~ Litter Size x Density Category x Food Treatment
 fmod <- lm(growthrate ~ littersize*density_cat*treatment_food, food)
@@ -75,42 +71,73 @@ anova(fmod)
 food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat", "treatment_food")))
 
 #plot regressions on top of raw data
-ggplot(food_effs)+
-  geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = food)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Density")+
-  scale_fill_discrete(name = "Density")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
-  facet_wrap(~facet)+
-  theme_bw()
+# ggplot(food_effs)+
+#   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+#   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+#   scale_color_discrete(name = "Density")+
+#   scale_fill_discrete(name = "Density")+
+#   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
+#   facet_wrap(~facet)+
+#   theme_bw()
+
+```
+
+
+
+```{r fig2, include = TRUE}
+
+fmod <- lm(growthrate ~ littersize*density_cat*treatment_food, food)
+anova(fmod)
+
+ggplot(food, aes(x = littersize, y = growthrate, group = interaction(density_cat, treatment_food))) +
+  geom_point(alpha = 0.3, aes(color = density_cat)) +
+  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
+  facet_wrap(~treatment_food, labeller = label_both) +
+  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
+  theme_minimal()
 
 ```
 
 Lastly, same thing but for the rattle data set. Incorporate rattle treatment.
 
 
-```{r fig 3, include = TRUE}
+```{r rattle mod, include = FALSE}
+
 # make model for growth ~ litter size * density category * rattle treatment
 rmod <- lm(growthrate ~ littersize*density_cat*treatment, rattle)
-
-#summary
 anova(rmod)
 
 #get effects table for model
 rat_effs <- as.data.table(ggpredict(rmod, terms = c("littersize", "density_cat", "treatment")))
 
 #plot regressions over raw data
-ggplot(rat_effs)+
-  geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = rattle)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_color_discrete(name = "Density")+
-  scale_fill_discrete(name = "Density")+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
-  facet_wrap(~facet)+
-  theme_bw()
+# ggplot(rat_effs)+
+#   geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = rattle)+
+#   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
+#   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
+#   scale_color_discrete(name = "Density")+
+#   scale_fill_discrete(name = "Density")+
+#   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
+#   facet_wrap(~facet)+
+#   theme_bw()
   
+```
+
+
+
+```{r fig 3, include = TRUE}
+
+rmod <- lm(growthrate ~ littersize*density_cat*treatment, rattle)
+anova(rmod)
+
+ggplot(rattle, aes(x = littersize, y = growthrate, group = interaction(density_cat, treatment))) +
+  geom_point(alpha = 0.3, aes(color = density_cat)) +
+  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
+  facet_wrap(~treatment, labeller = label_both) +
+  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
+  theme_minimal()
+
+
 ```
 
 
