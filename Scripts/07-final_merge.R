@@ -49,39 +49,6 @@ dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
 
 
 
-# standardize continuous variables ----------------------------------------
-
-#standardize density globally
-dat[, density_std := scale(density), year]
-
-#standardize cones globally
-dat[, cones_tree_std := scale(cones_tree_prev), year]
-
-#standardize cone cache globally
-dat[, cache_std := scale(cache_prev), year]
-
-#standardize birth date by grid year
-dat[, bjulian_std := scale(bjulian), gridyear]
-
-#standardize litter size by grid year
-dat[, littersize_std := scale(littersize), gridyear]
-
-#standardize growth rate by grid year
-dat[, growthrate_std := scale(growthrate), gridyear]
-
-#standardize mother age by grid year
-dat[, mother_age_std := scale(mother_age), gridyear]
-
-#up until this point the plan was to only use KL, SU, AG, JO, LL, BT
-#should I go back and try to include SX from 2010? No data from RR. 
-#no data for BT before 2016
-#we can make back of AG rattle in 2010, but its currently listed as all food add.
-#I don't see any of those reflocs in the data, but there are a lot of NA reflocs for that year in AG that don't have densities.
-#do you have the IDs and years of squirrels who were in the rattle experiment? This is the easiest way
-#no data for BT 2010
-#no indication of rattle playback for KL but doesn't matter much since its chickadee I guess. Could add 2010 KL into the rattle test if we find this data 
-
-
 
 # Correct issues with treatment -----------------------------------------------------
 
@@ -140,14 +107,49 @@ dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 
 
 
+# standardize continuous variables ----------------------------------------
+
+#standardize density globally
+dat[, density_std := scale(density), year]
+
+#standardize cones globally
+dat[, cones_tree_std := scale(cones_tree_prev), year]
+
+#standardize cone cache globally
+dat[, cache_std := scale(cache_prev), year]
+
+#standardize birth date by grid year
+dat[, bjulian_std := scale(bjulian), gridyear]
+
+#standardize litter size by grid year
+dat[, littersize_std := scale(littersize), gridyear]
+
+#standardize growth rate by grid year
+dat[, growthrate_std := scale(growthrate), gridyear]
+
+#standardize mother age by grid year
+dat[, mother_age_std := scale(mother_age), gridyear]
+
+#up until this point the plan was to only use KL, SU, AG, JO, LL, BT
+#should I go back and try to include SX from 2010? No data from RR. 
+#no data for BT before 2016
+#we can make back of AG rattle in 2010, but its currently listed as all food add.
+#I don't see any of those reflocs in the data, but there are a lot of NA reflocs for that year in AG that don't have densities.
+#do you have the IDs and years of squirrels who were in the rattle experiment? This is the easiest way
+#no data for BT 2010
+#no indication of rattle playback for KL but doesn't matter much since its chickadee I guess. Could add 2010 KL into the rattle test if we find this data 
+
+
+
 # finalize what are factors -----------------------------------------------
 
-#make factors
+#food, treatment, bucket
 dat2[, food := factor(food)][, treatment := factor(treatment)][, bucket := factor(bucket)]
 
-#make factors
+#BR
 dat2[, br := factor(br)]
 
+#mast year
 dat2[, mast := factor(mast)]
 
 
