@@ -17,13 +17,13 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 dat <- readRDS("Output/Data/final_data.rds")
 
 #get density quantiles
-dens25Q <- dat[, round(quantile(density)[2], 2)]
-dens75Q <- dat[, round(quantile(density)[4], 2)]
+dens25Q <- dat[, round(quantile(density_std)[2], 2)]
+dens75Q <- dat[, round(quantile(density_std)[4], 2)]
 
 #categorize density based on quantiles
-dat[density < dens25Q, density_cat := "low"]
-dat[density > dens25Q & density < dens75Q, density_cat := "medium"]
-dat[density > dens75Q, density_cat := "high"]
+dat[density_std < dens25Q, density_cat := "low"]
+dat[density_std > dens25Q & density_std < dens75Q, density_cat := "medium"]
+dat[density_std > dens75Q, density_cat := "high"]
 
 #make factor with levels
 dat[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
@@ -62,6 +62,23 @@ ggplot(control, aes(x = littersize, y = growthrate, group = interaction(density_
 ```
 
 
+```{r fig1 but standardized, include = TRUE}
+
+#this model is Growth Rate ~ Litter Size x Local Density Category using standardized
+bmod_std <- lm(growthrate_std ~ littersize_std*density_cat, control)
+anova(bmod_std)
+
+#plot regressions on top of raw data
+ggplot(control, aes(x = littersize_std, y = growthrate_std, group = interaction(density_cat))) +
+  geom_point(alpha = 0.3, aes(color = density_cat)) +
+  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
+  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
+  theme_minimal()
+
+```
+
+
+
 Next, same thing but using the food data set. Add in food treatment as factor.
 
 
@@ -94,6 +111,20 @@ fmod <- lm(growthrate ~ littersize*density_cat*treatment_food, food)
 anova(fmod)
 
 ggplot(food, aes(x = littersize, y = growthrate, group = interaction(density_cat, treatment_food))) +
+  geom_point(alpha = 0.3, aes(color = density_cat)) +
+  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
+  facet_wrap(~treatment_food, labeller = label_both) +
+  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
+  theme_minimal()
+
+```
+
+```{r fig2 but standardized, include = TRUE}
+
+fmod_std <- lm(growthrate_std ~ littersize_std*density_cat*treatment_food, food)
+anova(fmod_std)
+
+ggplot(food, aes(x = littersize_std, y = growthrate_std, group = interaction(density_cat, treatment_food))) +
   geom_point(alpha = 0.3, aes(color = density_cat)) +
   geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
   facet_wrap(~treatment_food, labeller = label_both) +
@@ -144,4 +175,20 @@ ggplot(rattle, aes(x = littersize, y = growthrate, group = interaction(density_c
 
 ```
 
+
+
+```{r fig 3 but standardized, include = TRUE}
+
+rmod_std <- lm(growthrate_std ~ littersize_std*density_cat*treatment, rattle)
+anova(rmod_std)
+
+ggplot(rattle, aes(x = littersize_std, y = growthrate_std, group = interaction(density_cat, treatment))) +
+  geom_point(alpha = 0.3, aes(color = density_cat)) +
+  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
+  facet_wrap(~treatment, labeller = label_both) +
+  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
+  theme_minimal()
+
+
+```
 
