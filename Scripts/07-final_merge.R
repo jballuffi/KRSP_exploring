@@ -110,25 +110,25 @@ dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 # standardize continuous variables ----------------------------------------
 
 #standardize density globally
-dat[, density_std := scale(density), year]
+dat2[, density_std := scale(density), year]
 
 #standardize cones globally
-dat[, cones_tree_std := scale(cones_tree_prev), year]
+dat2[, cones_tree_std := scale(cones_tree_prev), year]
 
 #standardize cone cache globally
-dat[, cache_std := scale(cache_prev), year]
+dat2[, cache_std := scale(cache_prev), year]
 
 #standardize birth date by grid year
-dat[, bjulian_std := scale(bjulian), gridyear]
+dat2[, bjulian_std := scale(bjulian), gridyear]
 
 #standardize litter size by grid year
-dat[, littersize_std := scale(littersize), gridyear]
+dat2[, littersize_std := scale(littersize), gridyear]
 
 #standardize growth rate by grid year
-dat[, growthrate_std := scale(growthrate), gridyear]
+dat2[, growthrate_std := scale(growthrate), gridyear]
 
 #standardize mother age by grid year
-dat[, mother_age_std := scale(mother_age), gridyear]
+dat2[, mother_age_std := scale(mother_age), gridyear]
 
 #up until this point the plan was to only use KL, SU, AG, JO, LL, BT
 #should I go back and try to include SX from 2010? No data from RR. 
