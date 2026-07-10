@@ -72,6 +72,9 @@ juv2[, littersize := .N, litter_id]
 #merge juv and litter data by the litter ID
 dat <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
 
+#calculate the number of days in between weight measures
+dat[, days := as.integer(date2 - date1)]
+
 #take only first litters for this analysis, as done by Delaney
 dat <- dat[ln == 1]
 
@@ -84,12 +87,15 @@ dat <- dat[!weight1 == weight2] #this looks to be usually when first nests were 
 #remove cases where weight 1 is bigger than weight 1
 dat <- dat[!weight1 > weight2] #this is a rare scenario
 
-#THE FOLLOWING WASN'T IN DELANEY
+#METHODS BY FISHER 2017 
 #remove any cases where weight 1 is over 50 g
 dat <- dat[!weight1 > 50]
 
 #remove any cases where weight 2 was over 100 g
 dat <- dat[!weight2 > 100]
+
+#remove cases when there were less than 5 days in between weight measures
+dat <- dat[!days < 5]
 
 #remove duplicate squirrels
 dat2 <- dat[!duplicated(squirrel_id) == TRUE] ##WHY?
@@ -97,9 +103,6 @@ dat2 <- dat[!duplicated(squirrel_id) == TRUE] ##WHY?
 
 
 # calculate growth rates --------------------------------------------------
-
-#get time difference
-dat2[, days := as.integer(date2 - date1)]
 
 #any cases where the two dates were the same make days NA
 dat2[days == 0, days := NA]
