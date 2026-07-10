@@ -47,9 +47,6 @@ dat[, gridyear := paste0(grid, "-", year)]
 #MAKE MAST YEAR COL YES OR NO
 dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
 
-# #create a category for density
-# dat[, densityf := cut(round(density), breaks = 4, labels = c("0 - 2", "2 - 4", "4 - 6", "6 - 8"))]
-
 
 
 # standardize continuous variables ----------------------------------------
@@ -74,15 +71,6 @@ dat[, growthrate_std := scale(growthrate), gridyear]
 
 #standardize mother age by grid year
 dat[, mother_age_std := scale(mother_age), gridyear]
-
-
-
-
-# rattle treatment  -------------------------------------------------------
-
-rats <- dat[food == 18 | food == 19]
-
-dat[grid == "BT", unique(year)]
 
 #up until this point the plan was to only use KL, SU, AG, JO, LL, BT
 #should I go back and try to include SX from 2010? No data from RR. 
