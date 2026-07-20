@@ -121,14 +121,15 @@ dat2[, cache_std := scale(cache_prev), year]
 #standardize birth date by grid year
 dat2[, bjulian_std := scale(bjulian), gridyear]
 
+#standardize mother age by grid year
+dat2[, mother_age_std := scale(mother_age), gridyear]
+
 #standardize litter size by grid year
 dat2[, littersize_std := scale(littersize), gridyear]
 
 #standardize growth rate by grid year
 dat2[, growthrate_std := scale(growthrate), gridyear]
 
-#standardize mother age by grid year
-dat2[, mother_age_std := scale(mother_age), gridyear]
 
 #up until this point the plan was to only use KL, SU, AG, JO, LL, BT
 #should I go back and try to include SX from 2010? No data from RR. 
