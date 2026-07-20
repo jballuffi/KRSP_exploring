@@ -70,6 +70,7 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 #instead of standardizing growth rate use family = lognormal() or family = Gamma(link = "log")
 
+#add in birth date
 
 # ANALYSIS 1 -----------------------------------
 
