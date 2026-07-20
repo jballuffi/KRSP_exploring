@@ -62,15 +62,8 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 
 
-
-
-#family = zero_truncated_poisson())
-
-#do we really want to standardize the response variables?
-
-#instead of standardizing growth rate use family = lognormal() or family = Gamma(link = "log")
-
-#add in birth date
+#add in birth date?
+#do we want litters of 0? Is that even possible to add?
 
 # ANALYSIS 1 -----------------------------------
 
@@ -83,9 +76,10 @@ f_continuous <- bf(
   family = Gamma(link = "log"))
 
 f_ordinal <- bf(
-  littersize ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
+  littersize | trunc(lb = 1) ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  family = cumulative("logit"))
+  #family = com_poisson(link = "log") #Conway-Maxwell-Poisson distribution for under dispersion
+  family = gaussian(link = "identity")) #gaussian distribution might be easier to run
 
 #this takes 16 min on work computer and that makes sense because it's very complicated (bella)
 biv_food_model <- brm(
