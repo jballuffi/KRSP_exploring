@@ -58,12 +58,19 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 # pp_check(test_model)
 # 
 # mcmc_plot(test_model, type = "trace")
-# 
 
 
+
+
+
+#########
 
 #add in birth date?
 #do we want litters of 0? Is that even possible to add?
+
+########
+
+
 
 # ANALYSIS 1 -----------------------------------
 
