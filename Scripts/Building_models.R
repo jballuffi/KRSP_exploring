@@ -68,7 +68,7 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 #add in birth date?
 #do we want litters of 0? Is that even possible to add?
 #make sure all independent variables use standardized versions
-
+#right now growth rate uses the gamma distribution and litter size uses the gaussian distribution
 
 ########
 
