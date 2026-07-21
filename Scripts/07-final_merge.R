@@ -214,7 +214,7 @@ missingdata <-
 saveRDS(dat2, "Output/Data/final_data.rds")
 
 #save and send to ben
-write.csv(summary, "Output/Data/N_summary_treatments.csv")
+write.csv(sum1, "Output/Data/N_summary_treatments.csv")
 
 #save output of missing data
 write.csv(missingdata, "Output/Data/Missing_data_summary.csv")
