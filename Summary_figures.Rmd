@@ -18,9 +18,9 @@ source("Scripts/09-growthrate_plots.R")
 
 ![Example of how local density is estimated. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area ((pi\*radius\^2)/10000.](Output/Figures/local_density_visual.jpeg)
 
-![Local densities in May by grid, summarizing census records from `r min(densities$year)` to `r max(densities$year)`.](Output/Figures/local_densities_total_grid.jpeg){width="655"}
+![Local densities in May by treatment, summarizing census records from `r min(densities$year)` to `r max(densities$year)`.](Output/Figures/local_densities_total_grid.jpeg){width="655"}
 
-![Average local density in May across all grids from `r min(densities$year)` to `r max(densities$year)`.](Output/Figures/local_densities_total_year.jpeg)
+![Average local density in May across all control grids from `r min(densities$year)` to `r max(densities$year)`.](Output/Figures/local_densities_total_year.jpeg)
 
 ## Growth Rate Summary Plots
 
