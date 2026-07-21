@@ -13,7 +13,7 @@ densities <- readRDS("Output/Data/final_data.rds")
 # plot --------------------------------------------------------------------
 
 #plot density by treatment
-(density_treatmeant <- 
+(density_treatment <-
     ggplot(densities)+
     geom_boxplot(aes(x = treatment, y = density))+
     labs(y = "Local density (squrirels/ha)", x = "Treatment")+
