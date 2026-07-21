@@ -166,10 +166,23 @@ dat2[, .N, by = .(treatment)]
 #summary by bucket
 dat2[, .N, bucket]
 
-#create a table showing sample sizes by categories for non-control grids
-summary <- dat2[!(grid == "SU" | grid == "KL"), .N, by = .(grid, year, treatment)]
-setorder(summary, grid, year)
+#summary of all grid years
+sum1 <- dat2[, .N, by = .(year, grid, treatment)]
 
+#create a table showing sample sizes by categories for non-control grids
+sum2 <- dat2[!(grid == "SU" | grid == "KL"), .N, by = .(year, grid, treatment)]
+setorder(sum2, year, grid)
+
+#local density on Agnes over time
+AGline <- lm(density ~ year, data = dat2[grid == "AG" & food == 1])
+AGint <- coef(AGline)[1]
+AGslope <- coef(AGline)[2]
+
+ggplot(dat2[grid == "AG" & food == 1])+
+  geom_point(aes(x = year, y = density))+
+  geom_abline(intercept = AGint, slope = AGslope)
+
+dat2[, mean(density), food]
 
 
 
