@@ -67,6 +67,8 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 #add in birth date?
 #do we want litters of 0? Is that even possible to add?
+#make sure all independent variables use standardized versions
+
 
 ########
 
@@ -125,7 +127,7 @@ c_continuous <- bf(
 c_ordinal <- bf(
   littersize ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  family = cumulative("logit"))
+  family = gaussian(link = "identity"))
 
 biv_cache_model <- brm(
   formula = c_continuous + c_ordinal,
@@ -154,7 +156,8 @@ r_continuous <- bf(
 r_ordinal <- bf(
   littersize ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  family = cumulative("logit"))
+  #family = cumulative("logit")
+  family = gaussian(link = "identity"))
 
 biv_rattle_model <- brm(
   formula = r_continuous + r_ordinal,
