@@ -62,7 +62,7 @@ testcols <- c("yes" = "red", "no" = "grey")
   scale_color_manual(guide = NULL, values = testcols)+
   labs(x = "X coordinate (m)", y = "Y coordinate (m)")+
   coord_fixed()+
-  theme_minimal())
+  theme_bw())
 
 #get the x and y locations for that test individual
 testx <- test[squirrel_id == testid, locX]
