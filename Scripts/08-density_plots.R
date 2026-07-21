@@ -12,22 +12,22 @@ densities <- readRDS("Output/Data/final_data.rds")
 
 # plot --------------------------------------------------------------------
 
-#get mean density by year
-means <- densities[, .(density = mean(density)), year]
-setorder(means, year)
-
-#plot density by grid
-(totaldensity_gr <- 
+#plot density by treatment
+(density_treatmeant <- 
     ggplot(densities)+
-    geom_boxplot(aes(x = grid, y = density))+
-    labs(y = "Local density (squrirels/ha)", x = "Grid")+
+    geom_boxplot(aes(x = treatment, y = density))+
+    labs(y = "Local density (squrirels/ha)", x = "Treatment")+
     theme_bw())
 
+#get mean density by year for controls only
+means <- densities[food == 0, .(density = mean(density)), year]
+setorder(means, year)
+
 #plot mean density by year
-(totaldensity_yr <- 
+(density_yr <- 
     ggplot(means)+
     geom_path(aes(x = year, y = density, group = 1))+
-    labs(y = "Mean local density (squirrels/ha)", x = "Year")+
+    labs(y = "Mean density (squirrels/ha)", x = "Year")+
     theme_bw())
 
 
@@ -35,6 +35,6 @@ setorder(means, year)
 # save --------------------------------------------------------------------
 
 #save figs
-ggsave("Output/Figures/local_densities_total_year.jpeg", totaldensity_yr, width = 6, height = 4, unit = "in")
-ggsave("Output/Figures/local_densities_total_grid.jpeg", totaldensity_gr, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/local_densities_total_year.jpeg", density_yr, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/local_densities_total_grid.jpeg", density_treatment, width = 6, height = 4, unit = "in")
 
