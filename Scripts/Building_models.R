@@ -65,6 +65,11 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 #########
 
+# z-score within grid year and random effect grid year (change the family)
+# log transformed and random effect grid year (change the family)
+# don't transform
+# just transform litter size as log
+
 #add in birth date?
 #do we want litters of 0? Is that even possible to add?
 #make sure all independent variables use standardized versions
@@ -73,6 +78,13 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 #alternative for litter: 
 #family = com_poisson(link = "log") #Conway-Maxwell-Poisson distribution for under dispersion
 #family = cumulative("logit")
+
+
+# litter size is using the same data as growth rates
+# covariance between an individual and the group it came from
+# litter size of 8 has 8 data points
+# do we remove litter id from random effect?
+
 
 ########
 
