@@ -121,9 +121,14 @@ dat2 <- dat2[!is.na(growthrate)]
 
 
 
-# finalize data set --------------------------------------------------------
+# finalize data sets --------------------------------------------------------
 
+#take only cols of interest
 dat2 <- dat2[, .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
+
+#average growth rate by litter
+datlitter <- dat2[, .(growthrate = mean(growthrate)),
+                  by = .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian, littersize)]
 
 
 
@@ -140,6 +145,7 @@ dat2[, .N, food]
 # save ---------------------------------------------------
 
 #save final growth rate
-saveRDS(dat2, "Output/Data/growth_rates.rds")
+saveRDS(dat2, "Output/Data/growth_rates_juvs.rds")
+saveRDS(datlitter, "Output/Data/growth_rates_litters.rds")
 
 
