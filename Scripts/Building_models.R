@@ -70,6 +70,10 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 #make sure all independent variables use standardized versions
 #right now growth rate uses the gamma distribution and litter size uses the gaussian distribution
 
+#alternative for litter: 
+#family = com_poisson(link = "log") #Conway-Maxwell-Poisson distribution for under dispersion
+#family = cumulative("logit")
+
 ########
 
 
@@ -80,14 +84,15 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 # growth rate OR litter size ~ treatment*tree cones*density + mother age + mother age^2 + sex + mast
 
 f_continuous <- bf(
-  growthrate ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  growthrate ~ treatment_food*cones_tree_std*density_std 
+  + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = Gamma(link = "log"))
 
 f_ordinal <- bf(
-  littersize | trunc(lb = 1) ~ treatment_food*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
+  littersize | trunc(lb = 1) ~ treatment_food*cones_tree_std*density_std 
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  #family = com_poisson(link = "log") #Conway-Maxwell-Poisson distribution for under dispersion
   family = gaussian(link = "identity")) #gaussian distribution might be easier to run
 
 #this takes 16 min on work computer and that makes sense because it's very complicated (bella)
@@ -120,12 +125,14 @@ summary(biv_food_model)
 
 #look at colinearity between cache and cones of prev years
 c_continuous <- bf(
-  growthrate ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  growthrate ~ cache_std*cones_tree_std*density_std 
+  + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = Gamma(link = "log"))
 
 c_ordinal <- bf(
-  littersize ~ cache_std*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
+  littersize | trunc(lb = 1) ~ cache_std*cones_tree_std*density_std 
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = gaussian(link = "identity"))
 
@@ -149,14 +156,15 @@ summary(biv_cache_model)
 
 
 r_continuous <- bf(
-  growthrate ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + sex + mast 
+  growthrate ~ treatment*cones_tree_std*density_std 
+  + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
   family = Gamma(link = "log"))
 
 r_ordinal <- bf(
-  littersize ~ treatment*cones_tree_std*density_std + mother_age_std + mother_age_std^2 + mast 
+  littersize | trunc(lb = 1) ~ treatment*cones_tree_std*density_std 
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast 
   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-  #family = cumulative("logit")
   family = gaussian(link = "identity"))
 
 biv_rattle_model <- brm(
@@ -169,7 +177,7 @@ biv_rattle_model <- brm(
 )
 
 
-summary(biv_rattle_model)
+`summary(biv_rattle_model)
 
 
 
