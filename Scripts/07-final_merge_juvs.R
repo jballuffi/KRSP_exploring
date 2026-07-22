@@ -1,5 +1,5 @@
 
-#script to merge and create the final data for analyses going forward
+#script to merge and create the final data for analyses using juveniles as the unit
 #merges local densities and juvenile growth rates + litter info data
 
 
