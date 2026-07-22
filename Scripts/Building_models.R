@@ -160,29 +160,29 @@ summary(biv_cache_model)
 #of density on co-variance between litter size and offspring growth.
 
 
-r_continuous <- bf(
-  growthrate ~ treatment*cones_tree_std*density_std 
-  + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
-  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
-  family = Gamma(link = "log"))
-
-r_ordinal <- bf(
-  littersize | trunc(lb = 1) ~ treatment*cones_tree_std*density_std 
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast 
-  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
-  family = gaussian(link = "identity"))
-
-biv_rattle_model <- brm(
-  formula = r_continuous + r_ordinal,
-  data = rattle,
-  chains = 2,
-  cores = 2, # Parallel processing
-  iter = 200,
-  warmup = 50
-)
-
-
-`summary(biv_rattle_model)
+# r_continuous <- bf(
+#   growthrate ~ treatment*cones_tree_std*density_std 
+#   + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
+#   + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
+#   family = Gamma(link = "log"))
+# 
+# r_ordinal <- bf(
+#   littersize | trunc(lb = 1) ~ treatment*cones_tree_std*density_std 
+#   + mother_age_std + mother_age_std^2 + bjulian_std + mast 
+#   + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
+#   family = gaussian(link = "identity"))
+# 
+# biv_rattle_model <- brm(
+#   formula = r_continuous + r_ordinal,
+#   data = rattle,
+#   chains = 2,
+#   cores = 2, # Parallel processing
+#   iter = 200,
+#   warmup = 50
+# )
+# 
+# 
+# summary(biv_rattle_model)
 
 
 
@@ -190,6 +190,6 @@ biv_rattle_model <- brm(
 
 saveRDS(biv_food_model, "Output/Models/foodtreatment_model.rds")
 saveRDS(biv_cache_model, "Output/Models/cache_model.rds")
-saveRDS(biv_rattle_model, "Output/Models/rattle_model.rds")
+#saveRDS(biv_rattle_model, "Output/Models/rattle_model.rds")
 
 
