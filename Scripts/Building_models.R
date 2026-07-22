@@ -98,13 +98,13 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 f_continuous <- bf(
   growthrate ~ treatment_food*cones_tree_std*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
-  + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
+  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
   family = Gamma(link = "log"))
 
 f_ordinal <- bf(
   littersize | trunc(lb = 1) ~ treatment_food*cones_tree_std*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + mast
-  + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
+  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
   family = gaussian(link = "identity")) #gaussian distribution might be easier to run
 
 #this takes 16 min on work computer and that makes sense because it's very complicated (bella)
