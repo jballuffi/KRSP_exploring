@@ -140,6 +140,9 @@ dat2[, .N]
 #Get sample size by treatment
 dat2[, .N, food]
 
+#missing growth rates?
+datlitter[is.na(growthrate), .N]
+
 
 
 # save ---------------------------------------------------
