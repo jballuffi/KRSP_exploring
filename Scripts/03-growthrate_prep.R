@@ -121,6 +121,12 @@ dat2 <- dat2[!is.na(growthrate)]
 
 
 
+# finalize data set --------------------------------------------------------
+
+dat2 <- dat2[, .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
+
+
+
 # Get basic summaries -----------------------------------------------------
 
 #How many growth rates?
