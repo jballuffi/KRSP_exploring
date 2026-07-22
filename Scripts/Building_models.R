@@ -15,7 +15,11 @@ library(dplyr)
 dat <- readRDS("Output/Data/final_data.rds")
 
 
+
 # subset data for different analyses --------------------------------------
+
+#make litter size numeric instead of integer
+dat[, littersize := as.numeric(littersize)]
 
 #make food treatment dataset
 food <- dat[food == 0 | food == 1]  #just food add and control grids
@@ -41,50 +45,39 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 #   cores = 2, # Parallel processing, dependent on computer you are using
 #   iter = 200, #how many times are you going to sample, bella says 1000
 #   warmup = 50 #if model is having a hard time to converge this will help, having some is good.
-#   #backend = "cmdstanr" #bella uses this
+#   backend = "cmdstanr" #bella uses this
 # )
 # 
-# summary(test_model)
-# #when I run without standardized variables the Rhats are way above 1.
-# #when I run with standardized variables the Rhats are all 1
-# 
-# plot(test_model)
-# 
-# 
-# conditional_effects(test_model)
-# 
-# posterior_epred(test_model)
-# 
-# pp_check(test_model)
-# 
-# mcmc_plot(test_model, type = "trace")
 
 
 
-
-
-#########
+######### NOTES
 
 # z-score within grid year and random effect grid year (change the family)
 # log transformed and random effect grid year (change the family)
 # don't transform
 # just transform litter size as log
 
-#add in birth date?
-#do we want litters of 0? Is that even possible to add?
-#make sure all independent variables use standardized versions
-#right now growth rate uses the gamma distribution and litter size uses the gaussian distribution
+# do we want litters of 0? Is that even possible to add?
+# right now growth rate uses the gamma distribution and litter size uses the gaussian distribution
 
-#alternative for litter: 
-#family = com_poisson(link = "log") #Conway-Maxwell-Poisson distribution for under dispersion
-#family = cumulative("logit")
+#family option 1:
+# for growth rate: family = Gamma(link = "log"))
+# for litter size: littersize | trunc(lb = 1) ~ AND family = gaussian(link = "identity")
 
+#family option 2:
+# both gaussian
+
+#alternative families for litter size: 
+# family = com_poisson(link = "log") #Conway-Maxwell-Poisson distribution for under dispersion
+# family = cumulative("logit")
 
 # litter size is using the same data as growth rates
 # covariance between an individual and the group it came from
 # litter size of 8 has 8 data points
 # do we remove litter id from random effect?
 
+# cumulative for litter and gaussian for growth rate
 
 ########
 
@@ -93,19 +86,19 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 # ANALYSIS 1 -----------------------------------
 
 #formula:
-# growth rate OR litter size ~ treatment*tree cones*density + mother age + mother age^2 + sex + mast
+# growth rate OR litter size ~ treatment*tree cones*density + mother age + mother age^2 + birth date + sex + mast
 
 f_continuous <- bf(
-  growthrate ~ treatment_food*cones_tree_std*density_std 
+  growthrate ~ treatment_food*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
   + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
   family = Gamma(link = "log"))
 
 f_ordinal <- bf(
-  littersize | trunc(lb = 1) ~ treatment_food*cones_tree_std*density_std 
+  littersize ~ treatment_food*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + mast
   + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
-  family = gaussian(link = "identity")) #gaussian distribution might be easier to run
+  family = gaussian())
 
 #this takes 16 min on work computer and that makes sense because it's very complicated (bella)
 biv_food_model <- brm(
@@ -115,7 +108,7 @@ biv_food_model <- brm(
   cores = 2, # Parallel processing, dependent on computer you are using
   iter = 200, #how many times are you going to sample, bella says 1000
   warmup = 50 #if model is having a hard time to converge this will help, having some is good.
-  #backend = "cmdstanr" #bella uses this
+
 )
 #total iterations = iterations - warmup
 
@@ -139,13 +132,13 @@ summary(biv_food_model)
 c_continuous <- bf(
   growthrate ~ cache_std*cones_tree_std*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
-  + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
+  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
   family = Gamma(link = "log"))
 
 c_ordinal <- bf(
   littersize | trunc(lb = 1) ~ cache_std*cones_tree_std*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + mast 
-  + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
+  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
   family = gaussian(link = "identity"))
 
 biv_cache_model <- brm(
@@ -170,13 +163,13 @@ summary(biv_cache_model)
 r_continuous <- bf(
   growthrate ~ treatment*cones_tree_std*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + sex + mast 
-  + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
+  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
   family = Gamma(link = "log"))
 
 r_ordinal <- bf(
   littersize | trunc(lb = 1) ~ treatment*cones_tree_std*density_std 
   + mother_age_std + mother_age_std^2 + bjulian_std + mast 
-  + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
+  + (1|mother_id/litter_id) + (1|gridyear) + (1|mother_byear),
   family = gaussian(link = "identity"))
 
 biv_rattle_model <- brm(
