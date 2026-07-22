@@ -10,7 +10,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 
 #read in prepped data
 dens <- readRDS("Output/Data/local_densities.rds")
-growth <- readRDS("Output/Data/growth_rates.rds")
+growth <- readRDS("Output/Data/growth_rates_juvs.rds")
 moms <- readRDS("Output/Data/mom_lives.rds")
 trees <- readRDS("Output/Data/tree_cone_counts.rds")
 cones <- readRDS("Output/Data/cone_cache.rds")
@@ -147,9 +147,6 @@ dat2[, growthrate_std := scale(growthrate), gridyear]
 #food, treatment, bucket
 dat2[, food := factor(food)][, treatment := factor(treatment)][, bucket := factor(bucket)]
 
-#BR
-dat2[, br := factor(br)]
-
 #mast year
 dat2[, mast := factor(mast)]
 
@@ -211,7 +208,7 @@ missingdata <-
 # save --------------------------------------------------------------------
 
 #save final data
-saveRDS(dat2, "Output/Data/final_data.rds")
+saveRDS(dat2, "Output/Data/final_data_juvs.rds")
 
 #save and send to ben
 write.csv(sum1, "Output/Data/N_summary_treatments.csv")
