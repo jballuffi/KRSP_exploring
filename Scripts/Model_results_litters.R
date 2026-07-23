@@ -101,5 +101,37 @@ mcmc_areas(data.frame(covariance = cov_draws), pars = "covariance", prob = 0.95)
 
 # plotting covariance in response to density ------------------------------
 
+#havent tried this yet. It is from gemini 
 
+library(brms)
+library(tidybayes)
+library(dplyr)
+library(ggplot2)
+
+# 1. Create a grid of values for your predictor (e.g., x_var)
+nd <- data.frame(x_var = seq(min(data$x_var), max(data$x_var), length.out = 100))
+
+# 2. Extract expected value draws for both responses
+epreds <- fit %>%
+  add_epred_draws(newdata = nd) 
+
+# 3. Compute covariance across posterior draws for each level of x_var
+cov_df <- epreds %>%
+  group_by(x_var, .draw) %>%
+  pivot_wider(names_from = .category, values_from = .epred) %>% 
+  group_by(x_var) %>%
+  summarize(
+    cov_mean = cov(y1, y2),
+    .groups = "drop"
+  )
+
+# 4. Plot
+ggplot(cov_df, aes(x = x_var, y = cov_mean)) +
+  geom_line(color = "steelblue", size = 1) +
+  labs(
+    x = "Independent Variable (X)",
+    y = "Covariance [E(Y1), E(Y2)]",
+    title = "Covariance of Expected Responses across X"
+  ) +
+  theme_minimal()
 
