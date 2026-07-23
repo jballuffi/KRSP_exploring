@@ -74,18 +74,32 @@ ggplot(df_joint, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
 
 
 
+# plotting the covariance -------------------------------------------
+
+# get the residual correlation parameter (rescor).
+
+# extract draws from the model
+draws <- as_draws_df(food_mod)
+
+# For a bivariate model with responses
+# brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
+sig1 <- draws$sigma_growthrate
+sig2 <- draws$sigma_littersize
+rho  <- draws$rescor__growthrate__littersize
+
+# Convert the correlation and standard deviations into the covariance metric for each posterior draw:
+cov_draws <- rho * sig1 * sig2
+
+#make a data frame version
+cov_draws_df <- as.data.frame(cov_draws)
+
+# plot using Using bayesplot
+mcmc_areas(data.frame(covariance = cov_draws), pars = "covariance", prob = 0.95) +
+  labs(title = "Posterior Distribution of Response Covariance", x = "Covariance (y1, y2)")
 
 
-# trying to plot the covariance -------------------------------------------
 
-#get the residual correlation parameter (rescor).
+# plotting covariance in response to density ------------------------------
 
 
-# Assuming you have a covariance parameter named 'Sigma'
-# Extract and average the matrices across draws
-sigma_draws <- subset_draws(post_draws, variable = "^Sigma") 
-mean_cov_matrix <- apply(sigma_draws, 2, mean)
 
-# Visualize using bayesplot
-# Example for MCMC intervals if you are looking at specific covariance coefficients
-mcmc_plot(fit_model, variable = "Sigma", regex = TRUE)
