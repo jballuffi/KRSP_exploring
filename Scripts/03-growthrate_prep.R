@@ -130,6 +130,22 @@ dat2 <- dat2[, .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian,
 datlitter <- dat2[, .(growthrate = mean(growthrate)),
                   by = .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian, littersize)]
 
+#FOR SEX RATIOS IN LITTER DATASET:
+#get number of males in every litter
+sexcounts <- dat2[, .N, by = .(litter_id, sex)]
+
+#make the output wide
+sexratios <- dcast(sexcounts, litter_id ~ sex)
+
+#fill in NAs with zeros
+sexratios[is.na(M), M := 0][is.na(`F`), `F` := 0]
+
+#calculate the ratio of males in litter
+sexratios[, sexratio := M/(`F` + M)]
+
+#merge back in with litter dataset
+datlitter <- merge(datlitter, sexratios[, .(litter_id, sexratio)], by = "litter_id", all.x = TRUE)
+
 
 
 # Get basic summaries -----------------------------------------------------
@@ -142,6 +158,9 @@ dat2[, .N, food]
 
 #missing growth rates?
 datlitter[is.na(growthrate), .N]
+
+#missing sex ratios?
+datlitter[is.na(sexratio), .N]
 
 
 
