@@ -12,17 +12,18 @@ library(dplyr)
 
 
 #read in finalized data
-dat <- readRDS("Output/Data/final_data.rds")
+dat <- readRDS("Output/Data/final_data_juvs.rds")
+
 
 
 
 # subset data for different analyses --------------------------------------
 
-#make litter size numeric instead of integer
-dat[, littersize := as.numeric(littersize)]
+#make a control only dataset
+controls <- dat[grid == "SU" | grid == "KL"]
 
 #make food treatment dataset
-food <- dat[food == 0 | food == 1]  #just food add and control grids
+food <- dat[food == 1]  #just food add
 
 #make cache dataset
 cacheyears <- dat[!is.na(cache_prev), unique(year)]  #get years with cache size data
@@ -31,24 +32,6 @@ cache <- dat[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long t
 #make rattle experiment dataset
 rattleyears <- dat[food == 19, unique(year)] #get years with rattles
 rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of rattle playbacks but 
-
-
-
-# test model for learning bayesian  ---------------------------------------
-# 
-# 
-# test_model <- brm(
-#   formula = growthrate_std ~ treatment_food*cones_tree_std*density_std + mother_age_std + sex + mast 
-#   + (1|litter_id/mother_id) + (1|gridyear) + (1|mother_byear),
-#   data = food,
-#   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
-#   cores = 2, # Parallel processing, dependent on computer you are using
-#   iter = 200, #how many times are you going to sample, bella says 1000
-#   warmup = 50 #if model is having a hard time to converge this will help, having some is good.
-#   backend = "cmdstanr" #bella uses this
-# )
-# 
-
 
 
 ######### NOTES
