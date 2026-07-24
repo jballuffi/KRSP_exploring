@@ -141,6 +141,9 @@ dat2[, food := factor(food)][, treatment := factor(treatment)][, bucket := facto
 #mast year
 dat2[, mast := factor(mast)]
 
+#make litter size numeric instead of integer
+dat2[, littersize := as.numeric(littersize)]
+
 
 
 # save --------------------------------------------------------------------
