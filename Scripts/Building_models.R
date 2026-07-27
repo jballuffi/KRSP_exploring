@@ -22,10 +22,10 @@ dat <- readRDS("Output/Data/final_data_juvs.rds")
 #make a control only dataset
 controls <- dat[grid == "SU" | grid == "KL"]
 
-#make food treatment dataset
-food <- dat[food == 1]  #just food add
+#make food treatment data set, All food add except the weird two years in KL
+food <- dat[food == 1 & !grid == "KL"]  #just food add
 
-#make cache dataset
+#make cache data set
 cacheyears <- dat[!is.na(cache_prev), unique(year)]  #get years with cache size data
 cache <- dat[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long term control grids
 
