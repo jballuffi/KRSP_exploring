@@ -15,30 +15,30 @@ dat <- readRDS("Output/Data/final_data_litters.rds")
 #make litter size numeric instead of integer
 dat[, littersize := as.numeric(littersize)]
 
+#make a control only dataset
+controls <- dat[grid == "SU" | grid == "KL"]
+
 #make food treatment data set
 food <- dat[food == 0 | food == 1]  #just food add and control grids
-
-#make cache data set
-cacheyears <- dat[!is.na(cache_prev), unique(year)]  #get years with cache size data
-cache <- dat[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long term control grids
-
-#make rattle experiment dataset
-rattleyears <- dat[food == 19, unique(year)] #get years with rattles
-rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of rattle playbacks but 
 
 
 
 # Read in model and summarize -----------------------------------------------------------
 
+#read in models
+control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
 
 #look at summary of models
+summary(control_mod)
 summary(food_mod)
 
 #fuzzy caterpillars of models
+mcmc_plot(control_mod, type = "trace")
 mcmc_plot(food_mod, type = "trace")
 
 #results plots
+conditional_effects(control_mod)
 conditional_effects(food_mod)
 
 
@@ -101,6 +101,10 @@ mcmc_areas(data.frame(covariance = cov_draws), pars = "covariance", prob = 0.95)
 
 # plotting covariance in response to density ------------------------------
 
+
+# Option A: Quick built-in plot
+conditional_effects(food_mod, effects = "growthrate:littersize", dpar = "rescor")
+
 #havent tried this yet. It is from gemini 
 
 library(brms)
@@ -109,10 +113,11 @@ library(dplyr)
 library(ggplot2)
 
 # 1. Create a grid of values for your predictor (e.g., x_var)
-nd <- data.frame(x_var = seq(min(data$x_var), max(data$x_var), length.out = 100))
+nd <- data.frame(density = seq(min(food$density), max(food$density), length.out = 120),
+                 treatment = unique(food$treatment_food))
 
 # 2. Extract expected value draws for both responses
-epreds <- fit %>%
+epreds <- food_mod %>%
   add_epred_draws(newdata = nd) 
 
 # 3. Compute covariance across posterior draws for each level of x_var
