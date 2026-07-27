@@ -37,7 +37,7 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 # ANALYSIS 1: CONTROL DATA -----------------------------------
 
 b_continuous <- bf(
-  growthrate ~ tdensity_std + cones_tree_prev
+  growthrate ~ density_std + cones_tree_prev
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
@@ -50,7 +50,7 @@ b_ordinal <- bf(
 
 biv_control_model <- brm(
   formula = b_continuous + b_ordinal,
-  data = food,
+  data = controls,
   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
   cores = 2, # Parallel processing, dependent on computer you are using
   iter = 200, #how many times are you going to sample, bella says 1000
@@ -58,6 +58,7 @@ biv_control_model <- brm(
   
 )
 
+summary(biv_control_model)
 
 
 
@@ -119,7 +120,7 @@ biv_cache_model <- brm(
 summary(biv_cache_model)
 
 
-
+saveRDS(biv_control_model, "Output/Models/control_model_litters.rds")
 saveRDS(biv_food_model, "Output/Models/foodtreatment_model_litters.rds")
 saveRDS(biv_cache_model, "Output/Models/cache_model_litters.rds")
 
