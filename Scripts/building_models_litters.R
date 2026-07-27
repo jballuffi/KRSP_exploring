@@ -18,13 +18,13 @@ dat <- readRDS("Output/Data/final_data_litters.rds")
 
 # subset data for different analyses --------------------------------------
 
-#make litter size numeric instead of integer
-dat[, littersize := as.numeric(littersize)]
+#make a control only dataset
+controls <- dat[grid == "SU" | grid == "KL"]
 
-#make food treatment dataset
-food <- dat[food == 0 | food == 1]  #just food add and control grids
+#make food treatment data set, All food add except the weird two years in KL
+food <- dat[food == 1 & !grid == "KL"]  #just food add
 
-#make cache dataset
+#make cache data set
 cacheyears <- dat[!is.na(cache_prev), unique(year)]  #get years with cache size data
 cache <- dat[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long term control grids
 
@@ -34,20 +34,24 @@ rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of
 
 
 
-# ANALYSIS 1 -----------------------------------
+# ANALYSIS 1: CONTROL DATA -----------------------------------
 
-#formula:
-# growth rate OR litter size ~ treatment*tree cones*density + mother age + mother age^2 + birth date + sex + mast
+
+
+
+
+
+# ANALYSIS 2: FOOD ADD DATA -----------------------------------------------
 
 f_continuous <- bf(
-  growthrate ~ treatment_food*density_std 
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast 
+  growthrate ~ treatment_food*density_std + cones_tree_prev
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 f_ordinal <- bf(
-  littersize ~ treatment_food*density_std 
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast
+  littersize ~ treatment_food*density_std + cones_tree_prev
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
@@ -61,31 +65,25 @@ biv_food_model <- brm(
   warmup = 50 #if model is having a hard time to converge this will help, having some is good.
   
 )
-#total iterations = iterations - warmup
-
 
 summary(biv_food_model)
 
 
 
 
-# ANALYSIS 2 --------------------------------------------------------------
+# ANALYSIS 3: CONE CACHE DATA --------------------------------------------------------------
 
 #Data from KL/SU to assess impact of hoarded cones on co-variance.
 
-#formula:
-#growth rate OR litter size ~ cones cached*tree cones*density + mother age + mother age^2 + sex + mast
-
-#look at colinearity between cache and cones of prev years
 c_continuous <- bf(
-  growthrate ~ cache_std*density_std 
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast 
+  growthrate ~ cache_std*density_std + cones_tree_prev
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 c_ordinal <- bf(
-  littersize ~ cache_std*density_std 
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast 
+  littersize ~ cache_std*density_std + cones_tree_prev
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
