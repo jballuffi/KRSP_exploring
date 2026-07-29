@@ -3,6 +3,7 @@
 library(brms)
 library(bayesplot)
 library(ggplot2)
+library(ggeffects)
 library(data.table)
 
 #rescor = residual correlation parameter
@@ -48,11 +49,11 @@ conditional_effects(food_mod)
 
 # Control Model -----------------------------------------------------------
 
-#look at all the variabes in the food model
-control_vars <- variables(control_mod)
-
-#grab any names that have growth rate
-grep("growthrate", control_vars, value = TRUE) 
+# #look at all the variabes in the food model
+# control_vars <- variables(control_mod)
+# 
+# #grab any names that have growth rate
+# grep("growthrate", control_vars, value = TRUE) 
 
 
 #POSTERIOR PREDICTIONS
@@ -98,14 +99,31 @@ mcmc_areas(data.frame(covariance = cov_draws_control), pars = "covariance", prob
   labs(title = "Posterior Distribution of Response Covariance", x = "Covariance (GR, LS)")
 
 
+#PLOT PREDICTIONS
+
+#create predictions for both responses
+control_pred <- as.data.table(ggpredict(control_mod, terms = c("density_std"))) #soluble biomass (sb)
+
+#rename response variables
+control_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
+control_pred[response.level == "littersize", response.level := "Litter size"]
+
+#plot
+ggplot(control_pred)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2)+
+  geom_line(aes(x = x, y = predicted), linewidth = 1)+
+  facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
+  labs(x = "Density (stnd)", y = "Predicted value")+
+  theme_minimal()
+
 
 
 
 # Food Model -------------------------------------
 
-#look at all the variabes in the food model
-food_vars <- variables(food_mod)
-grep("growthrate", food_vars, value = TRUE) 
+# #look at all the variabes in the food model
+# food_vars <- variables(food_mod)
+# grep("growthrate", food_vars, value = TRUE) 
 
 #POSTERIOR PREDICTIONS
 # 1. Generate posterior predictions for both variables across your data
@@ -148,6 +166,28 @@ cov_draws_food <- rho_food * sig_gr_food * sig_ls_food
 # 4. plot using Using bayesplot
 mcmc_areas(data.frame(covariance = cov_draws_food), pars = "covariance", prob = 0.95) +
   labs(title = "Posterior Distribution of Response Covariance", x = "Covariance (GR, LS)")
+
+
+
+#FINAL PREDICTIONS
+
+#create predictions for both responses
+food_pred <- as.data.table(ggpredict(food_mod, terms = c("density_std", "treatment_food"))) #soluble biomass (sb)
+
+#rename response variables
+food_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
+food_pred[response.level == "littersize", response.level := "Litter size"]
+
+#plot
+ggplot(food_pred)+
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
+  geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+  facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
+  labs(x = "Density (stnd)", y = "Predicted value", color = "Food treatment", fill = "Food treatment")+
+  theme_minimal()
+
+
+
 
 
 
