@@ -146,8 +146,30 @@ dat2[, littersize := as.numeric(littersize)]
 
 
 
+# subset data for different analyses --------------------------------------
+
+#make a control only dataset
+controls <- dat2[grid == "SU" | grid == "KL"]
+
+#make food treatment data set, All food add except the weird two years in KL
+food <- dat2[food == 1 & !grid == "KL"]  #just food add
+
+#make cache data set
+cacheyears <- dat2[!is.na(cache_prev), unique(year)]  #get years with cache size data
+cache <- dat2[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long term control grids
+
+#make rattle experiment dataset
+rattleyears <- dat2[food == 19, unique(year)] #get years with rattles
+rattle <- dat2[year %in% rattleyears & !grid == "AG"] #take all data from year of rattle playbacks but 
+
+
+
 # save --------------------------------------------------------------------
 
 #save final data
-saveRDS(dat2, "Output/Data/final_data_litters.rds")
+saveRDS(dat2, "Output/Data/full_cleaned_litters.rds")
+saveRDS(controls, "Output/Data/control_cleaned_litters.rds")
+saveRDS(food, "Output/Data/food_cleaned_litters.rds")
+saveRDS(cache, "Output/Data/cache_cleaned_litters.rds")
+
 
