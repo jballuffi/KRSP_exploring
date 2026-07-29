@@ -228,10 +228,10 @@ rattle <- dat2[year %in% rattleyears & !grid == "AG"] #take all data from year o
 # save --------------------------------------------------------------------
 
 #save final data
-saveRDS(dat2, "Output/Data/full_cleaned_litters.rds")
-saveRDS(controls, "Output/Data/control_cleaned_litters.rds")
-saveRDS(food, "Output/Data/food_cleaned_litters.rds")
-saveRDS(cache, "Output/Data/cache_cleaned_litters.rds")
+saveRDS(dat2, "Output/Data/full_cleaned_juvs.rds")
+saveRDS(controls, "Output/Data/control_cleaned_juvs.rds")
+saveRDS(food, "Output/Data/food_cleaned_juvs.rds")
+saveRDS(cache, "Output/Data/cache_cleaned_juvs.rds")
 
 #save and send to ben
 write.csv(sum1, "Output/Data/N_summary_treatments.csv")
