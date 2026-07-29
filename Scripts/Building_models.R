@@ -12,26 +12,11 @@ library(dplyr)
 
 
 #read in finalized data
-dat <- readRDS("Output/Data/final_data_juvs.rds")
+dat <- readRDS("Output/Data/full_cleaned_juvs.rds")
+controls <- readRDS("Output/Data/control_cleaned_juvs.rds")
+food <- readRDS("Output/Data/food_cleaned_juvs.rds")
+cache <- readRDS("Output/Data/cache_cleaned_juvs.rds")
 
-
-
-
-# subset data for different analyses --------------------------------------
-
-#make a control only dataset
-controls <- dat[grid == "SU" | grid == "KL"]
-
-#make food treatment data set, All food add except the weird two years in KL
-food <- dat[food == 1 & !grid == "KL"]  #just food add
-
-#make cache data set
-cacheyears <- dat[!is.na(cache_prev), unique(year)]  #get years with cache size data
-cache <- dat[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long term control grids
-
-#make rattle experiment dataset
-rattleyears <- dat[food == 19, unique(year)] #get years with rattles
-rattle <- dat[year %in% rattleyears & !grid == "AG"] #take all data from year of rattle playbacks but 
 
 
 ######### NOTES
