@@ -5,6 +5,8 @@ library(bayesplot)
 library(ggplot2)
 library(data.table)
 
+#rescor = residual correlation parameter
+
 
 
 # re-prep data ------------------------------------------------------------
@@ -28,6 +30,7 @@ food <- dat[food == 0 | food == 1]  #just food add and control grids
 #read in models
 control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
+cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
 
 #look at summary of models
 summary(control_mod)
@@ -43,25 +46,81 @@ conditional_effects(food_mod)
 
 
 
-# Plot posteriors against one another -------------------------------------
+# Control Model -----------------------------------------------------------
 
 #look at all the variabes in the food model
-all_vars <- variables(food_mod)
-grep("growthrate", all_vars, value = TRUE) 
+control_vars <- variables(control_mod)
 
+#grab any names that have growth rate
+grep("growthrate", control_vars, value = TRUE) 
+
+
+#POSTERIOR PREDICTIONS
 # 1. Generate posterior predictions for both variables across your data
-pred_growth <- posterior_predict(food_mod, resp = "growthrate")
-pred_litter <- posterior_predict(food_mod, resp = "littersize")
+pred_growth_control <- posterior_predict(control_mod, resp = "growthrate")
+pred_litter_control <- posterior_predict(control_mod, resp = "littersize")
 
 # 2. Average the predictions across all rows to get a single vector per MCMC draw
 # This isolates the overall joint behavior of your variables
-df_joint <- data.frame(
-  Growth_Rate_Pred = rowMeans(pred_growth),
-  Litter_Size_Pred = rowMeans(pred_litter)
+df_joint_control <- data.frame(
+  Growth_Rate_Pred = rowMeans(pred_growth_control),
+  Litter_Size_Pred = rowMeans(pred_litter_control)
 )
 
 # 3. Plot the joint distribution with a 95% Credible Ellipse
-ggplot(df_joint, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
+ggplot(df_joint_control, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
+  geom_point(alpha = 0.1, color = "darkblue") +
+  stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
+  stat_ellipse(level = 0.50, color = "red", size = 1.2) +
+  theme_minimal() +
+  labs(
+    title = "Implied Covariance Response via Posterior Predictions: Control Model",
+    x = "Predicted Growth Rate",
+    y = "Predicted Litter Size"
+  )
+
+#POSTERIOR DISTRIBUTION OF RESPONSE COVARIANCE
+# 1. extract draws from the model
+draws_contol <- as_draws_df(control_mod)
+
+# 2. get residual SDs
+# brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
+sig_gr_control <- draws_contol$sigma_growthrate
+sig_ls_control <- draws_contol$sigma_littersize
+rho_control  <- draws_contol$rescor__growthrate__littersize
+
+# 3. convert the correlation and standard deviations into the covariance metric for each posterior draw:
+cov_draws_control <- rho_control * sig_gr_control * sig_ls_control
+#cov_draws_df <- as.data.frame(cov_draws_control)
+
+# 4. plot using Using bayesplot
+mcmc_areas(data.frame(covariance = cov_draws_control), pars = "covariance", prob = 0.95) +
+  labs(title = "Posterior Distribution of Response Covariance", x = "Covariance (GR, LS)")
+
+
+
+
+
+# Food Model -------------------------------------
+
+#look at all the variabes in the food model
+food_vars <- variables(food_mod)
+grep("growthrate", food_vars, value = TRUE) 
+
+#POSTERIOR PREDICTIONS
+# 1. Generate posterior predictions for both variables across your data
+pred_growth_food <- posterior_predict(food_mod, resp = "growthrate")
+pred_litter_food <- posterior_predict(food_mod, resp = "littersize")
+
+# 2. Average the predictions across all rows to get a single vector per MCMC draw
+# This isolates the overall joint behavior of your variables
+df_joint_food <- data.frame(
+  Growth_Rate_Pred = rowMeans(pred_growth_food),
+  Litter_Size_Pred = rowMeans(pred_litter_food)
+)
+
+# 3. Plot the joint distribution with a 95% Credible Ellipse
+ggplot(df_joint_food, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
   geom_point(alpha = 0.1, color = "darkblue") +
   stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
   stat_ellipse(level = 0.50, color = "red", size = 1.2) +
@@ -72,52 +131,37 @@ ggplot(df_joint, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
     y = "Predicted Litter Size"
   )
 
+#POSTERIOR DISTRIBUTION OF RESPONSE COVARIANCE
+# 1. extract draws from the model
+draws_food <- as_draws_df(food_mod)
 
-
-# plotting the covariance -------------------------------------------
-
-# get the residual correlation parameter (rescor).
-
-# extract draws from the model
-draws <- as_draws_df(food_mod)
-
-# For a bivariate model with responses
+# 2. get residual SDs
 # brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
-sig1 <- draws$sigma_growthrate
-sig2 <- draws$sigma_littersize
-rho  <- draws$rescor__growthrate__littersize
+sig_gr_food <- draws_food$sigma_growthrate
+sig_ls_food <- draws_food$sigma_littersize
+rho_food  <- draws_food$rescor__growthrate__littersize
 
-# Convert the correlation and standard deviations into the covariance metric for each posterior draw:
-cov_draws <- rho * sig1 * sig2
+# 3. Convert the correlation and standard deviations into the covariance metric for each posterior draw:
+cov_draws_food <- rho_food * sig_gr_food * sig_ls_food
+#cov_draws_df <- as.data.frame(cov_draws)
 
-#make a data frame version
-cov_draws_df <- as.data.frame(cov_draws)
-
-# plot using Using bayesplot
-mcmc_areas(data.frame(covariance = cov_draws), pars = "covariance", prob = 0.95) +
-  labs(title = "Posterior Distribution of Response Covariance", x = "Covariance (y1, y2)")
+# 4. plot using Using bayesplot
+mcmc_areas(data.frame(covariance = cov_draws_food), pars = "covariance", prob = 0.95) +
+  labs(title = "Posterior Distribution of Response Covariance", x = "Covariance (GR, LS)")
 
 
 
 # plotting covariance in response to density ------------------------------
 
-
-# Option A: Quick built-in plot
-conditional_effects(food_mod, effects = "growthrate:littersize", dpar = "rescor")
-
-#havent tried this yet. It is from gemini 
-
-library(brms)
 library(tidybayes)
 library(dplyr)
-library(ggplot2)
 
 # 1. Create a grid of values for your predictor (e.g., x_var)
-nd <- data.frame(density = seq(min(food$density), max(food$density), length.out = 120),
-                 treatment = unique(food$treatment_food))
+nd <- data.frame(density = seq(min(controls$density), max(controls$density), length.out = 120),
+                 treatment = unique(controls$treatment_food))
 
 # 2. Extract expected value draws for both responses
-epreds <- food_mod %>%
+epreds <- control_mod %>%
   add_epred_draws(newdata = nd) 
 
 # 3. Compute covariance across posterior draws for each level of x_var
