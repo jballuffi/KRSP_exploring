@@ -13,7 +13,6 @@ food <- readRDS("Output/Data/food_cleaned_litters.rds")
 
 
 
-
 # get annual trends -------------------------------------------------------
 
 #first create year sequence, repeated three times
@@ -55,48 +54,47 @@ setorder(annualdensity, year)
 #plot avg annual growth rate over time and by food add
 (density_year_treatment <- ggplot(annualtrends)+
     geom_line(aes(x = year, y = density, color = treatment), linewidth = 1)+
-    labs(x = "Year", y = "Growth rate (g/day)")+
+    labs(x = "Year", y = "Growth rate (g/day)", color = "Treatment")+
     theme_bw()+
     theme(legend.position = "inside",
-    legend.position.inside = c(0.85, 0.75))
+    legend.position.inside = c(0.87, 0.75))
   )
 
 densityplot <- ggarrange(density_year, density_treatment, density_year_treatment, ncol = 1, nrow = 3, align = "h")
 
 
 
-
-
 #growth rate in response to treatments
 (gr_treatment <- ggplot(dat)+
    geom_boxplot(aes(x = treatment, y = growthrate, fill = bucket), alpha = 0.6)+
-   labs(x = "Grid Treatment", y = "Growth rate (g/day)")+
+   labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket")+
    theme_bw())
 
-#growth rate in response to treatments
+#litter size in response to treatments
 (ls_treatment <- ggplot(dat)+
-    geom_density(aes(x = littersize, fill = treatment, color = bucket), alpha = 0.6)+
-    labs(x = "Grid Treatment", y = "Growth rate (g/day)")+
+    geom_violin(aes(x = treatment, y = littersize, fill = bucket), alpha = 0.6)+
+    labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket")+
     theme_bw())
 
-
-
-
-
+responseplot <- ggarrange(gr_treatment, ls_treatment, ncol = 1, nrow = 2)
 
 
 
 # figures for stand alone -------------------------------------------------
 
+#get the relationship between litter size and growth rate from control data set
+gr_ls_mod <- lm(growthrate ~ littersize, controls)
+int <- coef(gr_ls_mod)[1]
+slope <- coef(gr_ls_mod)[2]
 
 #growth rate in response to litter size
 (ls <- ggplot(controls)+
-   geom_point(aes(x = littersize, y = growthrate))+
-   geom_smooth(aes(x = littersize, y = growthrate), method = "lm")+
+   geom_point(aes(x = littersize, y = growthrate), alpha = 0.5)+
+   geom_abline(aes(intercept = int, slope = slope), linewidth = 1)+
    labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Controls")+
    theme_bw())
 
-#growth rate in response to birthdate
+#growth rate in response to birth date
 (birthmonth <- ggplot(controls)+
     geom_point(aes(x = bjulian, y = growthrate))+
     geom_smooth(aes(x = bjulian, y = growthrate), method = "lm")+
@@ -104,15 +102,11 @@ densityplot <- ggarrange(density_year, density_treatment, density_year_treatment
     theme_bw())
 
 
+
 # save --------------------------------------------------------------------
 
 #save figs
-ggsave("Output/Figures/local_densities_total_year.jpeg", density_yr, width = 6, height = 4, unit = "in")
-ggsave("Output/Figures/local_densities_total_treatment.jpeg", density_treatment, width = 6, height = 4, unit = "in")
-
-ggsave("Output/Figures/GR_birthmonth.jpeg", birthmonth, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/density_summary.jpeg", densityplot, width = 5, height = 10, unit = "in")
+ggsave("Output/Figures/response_summary.jpeg", responseplot, width = 5, height = 8, unit = "in")
 ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 6, height = 4, unit = "in")
-
-ggsave("Output/Figures/GR_treatment.jpeg", treatment, width = 6, height = 4, unit = "in")
-ggsave("Output/Figures/GR_annual.jpeg", annualplot, width = 6, height = 4, unit = "in")
 
