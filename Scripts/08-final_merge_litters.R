@@ -106,6 +106,9 @@ dat2 <- dat2[!(grid == "AG" & year == 2019)]
 #exclude LL prior to 2006 and from 2012
 dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 
+#remove weird years with food add on KL
+dat2 <- dat2[!(grid == "KL" & food == 1)]
+
 
 
 # standardize continuous variables ----------------------------------------
