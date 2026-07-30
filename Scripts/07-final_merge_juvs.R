@@ -215,7 +215,7 @@ missingdata <-
 controls <- dat2[grid == "SU" | grid == "KL"]
 
 #make food treatment data set, All food add except the weird two years in KL
-food <- dat2[food == 1 & !grid == "KL"]  #just food add
+food <- dat2[food == 1]  #just food add
 
 #make cache data set
 cacheyears <- dat2[!is.na(cache_prev), unique(year)]  #get years with cache size data
