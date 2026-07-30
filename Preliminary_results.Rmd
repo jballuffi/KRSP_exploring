@@ -5,176 +5,83 @@ date: "2026-06-02"
 output: word_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r sourcing, include=FALSE}
+```{r sourcing, include = FALSE}
 #source the R folder to load any packages and functions
 lapply(dir('R', '*.R', full.names = TRUE), source)
 
 #read in finalized data
-dat <- readRDS("Output/Data/final_data_litters.rds")
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
+controls <- readRDS("Output/Data/control_cleaned_litters.rds")
+food <- readRDS("Output/Data/food_cleaned_litters.rds")
 
 #get density quantiles
 dens25Q <- dat[, round(quantile(density_std)[2], 2)]
 dens75Q <- dat[, round(quantile(density_std)[4], 2)]
 
 #categorize density based on quantiles
-dat[density_std < dens25Q, density_cat := "low"]
-dat[density_std > dens25Q & density_std < dens75Q, density_cat := "medium"]
-dat[density_std > dens75Q, density_cat := "high"]
+controls[density_std < dens25Q, density_cat := "low"]
+controls[density_std > dens25Q & density_std < dens75Q, density_cat := "medium"]
+controls[density_std > dens75Q, density_cat := "high"]
+
+#categorize density based on quantiles
+food[density_std < dens25Q, density_cat := "low"]
+food[density_std > dens25Q & density_std < dens75Q, density_cat := "medium"]
+food[density_std > dens75Q, density_cat := "high"]
 
 #make factor with levels
-dat[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
-
-#make control only data set
-control <- dat[grid == "SU" | grid == "KL"]
-
-#make food treatment data set, All food add except the weird two years in KL
-food <- dat[food == 1 & !grid == "KL"]  #just food add
-
-#make cache data set
-cacheyears <- dat[!is.na(cache_prev), unique(year)]  #get years with cache size data
-cache <- dat[(grid == "SU" | grid == "KL") & year %in% cacheyears]  #only long term control grids
-
-
+controls[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
+food[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 
 ```
+
 
 
 ## Preliminary Analysis
 
-Below is the basic relationship between growth rate, litter size, and density.
-
 ```{r fig1, include = TRUE}
 
-#this model is Growth Rate ~ Litter Size x Local Density Category
-bmod <- lm(growthrate ~ littersize*density_cat, control)
+#Control data
+#Growth Rate ~ Litter Size x Local Density Category
+bmod <- lm(growthrate ~ littersize*density_cat, controls)
 anova(bmod)
-
 bmod_pred <- as.data.table(ggpredict(bmod, terms = c("littersize", "density_cat"))) #soluble biomass (sb)
 
-
-#plot regressions on top of raw data
 ggplot() +
-  #geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.3, data = control) +
+  #geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.3, data = controls) +
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2, data = bmod_pred) +
-  geom_line(aes(x = x, y = predicted, color = group), data = bmod_pred)+
-  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density", fill = "Density") +
+  geom_line(aes(x = x, y = predicted, color = group), linewidth = 1, data = bmod_pred)+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Add Grids Only", color = "Density", fill = "Density") +
   theme_bw()
 
 ```
 
+The above is the basic relationship between litter size and growth rate. Density doesn't change much.
 
-Next, same thing but using the food data set. Add in food treatment as factor.
 
 
-```{r food mod, include = FALSE}
+```{r fig2, include = TRUE}
 
-#this model is Growth Rate ~ Litter Size x Density Category x Food Treatment
+#Food data
+#Growth Rate ~ Litter Size x Density Category x Food Treatment
 fmod <- lm(growthrate ~ littersize*density_cat*treatment_food, food)
 anova(fmod)
 
 #get effects table
 food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat", "treatment_food")))
 
-#plot regressions on top of raw data
+#plot regressions
 ggplot(food_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment")+
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Add Grids Only", color = "Density", fill = "Density")+
   facet_wrap(~facet)+
   theme_bw()
 
 ```
 
-
-
-```{r fig2, include = TRUE}
-
-fmod <- lm(growthrate ~ littersize*density_cat*treatment_food, food)
-anova(fmod)
-
-ggplot(food, aes(x = littersize, y = growthrate, group = interaction(density_cat, treatment_food))) +
-  geom_point(alpha = 0.3, aes(color = density_cat)) +
-  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
-  facet_wrap(~treatment_food, labeller = label_both) +
-  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
-  theme_minimal()
-
-```
-
-```{r fig2 but standardized, include = TRUE}
-
-fmod_std <- lm(growthrate_std ~ littersize_std*density_cat*treatment_food, food)
-anova(fmod_std)
-
-ggplot(food, aes(x = littersize_std, y = growthrate_std, group = interaction(density_cat, treatment_food))) +
-  geom_point(alpha = 0.3, aes(color = density_cat)) +
-  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
-  facet_wrap(~treatment_food, labeller = label_both) +
-  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
-  theme_minimal()
-
-```
-
-Lastly, same thing but for the rattle data set. Incorporate rattle treatment.
-
-
-```{r rattle mod, include = FALSE}
-
-# make model for growth ~ litter size * density category * rattle treatment
-rmod <- lm(growthrate ~ littersize*density_cat*treatment, rattle)
-anova(rmod)
-
-#get effects table for model
-rat_effs <- as.data.table(ggpredict(rmod, terms = c("littersize", "density_cat", "treatment")))
-
-#plot regressions over raw data
-# ggplot(rat_effs)+
-#   geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.2, data = rattle)+
-#   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-#   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-#   scale_color_discrete(name = "Density")+
-#   scale_fill_discrete(name = "Density")+
-#   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Grid Treatment + Bucket")+
-#   facet_wrap(~facet)+
-#   theme_bw()
-  
-```
-
-
-
-```{r fig 3, include = TRUE}
-
-rmod <- lm(growthrate ~ littersize*density_cat*treatment, rattle)
-anova(rmod)
-
-ggplot(rattle, aes(x = littersize, y = growthrate, group = interaction(density_cat, treatment))) +
-  geom_point(alpha = 0.3, aes(color = density_cat)) +
-  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
-  facet_wrap(~treatment, labeller = label_both) +
-  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
-  theme_minimal()
-
-
-```
-
-
-
-```{r fig 3 but standardized, include = TRUE}
-
-rmod_std <- lm(growthrate_std ~ littersize_std*density_cat*treatment, rattle)
-anova(rmod_std)
-
-ggplot(rattle, aes(x = littersize_std, y = growthrate_std, group = interaction(density_cat, treatment))) +
-  geom_point(alpha = 0.3, aes(color = density_cat)) +
-  geom_smooth(method = "lm", aes(color = density_cat), se = FALSE) +
-  facet_wrap(~treatment, labeller = label_both) +
-  labs(x = "Litter size", y = "Growth rate (g/day)", color = "Density") +
-  theme_minimal()
-
-
-```
+the above is the same relationship but parsed by food treatment on food add grids. Only data from food add grids is shown.
 
