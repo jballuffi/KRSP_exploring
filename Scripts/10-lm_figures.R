@@ -38,12 +38,12 @@ anova(bmod)
 bmod_pred <- as.data.table(ggpredict(bmod, terms = c("littersize", "density_cat"))) #soluble biomass (sb)
 
 #plot regressions on top of raw data
-ggplot() +
-  #geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.3, data = controls) +
+(control_fig <- ggplot() +
+  geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.3, data = controls) +
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2, data = bmod_pred) +
   geom_line(aes(x = x, y = predicted, color = group), linewidth = 1, data = bmod_pred)+
   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Add Grids Only", color = "Density", fill = "Density") +
-  theme_bw()
+  theme_bw())
 
 
 
@@ -57,11 +57,20 @@ anova(fmod)
 food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat", "treatment_food")))
 
 #plot regressions on top of raw data
-ggplot(food_effs)+
+(food_fig <- ggplot(food_effs)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
   geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Add Grids Only", color = "Density", fill = "Density")+
   facet_wrap(~facet)+
-  theme_bw()
+  theme_bw())
+
+
+
+# merge figures and save --------------------------------------------------
+
+
+fig <- ggarrange(control_fig, food_fig, ncol = 1, nrow = 2)
+
+ggsave("Output/Figures/lm_results.jpeg", width = 5, height = 6, unit = "in")
 
 
