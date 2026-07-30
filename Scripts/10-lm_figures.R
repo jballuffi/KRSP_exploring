@@ -71,6 +71,6 @@ food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat"
 
 fig <- ggarrange(control_fig, food_fig, ncol = 1, nrow = 2)
 
-ggsave("Output/Figures/lm_results.jpeg", width = 5, height = 6, unit = "in")
+ggsave("Output/Figures/lm_results.jpeg", width = 7, height = 9, unit = "in")
 
 
