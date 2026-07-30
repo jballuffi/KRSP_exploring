@@ -73,7 +73,7 @@ densityplot <- ggarrange(density_year, density_treatment, density_year_treatment
 #litter size in response to treatments
 (ls_treatment <- ggplot(dat)+
     geom_violin(aes(x = treatment, y = littersize, fill = bucket), alpha = 0.6)+
-    labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket")+
+    labs(x = "Grid Treatment", y = "Litter size", fill = "Bucket")+
     theme_bw())
 
 responseplot <- ggarrange(gr_treatment, ls_treatment, ncol = 1, nrow = 2)
