@@ -12,17 +12,12 @@ library(data.table)
 
 # re-prep data ------------------------------------------------------------
 
+
 #read in finalized data
-dat <- readRDS("Output/Data/final_data_litters.rds")
-
-#make litter size numeric instead of integer
-dat[, littersize := as.numeric(littersize)]
-
-#make a control only dataset
-controls <- dat[grid == "SU" | grid == "KL"]
-
-#make food treatment data set
-food <- dat[food == 0 | food == 1]  #just food add and control grids
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
+controls <- readRDS("Output/Data/control_cleaned_litters.rds")
+food <- readRDS("Output/Data/food_cleaned_litters.rds")
+cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 
 
 
@@ -73,7 +68,7 @@ ggplot(df_joint_control, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
   geom_point(alpha = 0.1, color = "darkblue") +
   stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
   stat_ellipse(level = 0.50, color = "red", size = 1.2) +
-  theme_minimal() +
+  theme_bw() +
   labs(
     title = "Implied Covariance Response via Posterior Predictions: Control Model",
     x = "Predicted Growth Rate",
@@ -114,7 +109,7 @@ ggplot(control_pred)+
   geom_line(aes(x = x, y = predicted), linewidth = 1)+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
   labs(x = "Density (stnd)", y = "Predicted value")+
-  theme_minimal()
+  theme_bw()
 
 
 
@@ -184,7 +179,7 @@ ggplot(food_pred)+
   geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
   labs(x = "Density (stnd)", y = "Predicted value", color = "Food treatment", fill = "Food treatment")+
-  theme_minimal()
+  theme_bw()
 
 
 
