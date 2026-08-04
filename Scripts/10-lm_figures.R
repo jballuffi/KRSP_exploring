@@ -42,7 +42,7 @@ bmod_pred <- as.data.table(ggpredict(bmod, terms = c("littersize", "density_cat"
   geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.3, data = controls) +
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2, data = bmod_pred) +
   geom_line(aes(x = x, y = predicted, color = group), linewidth = 1, data = bmod_pred)+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food Add Grids Only", color = "Density", fill = "Density") +
+  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Control Grids Only", color = "Density", fill = "Density") +
   theme_bw())
 
 
