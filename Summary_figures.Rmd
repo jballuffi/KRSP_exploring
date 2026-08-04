@@ -10,24 +10,19 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r sourcing, include=FALSE}
-source("Scripts/08-density_plots.R")
-source("Scripts/09-growthrate_plots.R")
+source("Scripts/09-summary_figures.R")
 ```
 
-## Density Summary Plots
+## Figures:
 
-![Example of how local density is estimated. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area ((pi\*radius\^2)/10000.](Output/Figures/local_density_visual.jpeg)
+![Fig 1. Example of how local density is estimated. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area ((pi\*radius\^2)/10000.](Output/Figures/local_density_visual.jpeg)
 
-![Local densities in May by treatment, summarizing census records from `r min(densities$year)` to `r max(densities$year)`.](Output/Figures/local_densities_total_grid.jpeg){width="655"}
+![Top: Mean local density in control grids across all years of the study. Middle: Local density in response to grid-level treatment. Bottom: Mean local density over time, colored by grid-level treatment.](Output/Figures/density_summary.jpeg)
 
-![Average local density in May across all control grids from `r min(densities$year)` to `r max(densities$year)`.](Output/Figures/local_densities_total_year.jpeg)
+![Top: litter growth rate (g/day) in response to mother-level treatment, either control, food add with a bucket, food add without a bucket, or rattle playback. Bottom: litter size in response to the same mother-level treatment.](Output/Figures/response_summary.jpeg)
 
-## Growth Rate Summary Plots
+![The relationship between litter growth rate (g/day) and litter size, using control grid data only (n = `r controls[, .N]`).](Output/Figures/GR_littersize.jpeg)
 
-![Growth rate (g/day) of first litter juveniles in response to categories of litter size. Data includes all years and all treatment grids (n = `r growth[, .N]`).](Output/Figures/GR_littersize.jpeg)
+![The relationship between litter growth rate (g/day) and birth date (Julian day), using control grid data only (n = `r controls[, .N]`).](Output/Figures/GR_birthmonth.jpeg)
 
-![Growth rate (g/day) of first litter juveniles in response to birth month. Data includes all years and all treatments (n = `r growth[, .N]`).](Output/Figures/GR_birthmonth.jpeg)
-
-![Growth rate (g/day) of first litter juveniles in response to one of four grid treatments, control (n = `r growth[treatment == "Control", .N]`), food add (n = `r growth[treatment == "Food add", .N]`), or rattle playback (n = `r growth[treatment == "Rattle", .N]`).](Output/Figures/GR_treatment.jpeg)
-
-![Average annual growth rates (g/day) of first litter juveniles, grouped by grid treatment which here included control (red; n = `r growth[treatment == "Control", .N]`), food add (green; n = `r growth[treatment == "Food add", .N]`), or rattle playback (blue; n = `r growth[treatment == "Rattle", .N]`).](Output/Figures/GR_annual.jpeg)
+![Top: litter growth rate (g/day) in response to litter size for control grids only (n = `r controls[, .N]` , colored by local density level. Bottom: litter growth rate (g/day) in response to litter size on food add grids only (n = `r food[, .N]` ), parsed by food add treatment of the mother (with a bucket or without a bucket), and colored by local density level.](Output/Figures/lm_results.jpeg)
