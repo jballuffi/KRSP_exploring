@@ -31,14 +31,17 @@ cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
 #look at summary of models
 summary(control_mod)
 summary(food_mod)
+summary(cache_mod)
 
 #fuzzy caterpillars of models
 mcmc_plot(control_mod, type = "trace")
 mcmc_plot(food_mod, type = "trace")
+mcmc_plot(cache_mod, type = "trace")
 
 #results plots
 conditional_effects(control_mod)
 conditional_effects(food_mod)
+conditional_effects(cache_mod)
 
 
 
@@ -75,6 +78,7 @@ ggplot(df_joint_control, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
     y = "Predicted Litter Size"
   )
 
+
 #POSTERIOR DISTRIBUTION OF RESPONSE COVARIANCE
 # 1. extract draws from the model
 draws_contol <- as_draws_df(control_mod)
@@ -94,8 +98,8 @@ mcmc_areas(data.frame(covariance = cov_draws_control), pars = "covariance", prob
   labs(title = "Posterior Distribution of Response Covariance", x = "Covariance (GR, LS)")
 
 
-#PLOT PREDICTIONS
 
+#PLOT PREDICTIONS SEPARATE
 #create predictions for both responses
 control_pred <- as.data.table(ggpredict(control_mod, terms = c("density_std"))) #soluble biomass (sb)
 
@@ -110,6 +114,100 @@ ggplot(control_pred)+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
   labs(x = "Density (stnd)", y = "Predicted value")+
   theme_bw()
+
+
+#PLOT COVARIANCE PREDICTIONS
+#First create new data based on density range and mean values
+newdat <- data.frame(
+  density_std = seq(min(dat$density_std), max(dat$density_std), length.out = 100),
+  cones_tree_prev = mean(dat$cones_tree_prev, na.rm = TRUE),
+  mother_age_std = mean(dat$mother_age_std, na.rm = TRUE),
+  bjulian_std = mean(dat$bjulian_std, na.rm = TRUE),
+  mast = "no",
+  sexratio = mean(dat$sexratio),
+  gridyear = "KL-1999",
+  mother_byear = 1997
+)
+
+#used control model to predict based on the new data
+pred <- posterior_epred(control_mod, newdata = newdat)
+
+#Take different predictions
+pred_growth <- pred[,,1]     # growthrate predictions
+pred_litter <- pred[,,2]     # littersize predictions
+
+library(purrr)
+library(dplyr)
+
+cov_by_x <- map_dfr(seq_len(ncol(pred_growth)), function(i) {
+  
+  g <- pred_growth[, i]   # growthrate draws at X[i]
+  l <- pred_litter[, i]   # littersize draws at X[i]
+  
+  tibble(
+    density_std = newdat$density_std[i],
+    cov = cov(g, l),
+    cor = cor(g, l)
+  )
+})
+
+#plot covariance
+ggplot(cov_by_x, aes(density_std, cov)) +
+  geom_line(size = 1.1) +
+  labs(
+    x = "Density (standardized)",
+    y = "Posterior covariance\n(growthrate × littersize)"
+  ) +
+  theme_minimal(base_size = 14)
+
+#plot correlation
+ggplot(cov_by_x, aes(density_std, cor)) +
+  geom_line(size = 1.1) +
+  labs(
+    x = "Density (standardized)",
+    y = "Posterior correlation\n(growthrate × littersize)"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+cov_by_x_full <- map_dfr(seq_len(ncol(pred_growth)), function(i) {
+  
+  g <- pred_growth[, i]
+  l <- pred_litter[, i]
+  
+  tibble(
+    density_std = newdat$density_std[i],
+    cov = g * l   # product of draws approximates covariance structure
+  )
+})
+
+cov_summary <- cov_by_x_full %>%
+  group_by(density_std) %>%
+  summarise(
+    median = median(cov),
+    lower = quantile(cov, 0.1),
+    upper = quantile(cov, 0.9)
+  )
+
+ggplot(cov_summary, aes(density_std, median)) +
+  geom_line(size = 1.1) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
+  labs(
+    x = "Density (standardized)",
+    y = "Posterior covariance (80% CI)"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
