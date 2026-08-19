@@ -145,6 +145,7 @@ pred <- posterior_epred(control_mod, newdata = newdat)
 pred_growth <- pred[,,1]     # growthrate predictions
 pred_litter <- pred[,,2]     # littersize predictions
 
+
 cov_by_x <- map_dfr(seq_len(ncol(pred_growth)), function(i) {
   
   g <- pred_growth[, i]   # growthrate draws at X[i]
