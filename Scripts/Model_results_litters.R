@@ -6,13 +6,15 @@ library(ggplot2)
 library(ggeffects)
 library(data.table)
 library(ggpubr)
+library(purrr)
+library(dplyr)
+
 
 #rescor = residual correlation parameter
 
 
 
 # re-prep data ------------------------------------------------------------
-
 
 #read in finalized data
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
@@ -102,6 +104,7 @@ cov_draws_control <- rho_control * sig_gr_control * sig_ls_control
 )
 
 
+
 #PLOT PREDICTIONS SEPARATE
 #create predictions for both responses
 control_pred <- as.data.table(ggpredict(control_mod, terms = c("density_std"))) #soluble biomass (sb)
@@ -111,12 +114,15 @@ control_pred[response.level == "growthrate", response.level := "Growth rate (g/d
 control_pred[response.level == "littersize", response.level := "Litter size"]
 
 #plot
-ggplot(control_pred)+
+(Pred_control <- 
+  ggplot(control_pred)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2)+
   geom_line(aes(x = x, y = predicted), linewidth = 1)+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-  labs(x = "Density (stnd)", y = "Predicted value")+
+  labs(x = "Density (stnd)", y = "Predicted value", title = "Control Model")+
   theme_bw()
+)
+
 
 
 #PLOT COVARIANCE PREDICTIONS
@@ -138,9 +144,6 @@ pred <- posterior_epred(control_mod, newdata = newdat)
 #Take different predictions
 pred_growth <- pred[,,1]     # growthrate predictions
 pred_litter <- pred[,,2]     # littersize predictions
-
-library(purrr)
-library(dplyr)
 
 cov_by_x <- map_dfr(seq_len(ncol(pred_growth)), function(i) {
   
@@ -272,12 +275,15 @@ food_pred[response.level == "growthrate", response.level := "Growth rate (g/day)
 food_pred[response.level == "littersize", response.level := "Litter size"]
 
 #plot
-ggplot(food_pred)+
+(Pred_food <- 
+  ggplot(food_pred)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
   geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-  labs(x = "Density (stnd)", y = "Predicted value", color = "Food treatment", fill = "Food treatment")+
-  theme_bw()
+  labs(x = "Density (stnd)", y = "Predicted value", title = "Food Model", color = "Food treatment", fill = "Food treatment")+
+  theme_bw()+
+  theme(legend.position = "top")
+  )
 
 
 
@@ -336,6 +342,29 @@ cov_draws_cache <- rho_cache * sig_gr_cache * sig_ls_cache
 
 
 
+#FINAL PREDICTIONS
+#create predictions for both responses
+cache_pred <- as.data.table(ggpredict(cache_mod, terms = c("density_std", "cache_std"))) #soluble biomass (sb)
+
+#rename response variables
+cache_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
+cache_pred[response.level == "littersize", response.level := "Litter size"]
+
+#plot
+(Pred_cache <- 
+    ggplot(cache_pred)+
+    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
+    geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+    facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
+    labs(x = "Density (stnd)", y = "Predicted value", title = "Cache Model", color = "Cache level", fill = "Cache level")+
+    theme_bw()+
+    theme(legend.position = "top")
+)
+
+
+
+
+
 
 # Compile Figures ---------------------------------------------------------
 
@@ -345,5 +374,11 @@ PostPred
 PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_cache, nrow = 3, ncol = 1, align = "hv")
 PostDist
 
+Predictions <- ggarrange(Pred_control, Pred_food, Pred_cache, nrow = 1, ncol = 3, align = "h")
+Predictions
 
 
+
+ggsave("Output/Figures/Posterior_predictions.jpeg", PostPred, width = 4, height = 8, unit = "in")
+ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 4, height = 8, unit = "in")
+ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 10, height = 8, unit = "in")
