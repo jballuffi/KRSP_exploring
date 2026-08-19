@@ -38,8 +38,8 @@ biv_control_model <- brm(
   data = controls,
   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
   cores = 2, # Parallel processing, dependent on computer you are using
-  iter = 200, #how many times are you going to sample, bella says 1000
-  warmup = 50 #if model is having a hard time to converge this will help, having some is good.
+  iter = 1500, #how many times are you going to sample, bella says 1000
+  warmup = 500 #if model is having a hard time to converge this will help, having some is good.
   
 )
 
@@ -67,8 +67,8 @@ biv_food_model <- brm(
   data = food,
   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
   cores = 2, # Parallel processing, dependent on computer you are using
-  iter = 200, #how many times are you going to sample, bella says 1000
-  warmup = 50 #if model is having a hard time to converge this will help, having some is good.
+  iter = 1500, #how many times are you going to sample, bella says 1000
+  warmup = 500 #if model is having a hard time to converge this will help, having some is good.
   
 )
 
@@ -98,8 +98,8 @@ biv_cache_model <- brm(
   data = cache,
   chains = 2,
   cores = 2, # Parallel processing
-  iter = 200,
-  warmup = 50
+  iter = 1500,
+  warmup = 500
 )
 
 summary(biv_cache_model)
