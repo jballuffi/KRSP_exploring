@@ -15,6 +15,7 @@ library(dplyr)
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
+food2 <- readRDS("Output/Data/food2_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 
 
@@ -61,7 +62,6 @@ f_ordinal <- bf(
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
-#this takes 16 min on work computer and that makes sense because it's very complicated (bella)
 biv_food_model <- brm(
   formula = f_continuous + f_ordinal,
   data = food,
@@ -105,7 +105,36 @@ biv_cache_model <- brm(
 summary(biv_cache_model)
 
 
+
+# Analysis 4: Food analysis 2 ---------------------------------------------
+
+f2_continuous <- bf(
+  growthrate ~ treatment_food*density_std + cones_tree_prev
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + (1|gridyear) + (1|mother_byear),
+  family = gaussian())
+
+f2_ordinal <- bf(
+  littersize ~ treatment_food*density_std + cones_tree_prev
+  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + (1|gridyear) + (1|mother_byear),
+  family = gaussian())
+
+biv_food2_model <- brm(
+  formula = f2_continuous + f2_ordinal,
+  data = food,
+  chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
+  cores = 2, # Parallel processing, dependent on computer you are using
+  iter = 1500, #how many times are you going to sample, bella says 1000
+  warmup = 500 #if model is having a hard time to converge this will help, having some is good.
+  
+)
+
+summary(biv_food2_model)
+
+
+
 saveRDS(biv_control_model, "Output/Models/control_model_litters.rds")
 saveRDS(biv_food_model, "Output/Models/foodtreatment_model_litters.rds")
 saveRDS(biv_cache_model, "Output/Models/cache_model_litters.rds")
-
+saveRDS(biv_food2_model, "Output/Models/food2_model_litters.rds")
