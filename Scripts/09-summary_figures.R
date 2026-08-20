@@ -41,20 +41,20 @@ setorder(annualdensity, year)
 (density_year <- 
     ggplot(annualdensity)+
     geom_line(aes(x = year, y = density, group = 1), linewidth = 1, color = "grey30")+
-    labs(y = "Mean density (squirrels/ha)", x = "Year")+
+    labs(y = "Local density (squirrels/ha)", x = "Year")+
     theme_bw())
 
 #plot density by treatment
 (density_treatment <-
     ggplot(dat)+
     geom_boxplot(aes(x = treatment, y = density))+
-    labs(y = "Local density (squrirels/ha)", x = "Treatment")+
+    labs(y = "Local density (squirrels/ha)", x = "Treatment")+
     theme_bw())
 
 #plot avg annual growth rate over time and by food add
 (density_year_treatment <- ggplot(annualtrends)+
     geom_line(aes(x = year, y = density, color = treatment), linewidth = 1)+
-    labs(x = "Year", y = "Growth rate (g/day)", color = "Treatment")+
+    labs(x = "Year", y = "Local density (squirrels/ha)", color = "Treatment")+
     theme_bw()+
     theme(legend.position = "inside",
     legend.position.inside = c(0.87, 0.75))
