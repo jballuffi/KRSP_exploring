@@ -12,7 +12,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Model Summaries
 
 
-```{r read in models, include = FALSE}
+```{r sourcing, include = FALSE}
+
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
 #read in models
 control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
@@ -20,12 +24,23 @@ cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
 
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+# Control Model
 
-```{r summaries, echo = FALSE, include = TRUE}
+```{r control, include = TRUE}
 summary(control_mod)
 ```
 
+# Food Model
 
+```{r food, include = TRUE}
+summary(food_mod)
+```
+
+
+
+# Cache Model
+
+```{r cache, include = TRUE}
+summary(cache_mod)
+```
