@@ -196,6 +196,9 @@ cov_summary <- cov_by_x_full %>%
     upper = quantile(cov, 0.9)
   )
 
+
+#this is the starting point and then the elipses explain whats going on.
+
 ggplot(cov_summary, aes(density_std, median)) +
   geom_line(size = 1.1) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
