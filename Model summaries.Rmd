@@ -1,0 +1,31 @@
+---
+title: "Model Summaries"
+author: "Juliana Balluffi-Fry"
+date: "2026-08-20"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Model Summaries
+
+
+```{r read in models, include = FALSE}
+#read in models
+control_mod <- readRDS("Output/Models/control_model_litters.rds")
+food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
+cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r summaries, echo = FALSE, include = TRUE}
+summary(control_mod)
+```
+
+
