@@ -76,28 +76,34 @@ AGcensus[, Date := dmy(Date)]
 BTcensus[, Date := mdy(Date)]
 RRcensus[, Date := mdy(Date)]
 
+#take only the back of AG
+AGcensus <- AGcensus[LocY > 24]
+
 #rbind all the 2010 data sets
 extra <- rbindlist(list(AGcensus, BTcensus, RRcensus), fill = TRUE)
 
 #take only grids from the list of grids
 extra <- extra[Grid %in% grids]
 
+#take only cols that are in  census
 census2010 <- extra[, .(grid = factor(Grid),
                         reflo = MidReflo, 
                         squirrel_id = paste0(Taglft, "-", Tagrt),
                         date = Date,
-                        locx = as.numeric(LocX),
-                        locy = as.numeric(LocY),
-                        date = Date,
+                        locX = as.numeric(LocX),
+                        locY = as.numeric(LocY),
                         Sex,
                         year = year(Date),
                         month = month(Date))]
 
 
 
+fullcensus <- rbind(census2010, census)
+
+
 # Save --------------------------------------------------------------------
 
 #save as RDS
-saveRDS(census, "Output/Data/census_full.rds")
+saveRDS(fullcensus, "Output/Data/census_full.rds")
 
 
