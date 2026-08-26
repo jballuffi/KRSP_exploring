@@ -21,6 +21,7 @@ dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
+food2 <- readRDS("Output/Data/food2_cleaned_litters.rds")
 
 
 
@@ -30,20 +31,24 @@ cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
 cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
+food2_mod <- readRDS("Output/Models/food2_model_litters.rds")
 
 #look at summary of models
 summary(control_mod)
 summary(food_mod)
+summary(food2_mod)
 summary(cache_mod)
 
 #fuzzy caterpillars of models
 mcmc_plot(control_mod, type = "trace")
 mcmc_plot(food_mod, type = "trace")
+mcmc_plot(food2_mod, type = "trace")
 mcmc_plot(cache_mod, type = "trace")
 
 #results plots
 conditional_effects(control_mod)
 conditional_effects(food_mod)
+conditional_effects(food2_mod)
 conditional_effects(cache_mod)
 
 
@@ -136,9 +141,38 @@ df_joint_cache <- data.frame(
     )
 )
 
+#FOOD OPTION 2
+# 1. Generate posterior predictions for both variables across your data
+pred_growth_food2 <- posterior_predict(food2_mod, resp = "growthrate")
+pred_litter_food2 <- posterior_predict(food2_mod, resp = "littersize")
+
+# 2. Average the predictions across all rows to get a single vector per MCMC draw
+# This isolates the overall joint behavior of your variables
+df_joint_food2 <- data.frame(
+  Growth_Rate_Pred = rowMeans(pred_growth_food2),
+  Litter_Size_Pred = rowMeans(pred_litter_food2)
+)
+
+# 3. Plot the joint distribution with a 95% Credible Ellipse
+(PostPred_food2 <-
+    ggplot(df_joint_food2, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
+    geom_point(alpha = 0.1, color = "darkblue") +
+    stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
+    stat_ellipse(level = 0.50, color = "red", size = 1.2) +
+    theme_bw() +
+    labs(
+      title = "Food 2 Model",
+      x = "Predicted Growth Rate",
+      y = "Predicted Litter Size"
+    )
+)
+
+
 #merge all
-PostPred <- ggarrange(PostPred_control, PostPred_food, PostPred_cache, nrow = 3, ncol = 1, align = "hv")
+PostPred <- ggarrange(PostPred_control, PostPred_food, PostPred_food2, PostPred_cache, 
+                      nrow = 2, ncol = 2, align = "hv")
 PostPred
+
 
 
 
@@ -205,8 +239,29 @@ cov_draws_cache <- rho_cache * sig_gr_cache * sig_ls_cache
     labs(title = "Cache Model", x = "Covariance (GR, LS)")
 )
 
+
+#FOOD OPTION 2 MODEL
+# 1. extract draws from the model
+draws_food2 <- as_draws_df(food2_mod)
+
+# 2. get residual SDs
+# brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
+sig_gr_food2 <- draws_food2$sigma_growthrate
+sig_ls_food2 <- draws_food2$sigma_littersize
+rho_food2  <- draws_food2$rescor__growthrate__littersize
+
+# 3. Convert the correlation and standard deviations into the covariance metric for each posterior draw:
+cov_draws_food2 <- rho_food2 * sig_gr_food2 * sig_ls_food2
+#cov_draws_df <- as.data.frame(cov_draws)
+
+# 4. plot using Using bayesplot
+(PostDist_food2 <- mcmc_areas(data.frame(covariance = cov_draws_food2), pars = "covariance", prob = 0.95) +
+    labs(title = "Food 2 Model", x = "Covariance (GR, LS)")
+)
+
 #merge 
-PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_cache, nrow = 3, ncol = 1, align = "hv")
+PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_food2, PostDist_cache, 
+                      nrow = 2, ncol = 2, align = "hv")
 PostDist
 
 
@@ -246,8 +301,8 @@ food_pred[response.level == "littersize", response.level := "Litter size"]
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     labs(x = "Density (stnd)", y = "Predicted value", title = "Food Model", color = "Food treatment", fill = "Food treatment")+
-    theme_bw()+
-    theme(legend.position = "top")
+    theme_bw()
+    #theme(legend.position = "top")
 )
 
 #CACHE MODEL
@@ -265,12 +320,32 @@ cache_pred[response.level == "littersize", response.level := "Litter size"]
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     labs(x = "Density (stnd)", y = "Predicted value", title = "Cache Model", color = "Cache level", fill = "Cache level")+
-    theme_bw()+
-    theme(legend.position = "top")
+    theme_bw()
+    #theme(legend.position = "top")
 )
 
+#FOOD2 MODEL
+#create predictions for both responses
+food2_pred <- as.data.table(ggpredict(food2_mod, terms = c("density_std", "treatment_food"))) #soluble biomass (sb)
+
+#rename response variables
+food2_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
+food2_pred[response.level == "littersize", response.level := "Litter size"]
+
+#plot
+(Pred_food2 <- 
+    ggplot(food2_pred)+
+    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
+    geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+    facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
+    labs(x = "Density (stnd)", y = "Predicted value", title = "Food Model", color = "Food treatment", fill = "Food treatment")+
+    theme_bw()
+    #theme(legend.position = "top")
+)
+
+
 #merge all
-Predictions <- ggarrange(Pred_control, Pred_food, Pred_cache, nrow = 1, ncol = 3, align = "h")
+Predictions <- ggarrange(Pred_control, Pred_food, Pred_food2, Pred_cache, nrow = 2, ncol = 2, align = "h")
 Predictions
 
 
@@ -376,6 +451,6 @@ ggplot(cov_summary, aes(density_std, median)) +
 
 # save Figures ---------------------------------------------------------
 
-ggsave("Output/Figures/Posterior_predictions.jpeg", PostPred, width = 4, height = 8, unit = "in")
-ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 4, height = 8, unit = "in")
-ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 10, height = 8, unit = "in")
+ggsave("Output/Figures/Posterior_predictions.jpeg", PostPred, width = 10, height = 8, unit = "in")
+ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 10, height = 8, unit = "in")
+ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 9, height = 12, unit = "in")
