@@ -122,7 +122,7 @@ f2_ordinal <- bf(
 
 biv_food2_model <- brm(
   formula = f2_continuous + f2_ordinal,
-  data = food,
+  data = food2,
   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
   cores = 2, # Parallel processing, dependent on computer you are using
   iter = 10000, #how many times are you going to sample, bella says 1000
