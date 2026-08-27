@@ -15,7 +15,7 @@ con <- krsp_connect(
   password = Sys.getenv("krsp_password")
 )
 
-#get litter data
+#get cone data
 cones <- as.data.table(tbl(con, "cones") %>% collect())
 
 #take cols of interest
@@ -39,29 +39,42 @@ cones_avg[, cones_tree_prev := lag(cones_tree), grid]
 
 
 
-# Use Jo for BT when BT is missing (2018 + 2023) --------------------------
+# Use Jo for BT when BT is missing (2010 + 2018 + 2023) --------------------------
 
 #what years do we have prev cone count for BT
 cones_avg[!is.na(cones_tree_prev) & grid == "BT", unique(year)]
+#we are missing prev cone counts for BT in 2010, 2018, and 2023
 
-#get prev cone count from Jo for those years
-JO2018 <- cones_avg[grid == "JO" & year == 2018, cones_tree_prev]
-JO2023 <- cones_avg[grid == "JO" & year == 2023, cones_tree_prev]
+#get prev cone count from Jo for missing BT years
+BTgaps <- cones_avg[grid == "JO" & (year == 2010 | year == 2018 | year == 2023)]
+BTgaps[, grid := "BT"]
 
-#use those values to make a short data frame for missing BT years
-BTgap <- data.table(
-  grid = "BT",
-  year = c(2018, 2023),
-  cones_tree_prev = c(JO2018, JO2023)
-)
+#remove BT in 2018
+cones_avg <- cones_avg[!(grid == "BT" & year == 2018)]
 
 #merge back with data
-cones_avg <- rbind(cones_avg, BTgap, fill = TRUE)
+cones_avg <- rbind(cones_avg, BTgaps, fill = TRUE)
 
-setorder(cones_avg, grid, year)
+
+
+# Use SU to fill in for RR (2010) -----------------------------------------
+
+#take 
+RR2010 <- cones_avg[grid == "SU" & year == 2010]
+RR2010[, grid := "RR"]
+
+cones_avg <- rbind(cones_avg, RR2010, fill = TRUE)
+
+
+
+# Plot --------------------------------------------------------------------
+
+conesfinal <- cones_avg[grid %in% grids]
+
+setorder(conesfinal, grid, year)
 
 #plot
-ggplot(cones_avg)+
+ggplot(conesfinal)+
   geom_path(aes(x = year, y = cones_tree_prev, color = grid, group = grid))
 
 
