@@ -43,7 +43,7 @@ data <- data[!grid == "??"]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "AG" & year == 2010]
+test <- data[grid == "BT" & year == 2010]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
