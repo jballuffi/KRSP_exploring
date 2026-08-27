@@ -24,6 +24,9 @@ juv <- as.data.table(tbl(con, "juvenile") %>% collect())
 #get list of moms with buckets (food add)
 buckets <- fread("Input/fed_squirrels.csv")
 
+#read in extra life history data from 2010 playback experiments
+extra <- fread("Input/2010_offgrid_lifehistory.csv")
+
 
 
 # prep bucket info --------------------------------------------------------
@@ -67,10 +70,40 @@ juv2[, littersize := .N, litter_id]
 
 
 
-# merge juvenile and litter data and clean based on weight data -----------------------------------------------------
+# merge juvenile and litter data -----------------------------------------------------
 
 #merge juv and litter data by the litter ID
-dat <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
+database <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
+
+
+
+# prep extra data from 2010 rattle experiments and rbind ----------------------------
+
+#take only AG (back of AG), RR and BT grids
+dat2010 <- extra[grid == "AG" | grid == "RR" | grid == "BT"]
+
+#make mother id using ear tags
+dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
+
+#make litter id
+dat2010[, litter_id := paste0(mother_id, "-", year, "-", ln)]
+
+#make litter size
+dat2010[, littersize := .N, litter_id]
+
+#set dates
+dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
+
+#take only cols of interest
+#using DNA2 as squirrel id
+dat10 <- dat2010[, .(grid, year, mother_id, litter_id, food, ln, bdate, bjulian, date1, date2, squirrel_id = DNA2, weight1, weight2, sex)]
+
+#rbind with data from database
+dat <- rbind(database, dat10, fill = TRUE)
+
+
+
+# Clean based on weight data  ---------------------------------------------
 
 #calculate the number of days in between weight measures
 dat[, days := as.integer(date2 - date1)]
@@ -143,7 +176,7 @@ sexratios[is.na(M), M := 0][is.na(`F`), `F` := 0]
 #calculate the ratio of males in litter
 sexratios[, sexratio := M/(`F` + M)]
 
-#merge back in with litter dataset
+#merge back in with litter data set
 datlitter <- merge(datlitter, sexratios[, .(litter_id, sexratio)], by = "litter_id", all.x = TRUE)
 
 
