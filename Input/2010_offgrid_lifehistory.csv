@@ -1,4 +1,4 @@
-grid,year,food,MTaglft,MTagrt,LocX,LocY,ln,squirrel_id,bdate,date1,bjulian,NX1,NY1,NType1,date2,NX2,NY2,NType2,Taglft,Tagrt,Colour,sex,Notch,Wt1,DNA1,Wt2,DNA2,DateSeen,Wt70,Comments
+grid,year,food,MTaglft,MTagrt,LocX,LocY,ln,squirrel_id,bdate,date1,bjulian,NX1,NY1,NType1,date2,NX2,NY2,NType2,Taglft,Tagrt,Colour,sex,Notch,weight1,DNA1,weight2,DNA2,DateSeen,Wt70,Comments
 AG,2010,19,F4098,F4099,K.5,25.5,1,F4098F4099,5/28/2010,5/30/2010,148,L.0,25.5,grass,6/22/2010,N.9,23.2,grass,,,,F,R,12.5,AO100527,32.40000153,AO100601,,0,Sacrificed for playback study
 AG,2010,19,D9118,D9119,K.0,30.5,1,D9118D9119,5/20/2010,5/22/2010,140,N.1,28.4,grass,6/15/2010,N.7,17.8,grass,,,,F,R,13.89999962,AG100381,47.70000076,AO100473,,0,Suspected part date May 17th; Sacrificed at N2
 AG,2010,19,F5952,F5953,D.0,26,1,F5952F5953,5/8/2010,5/15/2010,128,B.8,23.6,undergr,6/2/2010,E.8,29.7,wbr,,,,F,L,24.39999962,AG100341,55.59999847,AO100542,,0,Sacrificed for playback study.
