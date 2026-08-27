@@ -40,7 +40,7 @@ historic_ids<- tbl(con, "historic_squirrel_ids") %>%
 flastall <- tbl(con, "flastall2") %>% 
   #flastall2 contains juveniles that were not tagged
   # exclusions
-  filter(gr %in% c("SU", "KL", "AG", "LL", "JO", "BT")) %>% 
+  filter(gr %in% c("SU", "KL", "AG", "LL", "JO", "BT", "RR")) %>% 
   select(squirrel_id, sex, byear) %>% 
   collect()
 
