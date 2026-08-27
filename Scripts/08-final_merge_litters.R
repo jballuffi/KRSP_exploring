@@ -29,6 +29,10 @@ m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 #merge with tree cone counts
 m2 <- merge(m1, trees[, .(grid, year, cones_tree_prev)], by = c("year", "grid"), all.x = TRUE)
 
+#correct mother_id
+cones[, mother_id := as.character(mother_id)]
+moms[, mother_id := as.character(mother_id)]
+
 #merge with cone cache data
 m3 <- merge(m2, cones, by = c("mother_id", "year", "grid"), all.x = TRUE)
 
@@ -50,11 +54,12 @@ dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
 
 
 
-
 # Correct issues with treatment -----------------------------------------------------
 
 #correct for food add based on grid and year
-dat[grid == "AG" & (year >= 2005 & year <= 2017), food := 1]
+dat[grid == "AG" & (year >= 2005 & year < 2010), food := 1] #AG between 2005 and 2010
+dat[grid == "AG" & year == 2010 & food == 0, food := 1] #AG in 2010 has some rattles in the back
+dat[grid == "AG" & (year > 2010 & year <= 2017), food := 1] #AG between 2010
 dat[grid == "JO" & (year > 2006 & year <= 2014), food := 1]
 dat[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
@@ -151,7 +156,7 @@ dat2[, littersize := as.numeric(littersize)]
 
 # subset data for different analyses --------------------------------------
 
-#make a control only dataset
+#make a control only data set
 controls <- dat2[grid == "SU" | grid == "KL"]
 
 #make food treatment data set, All food add except the weird two years in KL
@@ -167,7 +172,7 @@ cache <- dat2[(grid == "SU" | grid == "KL") & year %in% cache_years]  #only long
 
 #make rattle experiment dataset
 rattleyears <- dat2[food == 19, unique(year)] #get years with rattles
-rattle <- dat2[year %in% rattleyears & !grid == "AG"] #take all data from year of rattle playbacks but 
+rattle <- dat2[year %in% rattleyears & (food == 19 | food == 18 | food == 0)] #take all data from year of rattle playbacks
 
 
 
