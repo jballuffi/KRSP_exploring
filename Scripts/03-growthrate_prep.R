@@ -86,7 +86,7 @@ database[grid == "SX" | grid == "SUX", grid := "SU"]
 dat2010 <- extra[grid == "AG" | grid == "BT" | grid == "RR"]
 
 #rename RR to LL
-dat[grid == "RR", grid := "LL"]
+dat2010[grid == "RR", grid := "LL"]
 
 #make mother id using ear tags
 dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
