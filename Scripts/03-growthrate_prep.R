@@ -79,8 +79,11 @@ database <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
 
 # prep extra data from 2010 rattle experiments and rbind ----------------------------
 
-#take only AG (back of AG), RR and BT grids
-dat2010 <- extra[grid == "AG" | grid == "RR" | grid == "BT"]
+#take only AG, BT, and RR because KL and SX should be in database
+dat2010 <- extra[grid == "AG" | grid == "BT" | grid == "RR"]
+
+#call Rolo Lloyd for simplicity from here on out
+dat2010[grid == "RR", grid := "LL"]
 
 #make mother id using ear tags
 dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
