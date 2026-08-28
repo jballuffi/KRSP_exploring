@@ -85,6 +85,9 @@ extra <- rbindlist(list(AGcensus, BTcensus, RRcensus), fill = TRUE)
 #take only grids from the list of grids
 extra <- extra[Grid %in% grids]
 
+#take only defended middens
+extra <- extra[MidDef == 4]
+
 #take only cols that are in  census
 census2010 <- extra[, .(grid = factor(Grid),
                         reflo = MidReflo, 
