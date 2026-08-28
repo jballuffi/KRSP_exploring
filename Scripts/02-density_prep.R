@@ -46,7 +46,7 @@ data <- data[!grid == "??"]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "SU" & year == 2010]
+test <- data[grid == "SU" & year == 2011]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -117,7 +117,7 @@ densities[grid == "RR", grid == "LL"]
 
 
 
-# save  --------------------------------------------------------
+# save  -------------------------------------------------------- 
 
 #save prepped data
 saveRDS(densities, "Output/Data/local_densities.rds")
