@@ -45,7 +45,7 @@ setnames(buckets, "squirrel_id_spring", "mother_id")
 # prep litter data and merge with bucket list -------------------------------------------------------
 
 #take only cols of interest
-lit2 <- lit[, .(mother_id = squirrel_id, litter_id = id,
+lit2 <- lit[, .(mother_id = squirrel_id, mother_eartag = mTagLft, litter_id = id,
                  year = yr, grid, br, food, ln,
                bdate = fieldBDate, date1, date2 = tagDt)]
 
@@ -80,13 +80,31 @@ database[grid == "SX" | grid == "SUX", grid := "SU"]
 
 
 
+
+# figure out and remove overlaps of squirrels -----------------------------
+
+
+#get list of eartags in extra data
+
+#get all the squirrel IDs from that list of eartags in 2010 only
+overlap_ids <- database[mother_eartag %in% extra_tags & year == 2010, .(mother_eartag, mother_id)]
+
+#remove those mothers/litter from database 
+database <- database[!(mother_eartag %in% extra_tags & year == 2010)]
+
+
+
 # prep extra data from 2010 rattle experiments and rbind ----------------------------
 
 #take only AG, BT, and RR because KL and SX should be in database
-dat2010 <- extra[grid == "AG" | grid == "BT" | grid == "RR"]
+#dat2010 <- extra[grid == "AG" | grid == "BT" | grid == "RR"]
 
-#rename RR to LL
-dat2010[grid == "RR", grid := "LL"]
+#rename RR to LL and SX to SU
+extra[grid == "RR", grid := "LL"][grid == "SX", grid := "SU"]
+
+#give correct squirrel IDs from database where possible
+dat2010 <- merge(extra, overlap_ids, by.x = "MTaglft", by.y = "mother_eartag", all = TRUE)
+
 
 #make mother id using ear tags
 dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
