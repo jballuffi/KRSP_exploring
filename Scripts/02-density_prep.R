@@ -109,6 +109,9 @@ data[, density := neighbors/((pi*radius^2)/10000)]
 #subset to cols of interest
 densities <- data[, .(mother_id = squirrel_id, sex = Sex, grid, year, reflo, neighbors, density)]
 
+#change RR to LL for later merge. Only one year of RR data
+densities[grid == "RR", grid == "LL"]
+
 
 
 # save  --------------------------------------------------------
