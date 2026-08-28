@@ -57,16 +57,6 @@ cones_avg <- rbind(cones_avg, BTgaps, fill = TRUE)
 
 
 
-# Use SU to fill in for RR (2010) -----------------------------------------
-
-#take 
-RR2010 <- cones_avg[grid == "SU" & year == 2010]
-RR2010[, grid := "RR"]
-
-cones_avg <- rbind(cones_avg, RR2010, fill = TRUE)
-
-
-
 # Plot --------------------------------------------------------------------
 
 conesfinal <- cones_avg[grid %in% grids]
