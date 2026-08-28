@@ -58,13 +58,15 @@ dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
 # Correct issues with treatment -----------------------------------------------------
 
 #correct for food add based on grid and year
-dat[grid == "AG" & (year >= 2005 & year < 2010), food := 1] #AG between 2005 and 2010
-dat[grid == "AG" & year == 2010 & food == 0, food := 1] #AG in 2010 has some rattles in the back
-dat[grid == "AG" & (year > 2010 & year <= 2017), food := 1] #AG between 2010
+dat[grid == "AG" & (year >= 2005 & year < 2010), food := 1] #AG between 2005 and 2010 was food add
+dat[grid == "AG" & year == 2010 & !food == 19, food := 1] #AG in 2010 has some rattles in the back, otherwise food add
+dat[grid == "AG" & (year > 2010 & year <= 2017), food := 1] #AG between 2010 and 2017 was food add
 
-dat[grid == "JO" & (year > 2006 & year <= 2014), food := 1]
+dat[grid == "JO" & (year > 2006 & year <= 2014), food := 1] #Jo from 2006 to 2014 was food add
 
-dat[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
+dat[grid == "LL" & (year >= 2005 & year < 2010), food := 1] #Lloyd between 2005 and 2010 was food add
+dat[grid == "LL" & year == 2010 & !food == 19, food := 1] #Lloyd in 2010 had some rattles but otherwise was food add
+dat[grid == "LL" & year == 2011, food := 1] #Lloyd in 2011 was just food add
 
 #if food is NA, make foods 0
 dat[is.na(food), food := 0]
@@ -83,6 +85,8 @@ dat[treatment == "Control", treatment_food := "Control"]
 dat[treatment == "Food add" & bucket == 1, treatment_food := "Bucket"]
 dat[treatment == "Food add" & bucket == 0, treatment_food := "No Bucket"]
 unique(dat$treatment_food)
+
+test <- dat[year == 2010]
 
 
 
