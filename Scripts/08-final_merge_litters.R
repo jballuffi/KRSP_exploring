@@ -20,8 +20,9 @@ cones <- readRDS("Output/Data/cone_cache.rds")
 
 # initial merge -------------------------------------------------
 
-#take only moms from density data and remove sex col
-dens <- dens[sex == "F"][, sex := NULL]
+#remove sex col from density and cones
+dens[, sex := NULL]
+cones[, sex := NULL]
 
 #merge data by mother id, year and grid
 m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
@@ -60,7 +61,9 @@ dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
 dat[grid == "AG" & (year >= 2005 & year < 2010), food := 1] #AG between 2005 and 2010
 dat[grid == "AG" & year == 2010 & food == 0, food := 1] #AG in 2010 has some rattles in the back
 dat[grid == "AG" & (year > 2010 & year <= 2017), food := 1] #AG between 2010
+
 dat[grid == "JO" & (year > 2006 & year <= 2014), food := 1]
+
 dat[grid == "LL" & (year >= 2005 & year <= 2011), food := 1]
 
 #if food is NA, make foods 0
