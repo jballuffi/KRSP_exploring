@@ -99,9 +99,11 @@ census2010 <- extra[, .(grid = factor(Grid),
                         year = year(Date),
                         month = month(Date))]
 
-
+#classify any squirrel censused in SX or SUX to just be SU
+census[grid == "SX" | grid == "SUX", grid := "SU"]
 
 fullcensus <- rbind(census2010, census)
+
 
 
 # Save --------------------------------------------------------------------
