@@ -82,9 +82,6 @@ AGcensus <- AGcensus[LocY > 24]
 #rbind all the 2010 data sets
 extra <- rbindlist(list(AGcensus, BTcensus, RRcensus), fill = TRUE)
 
-#take only grids from the list of grids
-extra <- extra[Grid %in% grids]
-
 #take only defended middens
 extra <- extra[MidDef == 4]
 
@@ -102,6 +99,7 @@ census2010 <- extra[, .(grid = factor(Grid),
 #classify any squirrel censused in SX or SUX to just be SU
 census[grid == "SX" | grid == "SUX", grid := "SU"]
 
+#rbind 2010 data with census
 fullcensus <- rbind(census2010, census)
 
 
