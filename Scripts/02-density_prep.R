@@ -11,8 +11,11 @@ census <- readRDS("Output/Data/census_full.rds")
 # Clean data -----------------------------------------------------------------
 
 #subset census data
-#remove any unknown squirrels and only take from month of may
-data <- census[!is.na(squirrel_id) & month == 5] #correct to remove NAs
+#only take from month of may
+data <- census[month == 5 | month == 4] #correct to remove NAs
+
+#remove any unknown squirrels
+#data <- data[!is.na(squirrel_id)]
 
 #remove date col
 data[, date := NULL]
@@ -43,7 +46,7 @@ data <- data[!grid == "??"]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "AG" & year == 2010]
+test <- data[grid == "SU" & year == 2010]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
