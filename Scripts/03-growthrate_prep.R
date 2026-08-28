@@ -102,7 +102,7 @@ dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
 
 #take only cols of interest
 #using DNA2 as squirrel id
-dat10 <- dat2010[, .(grid, year, mother_id, litter_id, food, ln, bdate, bjulian, date1, date2, squirrel_id = DNA2, weight1, weight2, sex)]
+dat10 <- dat2010[, .(grid, year, mother_id, litter_id, food, ln, bdate, bjulian, date1, date2, squirrel_id = DNA2, weight1, weight2, sex, littersize)]
 
 #rbind with data from database
 dat <- rbind(database, dat10, fill = TRUE)
