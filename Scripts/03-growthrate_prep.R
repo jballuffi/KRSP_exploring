@@ -75,6 +75,9 @@ juv2[, littersize := .N, litter_id]
 #merge juv and litter data by the litter ID
 database <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
 
+#rename RR and SX/SUX grids
+database[grid == "SX" | grid == "SUX", grid := "SU"]
+
 
 
 # prep extra data from 2010 rattle experiments and rbind ----------------------------
@@ -82,8 +85,8 @@ database <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
 #take only AG, BT, and RR because KL and SX should be in database
 dat2010 <- extra[grid == "AG" | grid == "BT" | grid == "RR"]
 
-#call Rolo Lloyd for simplicity from here on out
-dat2010[grid == "RR", grid := "LL"]
+#rename RR to LL
+dat[grid == "RR", grid := "LL"]
 
 #make mother id using ear tags
 dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
