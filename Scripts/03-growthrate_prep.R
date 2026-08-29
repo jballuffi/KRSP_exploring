@@ -80,34 +80,29 @@ database[grid == "SX" | grid == "SUX", grid := "SU"]
 
 
 
-
-# figure out and remove overlaps of squirrels -----------------------------
-
-
-#get list of eartags in extra data
-
-#get all the squirrel IDs from that list of eartags in 2010 only
-overlap_ids <- database[mother_eartag %in% extra_tags & year == 2010, .(mother_eartag, mother_id)]
-
-#remove those mothers/litter from database 
-database <- database[!(mother_eartag %in% extra_tags & year == 2010)]
-
-
-
 # prep extra data from 2010 rattle experiments and rbind ----------------------------
 
-#take only AG, BT, and RR because KL and SX should be in database
-#dat2010 <- extra[grid == "AG" | grid == "BT" | grid == "RR"]
+#take just rattle data from extras
+extra <- extra[food == 19]
+
+#get list of ear tags in extra data
+extra_tags <- extra[, unique(MTaglft)]
+
+#get all the squirrel IDs from that list of ear tags in 2010 only
+overlap_ids <- database[mother_eartag %in% extra_tags, .(mother_eartag, mother_id)]
+overlap_ids <- overlap_ids[duplicated(mother_eartag) == FALSE]
 
 #rename RR to LL and SX to SU
-extra[grid == "RR", grid := "LL"][grid == "SX", grid := "SU"]
+extra[grid == "RR", grid := "LL"]
 
 #give correct squirrel IDs from database where possible
-dat2010 <- merge(extra, overlap_ids, by.x = "MTaglft", by.y = "mother_eartag", all = TRUE)
+dat2010 <- merge(extra, overlap_ids, by.x = "MTaglft", by.y = "mother_eartag", all.x = TRUE)
 
+#make mother_id a character
+dat2010[, mother_id := as.character(mother_id)]
 
 #make mother id using ear tags
-dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
+dat2010[is.na(mother_id), mother_id := paste0(MTaglft, "-", MTagrt)]
 
 #make litter id
 dat2010[, litter_id := paste0(mother_id, "-", year, "-", ln)]
@@ -121,6 +116,9 @@ dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
 #take only cols of interest
 #using DNA2 as squirrel id
 dat10 <- dat2010[, .(grid, year, mother_id, litter_id, food, ln, bdate, bjulian, date1, date2, squirrel_id = DNA2, weight1, weight2, sex, littersize)]
+
+#remove the moms/litters who are in extra from database 
+database <- database[!(mother_eartag %in% extra_tags & year == 2010)]
 
 #rbind with data from database
 dat <- rbind(database, dat10, fill = TRUE)
