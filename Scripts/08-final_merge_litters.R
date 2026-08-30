@@ -87,7 +87,7 @@ dat[treatment == "Food add" & bucket == 0, treatment_food := "No Bucket"]
 unique(dat$treatment_food)
 
 test <- dat[year == 2010]
-
+LL10 <- dens[year == 2010 & grid == "LL"]
 
 
 # Additional info for Rattle treatment ------------------------------------
