@@ -6,6 +6,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 library(tidyverse)
 
 
+
 # Import Data ---------------------------------------
 
 #connect with database
@@ -35,7 +36,10 @@ census_2 <- tbl(con, "census") %>%
   collect %>%
   mutate(locx = loc_to_numeric(locx))
 
-#import extra data for rattle experiments in 2010
+#import trapping data for any missing midden locations
+trapping <- as.data.table(tbl(con, "trapping") %>% collect())
+
+#import extra data from rattle experiments in 2010 that arent in data base.
 RRcensus <- fread("Input/2010_RR_Midden_Census.csv")
 BTcensus <- fread("Input/2010_BT_Midden_Census.csv")
 AGcensus <- fread("Input/2010_AG_AO_Midden_Census.csv")
@@ -64,14 +68,55 @@ census <- bind_rows(census_1, census_2) %>%
 #make a data.table
 census <- data.table::as.data.table(census)
 
-#remove any lines where there is no X location or is no Y location
-census <- census[!is.na(locX) | !is.na(locY)]
+#reclassify SX or SUX to just be SU
+census[grid == "SX" | grid == "SUX", grid := "SU"]
+
+#clean out unwanted grids and any rows without squirrel ID
+census <- census[grid %in% grids & !is.na(squirrel_id)]
+
+#start a file with all squirrels censused every year and grid
+c1 <- census[, .(squirrel_id = unique(squirrel_id)), by = .(grid, year)]
+
+#take only spring census (April and May)
+censusspring <- census[month == 5 | month == 4]
+
+#prep trapping data
+trap <- trapping[, .(grid = factor(gr),
+                     year = year(ymd(date)),
+                     month = month(ymd(date)),
+                     squirrel_id,
+                     locX = loc_to_numeric(locx),
+                     locY = as.numeric(locy)
+                     )]
+
+#take only April - June for trapping
+trapspring <- trap[month == 4 | month == 5 | month == 6]
+
+#average spring trapping locations for each squirrel each grid-year
+traplocs <- trapspring[, .(trapX = round(mean(locX, na.rm = TRUE), 1), 
+                     trapY = round(mean(locY, na.rm = TRUE), 1)),
+                by = .(squirrel_id, year, grid)]
+
+
+#merge starting list with census data
+#any NA locations are squirrels that were censused that year but not in april or may
+c1 <- merge(c1, censusspring, by = c("squirrel_id", "grid", "year"), all.x = TRUE)
+
+#merge census list with trap locations
+c1 <- merge(c1, traplocs, by = c("squirrel_id", "year", "grid"), all.x = TRUE)
+
+#if there is a missing census location, will in with average trap location
+c1[is.na(locX), locX := trapX][is.na(locY), locY := trapY]
+
+#remove trap cols and date and month
+c1[, trapX := NULL][, trapY := NULL]
+c1[, date := NULL][, month := NULL]
 
 
 
-# prep and merge 2010 data ------------------------------------------------
+# prep and merge 2010 data ---NULL# prep and merge 2010 data ------------------------------------------------
 
-#fix date formats
+#fix date formats because they are all DIFFERENT
 AGcensus[, Date := dmy(Date)]
 BTcensus[, Date := mdy(Date)]
 RRcensus[, Date := mdy(Date)]
@@ -92,18 +137,16 @@ extra <- extra[!squirrel_id == "-"]
 census2010 <- extra[, .(grid = factor(Grid),
                         reflo = MidReflo, 
                         squirrel_id,
-                        date = Date,
+                        year = year(Date),
                         locX = as.numeric(LocX),
                         locY = as.numeric(LocY),
-                        Sex,
-                        year = year(Date),
-                        month = month(Date))]
-
-#classify any squirrel censused in SX or SUX to just be SU
-census[grid == "SX" | grid == "SUX", grid := "SU"]
+                        Sex)]
 
 #rbind 2010 data with census
-fullcensus <- rbind(census2010, census)
+fullcensus <- rbind(census2010, c1)
+
+#lastly, remove anyone who still does not have a location for the spring of that year
+fullcensus <- fullcensus[!is.na(locX) | !is.na(locY)]
 
 
 
