@@ -180,24 +180,24 @@ hist(dat2$growthrate)
 #checking my work. This should be 0 due to prior cleaning of weights
 dat2[growthrate <= 0 | growthrate > 10, .N]
 
-#remove NA growth rates
-dat2 <- dat2[!is.na(growthrate)]
-
 
 
 # finalize data sets --------------------------------------------------------
 
+#remove NA growth rates
+dat3 <- dat2[!is.na(growthrate)]
+
 #take only cols of interest
-dat2 <- dat2[, .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
+dat3 <- dat3[, .(litter_id, year, grid, mother_id, mother_eartag, MTaglft, locx, locy, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
 
 #average growth rate by litter
-datlitter <- dat2[, .(growthrate = mean(growthrate)),
-                  by = .(litter_id, year, grid, mother_id, mother_eartag, MTaglft,
+datlitter <- dat3[, .(growthrate = mean(growthrate)),
+                  by = .(litter_id, year, grid, mother_id, mother_eartag, MTaglft, locx, locy,
                          food, bucket, bdate, bjulian, littersize)]
 
 #FOR SEX RATIOS IN LITTER DATASET:
 #get number of males in every litter
-sexcounts <- dat2[, .N, by = .(litter_id, sex)]
+sexcounts <- dat3[, .N, by = .(litter_id, sex)]
 
 #make the output wide
 sexratios <- dcast(sexcounts, litter_id ~ sex)
@@ -216,10 +216,10 @@ datlitter <- merge(datlitter, sexratios[, .(litter_id, sexratio)], by = "litter_
 # Get basic summaries -----------------------------------------------------
 
 #How many growth rates?
-dat2[, .N]
+dat3[, .N]
 
 #Get sample size by treatment
-dat2[, .N, food]
+dat3[, .N, food]
 
 #missing growth rates?
 datlitter[is.na(growthrate), .N]
