@@ -5,11 +5,11 @@
 # calculates cache size, links the data to the flastall table in the core database, and
 # creates a simple plot of the data.
 
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
 
 library (tidyverse)
-library (krsp)
-library (lubridate)
-library(data.table)
+
 
 # Connection #
 
