@@ -16,6 +16,9 @@ moms <- readRDS("Output/Data/mom_lives.rds")
 trees <- readRDS("Output/Data/tree_cone_counts.rds")
 cones <- readRDS("Output/Data/cone_cache.rds")
 
+#get median densities by grid + year
+meandensities <- dens[, .(griddensity = median(density, na.rm = TRUE)), by = .(grid, year)]
+
 
 
 # initial merge -------------------------------------------------
@@ -28,9 +31,13 @@ cones[, sex := NULL]
 
 #merge non-rattle data by mother id, year and grid
 m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
-m1[is.na(density), .N, year] #check
 
-#first change RR to LL now that density merge is done
+
+m1 <- merge(m1, meandensities, by = c("grid", "year"), all.x = TRUE)
+
+
+
+#first change RR to LL now that density merge is done#first change RR tyearo LL now that density merge is done
 m1[grid == "RR", grid := "LL"]
 
 #merge with tree cone counts
@@ -48,7 +55,7 @@ dat <- merge(m3, moms, by = c("mother_id"), all.x = TRUE)
 
 
 
-# create additional factors or co variates -------------------------
+# create additional factors or co variate -------------------------
 
 #calculate mother age
 dat[, mother_age := year - mother_byear]
