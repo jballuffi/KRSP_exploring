@@ -46,7 +46,7 @@ data <- data[!grid == "??"]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "SU" & year == 2011]
+test <- data[grid == "RR" & year == 2010]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -113,7 +113,7 @@ data[, density := neighbors/((pi*radius^2)/10000)]
 densities <- data[, .(mother_id = squirrel_id, sex = Sex, grid, year, reflo, neighbors, density)]
 
 #change RR to LL for later merge. Only one year of RR data
-densities[grid == "RR", grid == "LL"]
+#densities[grid == "RR", grid == "LL"]
 
 
 
