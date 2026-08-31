@@ -82,13 +82,16 @@ AGcensus <- AGcensus[LocY > 24]
 #rbind all the 2010 data sets
 extra <- rbindlist(list(AGcensus, BTcensus, RRcensus), fill = TRUE)
 
-#take only defended middens
-extra <- extra[MidDef == 4]
+#make squirrel ID from eartage
+extra[, squirrel_id := paste0(Taglft, "-", Tagrt)]
+
+#take only cases where ID is known
+extra <- extra[!squirrel_id == "-"]
 
 #take only cols that are in  census
 census2010 <- extra[, .(grid = factor(Grid),
                         reflo = MidReflo, 
-                        squirrel_id = paste0(Taglft, "-", Tagrt),
+                        squirrel_id,
                         date = Date,
                         locX = as.numeric(LocX),
                         locY = as.numeric(LocY),
