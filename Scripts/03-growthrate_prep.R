@@ -187,7 +187,7 @@ dat2[growthrate <= 0 | growthrate > 10, .N]
 # finalize data sets --------------------------------------------------------
 
 #remove NA growth rates
-dat3 <- dat2[!is.na(growthrate)]
+dat3 <- dat2[!is.na(growthrate) & grid %in% grids]
 
 #take only cols of interest
 dat3 <- dat3[, .(litter_id, year, grid, mother_id, MTaglft, food, bucket, bdate, bjulian, sex, littersize, growthrate)]

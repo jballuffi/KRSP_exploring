@@ -55,16 +55,17 @@ cones_avg <- cones_avg[!(grid == "BT" & year == 2018)]
 #merge back with data
 cones_avg <- rbind(cones_avg, BTgaps, fill = TRUE)
 
+#take only grids of interest
+cones_avg <- cones_avg[grid %in% grids]
+
 
 
 # Plot --------------------------------------------------------------------
 
-conesfinal <- cones_avg[grid %in% grids]
-
-setorder(conesfinal, grid, year)
+setorder(cones_avg, grid, year)
 
 #plot
-ggplot(conesfinal)+
+ggplot(cones_avg)+
   geom_path(aes(x = year, y = cones_tree_prev, color = grid, group = grid))
 
 
