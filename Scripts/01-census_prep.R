@@ -64,8 +64,8 @@ census <- bind_rows(census_1, census_2) %>%
 #make a data.table
 census <- data.table::as.data.table(census)
 
-#remove any lines where there is no location
-census <- census[!is.na(locX) & !is.na(reflo)]
+#remove any lines where there is no X location or is no Y location
+census <- census[!is.na(locX) | !is.na(locY)]
 
 
 
@@ -82,7 +82,7 @@ AGcensus <- AGcensus[LocY > 24]
 #rbind all the 2010 data sets
 extra <- rbindlist(list(AGcensus, BTcensus, RRcensus), fill = TRUE)
 
-#make squirrel ID from eartage
+#make squirrel ID from ear tag
 extra[, squirrel_id := paste0(Taglft, "-", Tagrt)]
 
 #take only cases where ID is known
