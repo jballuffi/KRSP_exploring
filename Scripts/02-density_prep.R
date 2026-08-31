@@ -2,23 +2,12 @@
 #source the R folder to load any packages and functions
 lapply(dir('R', '*.R', full.names = TRUE), source)
 
-
 #read in prepped census data
-census <- readRDS("Output/Data/census_full.rds")
+data <- readRDS("Output/Data/census_full.rds")
 
 
 
-# Clean data -----------------------------------------------------------------
-
-#subset census data
-#only take from month of may
-data <- census[month == 5 | month == 4] #correct to remove NAs
-
-#remove any unknown squirrels
-#data <- data[!is.na(squirrel_id)]
-
-#remove date col
-data[, date := NULL]
+# prep data -----------------------------------------------------------------
 
 #make a squirrel_year col
 data[, squirrel_yr := paste0(squirrel_id, "_", year)]
@@ -33,9 +22,6 @@ data <- data[!duplicated(squirrel_yr_gr)]
 #convert spatial locations into meters
 data[, locX := locX*30][, locY := locY*30]
 
-#remove one data point with ?? grid
-data <- data[!grid == "??"]
-
 
 
 # test on one individual on one grid in one year -----------------------------------------------------------
@@ -46,7 +32,7 @@ data <- data[!grid == "??"]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "RR" & year == 2010]
+test <- data[grid == "LL" & year == 2010]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -110,8 +96,14 @@ data[neighbors < 0, neighbors := 0]
 data[, density := neighbors/((pi*radius^2)/10000)]
 
 #subset to cols of interest and grids of interest
-densities <- data[grid %in% grids, .(mother_id = squirrel_id, sex = Sex, grid, year, locx = locX, locy = locY, neighbors, density)]
-
+densities <- data[grid %in% grids, 
+                  .(mother_id = squirrel_id,
+                    grid, 
+                    year, 
+                    locx = locX, 
+                    locy = locY, 
+                    neighbors, 
+                    density)]
 
 
 
