@@ -19,7 +19,7 @@ con <- krsp_connect(
 
 #Importing midden census data
 census_1 <- tbl(con, "dbamidden") %>% 
-  select(reflo, squirrel_id, locX, locY, grid, date, Sex) %>%
+  select(reflo, squirrel_id, locX, locY, grid, date, Sex, fate) %>%
   # use collect to execute the sql query before using any R specific functions
   # such as loc_to_numeric
   collect %>%
@@ -78,7 +78,10 @@ census <- census[grid %in% grids & !is.na(squirrel_id)]
 c1 <- census[, .(squirrel_id = unique(squirrel_id)), by = .(grid, year)]
 
 #take only spring census (April and May)
-censusspring <- census[month == 5 | month == 4]
+censusspring <- census[month == 5 | month == 4, 
+                       .(locX = round(mean(locX, na.rm = TRUE), 1), 
+                        locY = round(mean(locY, na.rm = TRUE), 1)),
+                       by = .(squirrel_id, year, grid)]
 
 #prep trapping data
 trap <- trapping[, .(grid = factor(gr),
@@ -108,9 +111,8 @@ c1 <- merge(c1, traplocs, by = c("squirrel_id", "year", "grid"), all.x = TRUE)
 #if there is a missing census location, will in with average trap location
 c1[is.na(locX), locX := trapX][is.na(locY), locY := trapY]
 
-#remove trap cols and date and month
+#remove trap cols
 c1[, trapX := NULL][, trapY := NULL]
-c1[, date := NULL][, month := NULL]
 
 
 
@@ -135,12 +137,10 @@ extra <- extra[!squirrel_id == "-"]
 
 #take only cols that are in  census
 census2010 <- extra[, .(grid = factor(Grid),
-                        reflo = MidReflo, 
                         squirrel_id,
                         year = year(Date),
                         locX = as.numeric(LocX),
-                        locY = as.numeric(LocY),
-                        Sex)]
+                        locY = as.numeric(LocY))]
 
 #rbind 2010 data with census
 fullcensus <- rbind(census2010, c1)
