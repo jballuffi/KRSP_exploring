@@ -46,7 +46,7 @@ setnames(buckets, "squirrel_id_spring", "mother_id")
 
 #take only cols of interest
 lit2 <- lit[, .(mother_id = squirrel_id, 
-                mother_eartag = paste0(mTagLft, "-", mTagRt),
+                #mother_eartag = paste0(mTagLft, "-", mTagRt),
                 MTaglft = mTagLft,
                 litter_id = id,
                 locx, locy,
@@ -93,20 +93,22 @@ extra <- extra[food == 19]
 extra_tags <- extra[, unique(MTaglft)]
 
 #get all the squirrel IDs from that list of ear tags in 2010 only
-overlap_ids <- database[MTaglft %in% extra_tags, .(mother_eartag, mother_id, MTaglft)]
-overlap_ids <- overlap_ids[duplicated(mother_eartag) == FALSE]
+#overlap_ids <- database[MTaglft %in% extra_tags, .(mother_eartag, mother_id, MTaglft)]
+#overlap_ids <- overlap_ids[duplicated(mother_eartag) == FALSE]
 
 #rename RR to LL and SX to SU
 #extra[grid == "RR", grid := "LL"]
 
 #give correct squirrel IDs from database where possible
-dat2010 <- merge(extra, overlap_ids, by = "MTaglft", all.x = TRUE)
+#dat2010 <- merge(extra, overlap_ids, by = "MTaglft", all.x = TRUE)
 
 #make mother_id a character
-dat2010[, mother_id := as.character(mother_id)]
+#dat2010[, mother_id := as.character(mother_id)]
 
 #make mother id using ear tags
-dat2010[is.na(mother_id), mother_id := paste0(MTaglft, "-", MTagrt)]
+#dat2010[is.na(mother_id), mother_id := paste0(MTaglft, "-", MTagrt)]
+
+dat2010 <- extra[, mother_id := paste0(MTaglft, "-", MTagrt)]
 
 #make litter id
 dat2010[, litter_id := paste0(mother_id, "-", year, "-", ln)]
@@ -120,14 +122,14 @@ dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
 #take only cols of interest
 #using DNA2 as squirrel id
 dat10 <- dat2010[, .(grid, year, 
-                     mother_id, mother_eartag, MTaglft,
+                     mother_id, MTaglft,
                      litter_id, 
                      food, ln, bdate, bjulian, date1, date2, 
                      locx = LocX, locy = LocY,
                      squirrel_id = DNA2, weight1, weight2, sex, littersize)]
 
 #remove the moms/litters who are in extra from database 
-database <- database[!(mother_eartag %in% extra_tags & year == 2010)]
+database <- database[!(MTaglft %in% extra_tags & year == 2010)]
 
 #rbind with data from database
 dat <- rbind(database, dat10, fill = TRUE)
@@ -188,11 +190,11 @@ dat2[growthrate <= 0 | growthrate > 10, .N]
 dat3 <- dat2[!is.na(growthrate)]
 
 #take only cols of interest
-dat3 <- dat3[, .(litter_id, year, grid, mother_id, mother_eartag, MTaglft, locx, locy, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
+dat3 <- dat3[, .(litter_id, year, grid, mother_id, MTaglft, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
 
 #average growth rate by litter
 datlitter <- dat3[, .(growthrate = mean(growthrate)),
-                  by = .(litter_id, year, grid, mother_id, mother_eartag, MTaglft, locx, locy,
+                  by = .(litter_id, year, grid, mother_id, MTaglft,
                          food, bucket, bdate, bjulian, littersize)]
 
 #FOR SEX RATIOS IN LITTER DATASET:
