@@ -45,9 +45,13 @@ setnames(buckets, "squirrel_id_spring", "mother_id")
 # prep litter data and merge with bucket list -------------------------------------------------------
 
 #take only cols of interest
-lit2 <- lit[, .(mother_id = squirrel_id, mother_eartag = mTagLft, litter_id = id,
-                 year = yr, grid, br, food, ln,
-               bdate = fieldBDate, date1, date2 = tagDt)]
+lit2 <- lit[, .(mother_id = squirrel_id, 
+                mother_eartag = paste0(mTagLft, "-", mTagRt),
+                MTaglft = mTagLft,
+                litter_id = id,
+                locx, locy,
+                year = yr, grid, br, food, ln,
+                bdate = fieldBDate, date1, date2 = tagDt)]
 
 #create dates
 lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)][, bjulian := yday(bdate)]
@@ -89,14 +93,14 @@ extra <- extra[food == 19]
 extra_tags <- extra[, unique(MTaglft)]
 
 #get all the squirrel IDs from that list of ear tags in 2010 only
-overlap_ids <- database[mother_eartag %in% extra_tags, .(mother_eartag, mother_id)]
+overlap_ids <- database[MTaglft %in% extra_tags, .(mother_eartag, mother_id, MTaglft)]
 overlap_ids <- overlap_ids[duplicated(mother_eartag) == FALSE]
 
 #rename RR to LL and SX to SU
-extra[grid == "RR", grid := "LL"]
+#extra[grid == "RR", grid := "LL"]
 
 #give correct squirrel IDs from database where possible
-dat2010 <- merge(extra, overlap_ids, by.x = "MTaglft", by.y = "mother_eartag", all.x = TRUE)
+dat2010 <- merge(extra, overlap_ids, by = "MTaglft", all.x = TRUE)
 
 #make mother_id a character
 dat2010[, mother_id := as.character(mother_id)]
@@ -115,7 +119,12 @@ dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
 
 #take only cols of interest
 #using DNA2 as squirrel id
-dat10 <- dat2010[, .(grid, year, mother_id, litter_id, food, ln, bdate, bjulian, date1, date2, squirrel_id = DNA2, weight1, weight2, sex, littersize)]
+dat10 <- dat2010[, .(grid, year, 
+                     mother_id, mother_eartag, MTaglft,
+                     litter_id, 
+                     food, ln, bdate, bjulian, date1, date2, 
+                     locx = LocX, locy = LocY,
+                     squirrel_id = DNA2, weight1, weight2, sex, littersize)]
 
 #remove the moms/litters who are in extra from database 
 database <- database[!(mother_eartag %in% extra_tags & year == 2010)]
@@ -183,7 +192,8 @@ dat2 <- dat2[, .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian,
 
 #average growth rate by litter
 datlitter <- dat2[, .(growthrate = mean(growthrate)),
-                  by = .(litter_id, year, grid, mother_id, food, bucket, bdate, bjulian, littersize)]
+                  by = .(litter_id, year, grid, mother_id, mother_eartag, MTaglft,
+                         food, bucket, bdate, bjulian, littersize)]
 
 #FOR SEX RATIOS IN LITTER DATASET:
 #get number of males in every litter
