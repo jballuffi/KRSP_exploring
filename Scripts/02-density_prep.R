@@ -109,11 +109,9 @@ data[neighbors < 0, neighbors := 0]
 #convert to densities (squirrels/ha)
 data[, density := neighbors/((pi*radius^2)/10000)]
 
-#subset to cols of interest
-densities <- data[, .(mother_id = squirrel_id, sex = Sex, grid, year, locx = locX, locy = locY, neighbors, density)]
+#subset to cols of interest and grids of interest
+densities <- data[grid %in% grids, .(mother_id = squirrel_id, sex = Sex, grid, year, locx = locX, locy = locY, neighbors, density)]
 
-#change RR to LL for later merge. Only one year of RR data
-#densities[grid == "RR", grid == "LL"]
 
 
 
