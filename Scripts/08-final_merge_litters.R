@@ -20,12 +20,18 @@ cones <- readRDS("Output/Data/cone_cache.rds")
 
 # initial merge -------------------------------------------------
 
-#remove sex col from density and cones
+#remove sex col from density
 dens[, sex := NULL]
+
+#remove sex col from and cones
 cones[, sex := NULL]
 
-#merge data by mother id, year and grid
+#merge non-rattle data by mother id, year and grid
 m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
+m1[is.na(density), .N, year] #check
+
+#first change RR to LL now that density merge is done
+m1[grid == "RR", grid := "LL"]
 
 #merge with tree cone counts
 m2 <- merge(m1, trees[, .(grid, year, cones_tree_prev)], by = c("year", "grid"), all.x = TRUE)
@@ -86,8 +92,6 @@ dat[treatment == "Food add" & bucket == 1, treatment_food := "Bucket"]
 dat[treatment == "Food add" & bucket == 0, treatment_food := "No Bucket"]
 unique(dat$treatment_food)
 
-test <- dat[year == 2010]
-LL10 <- dens[year == 2010 & grid == "LL"]
 
 
 # Additional info for Rattle treatment ------------------------------------
@@ -191,5 +195,5 @@ saveRDS(controls, "Output/Data/control_cleaned_litters.rds")
 saveRDS(food, "Output/Data/food_cleaned_litters.rds")
 saveRDS(food2, "Output/Data/food2_cleaned_litters.rds")
 saveRDS(cache, "Output/Data/cache_cleaned_litters.rds")
-
-
+saveRDS(rattle, "Output/Data/rattle_cleaned_litters.rds")
+write.csv(rattle, "Output/Data/rattle_cleaned_litters.csv")
