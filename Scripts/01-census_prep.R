@@ -77,7 +77,7 @@ census <- census[grid %in% grids & !is.na(squirrel_id)]
 #start a file with all squirrels censused every year and grid
 c1 <- census[, .(squirrel_id = unique(squirrel_id)), by = .(grid, year)]
 
-#take only spring census (April and May)
+#take only spring census (April and May) and average locations
 censusspring <- census[month == 5 | month == 4, 
                        .(locX = round(mean(locX, na.rm = TRUE), 1), 
                         locY = round(mean(locY, na.rm = TRUE), 1)),
@@ -116,7 +116,7 @@ c1[, trapX := NULL][, trapY := NULL]
 
 
 
-# prep and merge 2010 data ---NULL# prep and merge 2010 data ------------------------------------------------
+# prep 2010 data ------------------------------------------------
 
 #fix date formats because they are all DIFFERENT
 AGcensus[, Date := dmy(Date)]
@@ -136,11 +136,20 @@ extra[, squirrel_id := paste0(Taglft, "-", Tagrt)]
 extra <- extra[!squirrel_id == "-"]
 
 #take only cols that are in  census
-census2010 <- extra[, .(grid = factor(Grid),
+extra <- extra[, .(grid = factor(Grid),
                         squirrel_id,
                         year = year(Date),
                         locX = as.numeric(LocX),
                         locY = as.numeric(LocY))]
+
+#average census locations 
+census2010 <- extra[, .(locX = round(mean(locX, na.rm = TRUE), 1), 
+                        locY = round(mean(locY, na.rm = TRUE), 1)),
+                       by = .(squirrel_id, year, grid)]
+
+
+
+# merge database and 2010 rattle data  ------------------------------------
 
 #rbind 2010 data with census
 fullcensus <- rbind(census2010, c1)
