@@ -1,5 +1,5 @@
-"","treatment_ind","N"
-"1","Control",1239
-"2","Bucket",473
-"3","No Bucket",284
-"4","Rattle",63
+"","treatment_ind","N","Avg_density","Avg_growthrate","Avg_littersize"
+"1","Control",1239,2.12,1.74,3.02
+"2","Bucket",473,2.38,1.85,3.41
+"3","No Bucket",284,2.85,1.68,3.17
+"4","Rattle",63,1.55,1.44,3.33
