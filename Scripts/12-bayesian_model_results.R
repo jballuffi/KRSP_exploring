@@ -14,7 +14,7 @@ library(dplyr)
 
 
 
-# re-prep data ------------------------------------------------------------
+# read in data and models ------------------------------------------------------------
 
 #read in finalized data
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
@@ -23,34 +23,33 @@ food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
-
-
-# Read in model and summarize -----------------------------------------------------------
-
 #read in models
 control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
 cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
 rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
+
+
+# Summarize models -----------------------------------------------------------
+
 #look at summary of models
 summary(control_mod)
 summary(food_mod)
-summary(food2_mod)
 summary(cache_mod)
+summary(rattle_mod)
 
 #fuzzy caterpillars of models
 mcmc_plot(control_mod, type = "trace")
 mcmc_plot(food_mod, type = "trace")
-mcmc_plot(food2_mod, type = "trace")
 mcmc_plot(cache_mod, type = "trace")
+mcmc_plot(rattle_mod, type = "trace")
 
 #results plots
 conditional_effects(control_mod)
 conditional_effects(food_mod)
-conditional_effects(food2_mod)
 conditional_effects(cache_mod)
-
+conditional_effects(rattle_mod)
 
 
 # POSTERIOR PREDICTIONS -----------------------------------------------------------
@@ -143,25 +142,25 @@ df_joint_cache <- data.frame(
 
 #FOOD OPTION 2
 # 1. Generate posterior predictions for both variables across your data
-pred_growth_food2 <- posterior_predict(food2_mod, resp = "growthrate")
-pred_litter_food2 <- posterior_predict(food2_mod, resp = "littersize")
+pred_growth_rattle <- posterior_predict(rattle_mod, resp = "growthrate")
+pred_litter_rattle <- posterior_predict(rattle_mod, resp = "littersize")
 
 # 2. Average the predictions across all rows to get a single vector per MCMC draw
 # This isolates the overall joint behavior of your variables
-df_joint_food2 <- data.frame(
-  Growth_Rate_Pred = rowMeans(pred_growth_food2),
-  Litter_Size_Pred = rowMeans(pred_litter_food2)
+df_joint_rattle <- data.frame(
+  Growth_Rate_Pred = rowMeans(pred_growth_rattle),
+  Litter_Size_Pred = rowMeans(pred_litter_rattle)
 )
 
 # 3. Plot the joint distribution with a 95% Credible Ellipse
-(PostPred_food2 <-
-    ggplot(df_joint_food2, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
+(PostPred_rattle <-
+    ggplot(df_joint_rattle, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
     geom_point(alpha = 0.1, color = "darkblue") +
     stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
     stat_ellipse(level = 0.50, color = "red", size = 1.2) +
     theme_bw() +
     labs(
-      title = "Food 2 Model",
+      title = "Rattle Model",
       x = "Predicted Growth Rate",
       y = "Predicted Litter Size"
     )
@@ -169,7 +168,7 @@ df_joint_food2 <- data.frame(
 
 
 #merge all
-PostPred <- ggarrange(PostPred_control, PostPred_food, PostPred_food2, PostPred_cache, 
+PostPred <- ggarrange(PostPred_control, PostPred_food, PostPred_cache, PostPred_rattle,
                       nrow = 2, ncol = 2, align = "hv")
 PostPred
 
@@ -239,28 +238,27 @@ cov_draws_cache <- rho_cache * sig_gr_cache * sig_ls_cache
     labs(title = "Cache Model", x = "Covariance (GR, LS)")
 )
 
-
-#FOOD OPTION 2 MODEL
+#RATTLE MODEL
 # 1. extract draws from the model
-draws_food2 <- as_draws_df(food2_mod)
+draws_rattle <- as_draws_df(rattle_mod)
 
 # 2. get residual SDs
 # brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
-sig_gr_food2 <- draws_food2$sigma_growthrate
-sig_ls_food2 <- draws_food2$sigma_littersize
-rho_food2  <- draws_food2$rescor__growthrate__littersize
+sig_gr_rattle <- draws_rattle$sigma_growthrate
+sig_ls_rattle <- draws_rattle$sigma_littersize
+rho_rattle  <- draws_rattle$rescor__growthrate__littersize
 
 # 3. Convert the correlation and standard deviations into the covariance metric for each posterior draw:
-cov_draws_food2 <- rho_food2 * sig_gr_food2 * sig_ls_food2
+cov_draws_rattle <- rho_rattle * sig_gr_rattle * sig_ls_rattle
 #cov_draws_df <- as.data.frame(cov_draws)
 
 # 4. plot using Using bayesplot
-(PostDist_food2 <- mcmc_areas(data.frame(covariance = cov_draws_food2), pars = "covariance", prob = 0.95) +
-    labs(title = "Food 2 Model", x = "Covariance (GR, LS)")
+(PostDist_rattle <- mcmc_areas(data.frame(covariance = cov_draws_rattle), pars = "covariance", prob = 0.95) +
+    labs(title = "Rattle Model", x = "Covariance (GR, LS)")
 )
 
 #merge 
-PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_food2, PostDist_cache, 
+PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_cache, PostDist_rattle, 
                       nrow = 2, ncol = 2, align = "hv")
 PostDist
 
@@ -324,28 +322,28 @@ cache_pred[response.level == "littersize", response.level := "Litter size"]
     #theme(legend.position = "top")
 )
 
-#FOOD2 MODEL
+#RATTLE MODEL
 #create predictions for both responses
-food2_pred <- as.data.table(ggpredict(food2_mod, terms = c("density_std", "treatment_food"))) #soluble biomass (sb)
+rattle_pred <- as.data.table(ggpredict(rattle_mod, terms = c("density_std", "treatment_food"))) #soluble biomass (sb)
 
 #rename response variables
-food2_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
-food2_pred[response.level == "littersize", response.level := "Litter size"]
+rattle_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
+rattle_pred[response.level == "littersize", response.level := "Litter size"]
 
 #plot
-(Pred_food2 <- 
-    ggplot(food2_pred)+
+(Pred_rattle <- 
+    ggplot(rattle_pred)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-    labs(x = "Density (stnd)", y = "Predicted value", title = "Food Model", color = "Food treatment", fill = "Food treatment")+
+    labs(x = "Density (stnd)", y = "Predicted value", title = "Rattle Model", color = "Rattle treatment", fill = "Rattle treatment")+
     theme_bw()
     #theme(legend.position = "top")
 )
 
 
 #merge all
-Predictions <- ggarrange(Pred_control, Pred_food, Pred_food2, Pred_cache, nrow = 2, ncol = 2, align = "h")
+Predictions <- ggarrange(Pred_control, Pred_food, Pred_cache, Pred_rattle, nrow = 2, ncol = 2, align = "hv")
 Predictions
 
 
