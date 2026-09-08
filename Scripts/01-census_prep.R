@@ -17,7 +17,7 @@ con <- krsp_connect(
   password = Sys.getenv("krsp_password")
 )
 
-#Importing midden census data
+#Import the first census data (1984 to 2011) 
 census_1 <- tbl(con, "dbamidden") %>% 
   select(reflo, squirrel_id, locX, locY, grid, date, Sex, fate) %>%
   # use collect to execute the sql query before using any R specific functions
@@ -25,7 +25,7 @@ census_1 <- tbl(con, "dbamidden") %>%
   collect %>%
   mutate(locX = loc_to_numeric(locX))
 
-#Importing squirrel census data
+#Import the second census data (2011 - present)
 census_2 <- tbl(con, "census") %>%
   # be careful with case, database uses locX in census, but locX in dbaMidden
   # sql doesn't care since it's not case sensitive, but R does!
@@ -36,7 +36,7 @@ census_2 <- tbl(con, "census") %>%
   collect %>%
   mutate(locx = loc_to_numeric(locx))
 
-#import trapping data for any missing midden locations
+#import trapping data to fill in any missing midden locations
 trapping <- as.data.table(tbl(con, "trapping") %>% collect())
 
 #import extra data from rattle experiments in 2010 that arent in data base.
@@ -48,7 +48,7 @@ AGcensus <- fread("Input/2010_AG_AO_Midden_Census.csv")
 
 # prep and merge database data -----------------------------------------------------
 
-#change col names to match
+#change col names in census 2 to match census 1
 census_2 <- select (census_2, -sq_fate) %>% 
   rename (locX = locx,
           locY = locy,
@@ -74,14 +74,9 @@ census[grid == "SX" | grid == "SUX", grid := "SU"]
 #clean out unwanted grids and any rows without squirrel ID
 census <- census[grid %in% grids & !is.na(squirrel_id)]
 
-#start a file with all squirrels censused every year and grid
-c1 <- census[, .(squirrel_id = unique(squirrel_id)), by = .(grid, year)]
 
-#take only spring census (April and May) and average locations
-censusspring <- census[month == 5 | month == 4, 
-                       .(locX = round(mean(locX, na.rm = TRUE), 1), 
-                        locY = round(mean(locY, na.rm = TRUE), 1)),
-                       by = .(squirrel_id, year, grid)]
+
+# prep trapping location data ---------------------------------------------
 
 #prep trapping data
 trap <- trapping[, .(grid = factor(gr),
@@ -90,18 +85,32 @@ trap <- trapping[, .(grid = factor(gr),
                      squirrel_id,
                      locX = loc_to_numeric(locx),
                      locY = as.numeric(locy)
-                     )]
+)]
 
 #take only April - June for trapping
 trapspring <- trap[month == 4 | month == 5 | month == 6]
 
-#average spring trapping locations for each squirrel each grid-year
+#average trapping locations for each squirrel each grid-year
 traplocs <- trapspring[, .(trapX = round(mean(locX, na.rm = TRUE), 1), 
-                     trapY = round(mean(locY, na.rm = TRUE), 1)),
-                by = .(squirrel_id, year, grid)]
+                           trapY = round(mean(locY, na.rm = TRUE), 1)),
+                       by = .(squirrel_id, year, grid)]
 
 
-#merge starting list with census data
+
+# Create data to calculate density later  ---------------------------------------------------
+
+#start with the list of all squirrels censused every year and grid
+################
+c1 <- census[, .(squirrel_id = unique(squirrel_id)), by = .(grid, year)]  ### SHOULD I ADD month == 5 and month == 4???
+############### QUESTIONS ^^^^
+
+#take only spring census (April and May) and average locations
+censusspring <- census[month == 5 | month == 4, 
+                       .(locX = round(mean(locX, na.rm = TRUE), 1), 
+                        locY = round(mean(locY, na.rm = TRUE), 1)),
+                       by = .(squirrel_id, year, grid)]
+
+#merge spring census data with full list of all squirrels 
 #any NA locations are squirrels that were censused that year but not in april or may
 c1 <- merge(c1, censusspring, by = c("squirrel_id", "grid", "year"), all.x = TRUE)
 
