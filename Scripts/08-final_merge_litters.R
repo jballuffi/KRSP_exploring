@@ -32,12 +32,10 @@ cones[, sex := NULL]
 #merge non-rattle data by mother id, year and grid
 m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
-
+#merge with median densities
 m1 <- merge(m1, meandensities, by = c("grid", "year"), all.x = TRUE)
 
-
-
-#first change RR to LL now that density merge is done#first change RR tyearo LL now that density merge is done
+#first change RR to LL now that density merge is done
 m1[grid == "RR", grid := "LL"]
 
 #merge with tree cone counts
@@ -91,13 +89,14 @@ dat[is.na(bucket), bucket := 0]
 dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #Just LL 2012 which we will remove
 
 #create treatment col based on food col.
-dat[food == 0 | food == 18, treatment := "Control"][food == 1, treatment := "Food add"][food == 19, treatment := "Rattle"]
+dat[food == 0 | food == 18, treatment_gr := "Control"][food == 1, treatment_gr := "Food add"][food == 19, treatment_gr := "Rattle"]
 
 #make a treatment+bucket
-dat[treatment == "Control", treatment_food := "Control"]
-dat[treatment == "Food add" & bucket == 1, treatment_food := "Bucket"]
-dat[treatment == "Food add" & bucket == 0, treatment_food := "No Bucket"]
-unique(dat$treatment_food)
+dat[treatment_gr == "Control", treatment_ind := "Control"]
+dat[treatment_gr == "Food add" & bucket == 1, treatment_ind := "Bucket"]
+dat[treatment_gr == "Food add" & bucket == 0, treatment_ind := "No Bucket"]
+dat[treatment_gr == "Rattle", treatment_ind := "Rattle"]
+unique(dat$treatment_ind)
 
 
 
@@ -159,16 +158,32 @@ dat2[, growthrate_std := scale(growthrate), gridyear]
 
 
 
+# make density categories ---------------------------------------------------
+
+#get density quantiles
+dens25Q <- dat2[, round(quantile(density_std)[2], 2)]
+dens75Q <- dat2[, round(quantile(density_std)[4], 2)]
+
+#categorize density based on quantiles
+dat2[density_std < dens25Q, density_cat := "low"]
+dat2[density_std > dens25Q & density_std < dens75Q, density_cat := "medium"]
+dat2[density_std > dens75Q, density_cat := "high"]
+
+
+
 # finalize what are factors -----------------------------------------------
 
 #food, treatment, bucket
-dat2[, food := factor(food)][, treatment := factor(treatment)][, bucket := factor(bucket)]
+dat2[, food := factor(food)][, treatment_gr := factor(treatment_gr)][, bucket := factor(bucket)][, treatment_ind := factor(treatment_ind)]
 
 #mast year
 dat2[, mast := factor(mast)]
 
 #make litter size numeric instead of integer
 dat2[, littersize := as.numeric(littersize)]
+
+#density category with levels
+dat2[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 
 
 
