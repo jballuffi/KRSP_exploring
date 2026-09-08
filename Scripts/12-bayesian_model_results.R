@@ -21,7 +21,7 @@ dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
-food2 <- readRDS("Output/Data/food2_cleaned_litters.rds")
+rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 
 
@@ -31,7 +31,7 @@ food2 <- readRDS("Output/Data/food2_cleaned_litters.rds")
 control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
 cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
-food2_mod <- readRDS("Output/Models/food2_model_litters.rds")
+rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
 #look at summary of models
 summary(control_mod)
