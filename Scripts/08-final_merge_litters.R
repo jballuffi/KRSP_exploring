@@ -177,12 +177,8 @@ dat2[, littersize := as.numeric(littersize)]
 #make a control only data set
 controls <- dat2[grid == "SU" | grid == "KL"]
 
-#make food treatment data set, All food add except the weird two years in KL
-food <- dat2[food == 1]  #just food add
-
 #make food 2 data set: control and food add grids during food years
-food_years <- food[, unique(year)]
-food2 <- dat2[(food == 1 | grid == "SU" | grid == "KL") & year %in% food_years]
+food <- dat2[(food == 1 | grid == "SU" | grid == "KL")]
 
 #make cache data set
 cache_years <- dat2[!is.na(cache_prev), unique(year)]  #get years with cache size data
@@ -200,7 +196,7 @@ rattle <- dat2[year %in% rattleyears & (food == 19 | food == 18 | food == 0)] #t
 saveRDS(dat2, "Output/Data/full_cleaned_litters.rds")
 saveRDS(controls, "Output/Data/control_cleaned_litters.rds")
 saveRDS(food, "Output/Data/food_cleaned_litters.rds")
-saveRDS(food2, "Output/Data/food2_cleaned_litters.rds")
 saveRDS(cache, "Output/Data/cache_cleaned_litters.rds")
 saveRDS(rattle, "Output/Data/rattle_cleaned_litters.rds")
+
 write.csv(rattle, "Output/Data/rattle_cleaned_litters.csv")
