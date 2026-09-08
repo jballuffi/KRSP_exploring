@@ -19,15 +19,15 @@ food <- readRDS("Output/Data/food_cleaned_litters.rds")
 years <- data.table(year = rep(seq(min(dat$year), max(dat$year)), 3))
 
 #add in all three treatments to year seq
-years$treatment <- rep(unique(dat$treatment), each = years[, .N]/3)
+years$treatment_gr <- rep(unique(dat$treatment_gr), each = years[, .N]/3)
 
 #get mean densities, growth rates, and litter size by year and treatment
 annualgrowth <- dat[, .(growthrate = mean(growthrate, na.rm = TRUE),
                         density = mean(density, na.rm = TRUE),
-                        littersize = mean(littersize, na.rm = TRUE)), by = .(year, treatment)]
+                        littersize = mean(littersize, na.rm = TRUE)), by = .(year, treatment_gr)]
 
 #merge with years
-annualtrends <- merge(years, annualgrowth, by = c("year", "treatment"), all.x = TRUE)
+annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x = TRUE)
 
 #get mean density by year for controls only
 annualdensity <- controls[, .(density = mean(density)), year]
@@ -47,14 +47,14 @@ setorder(annualdensity, year)
 #plot density by treatment
 (density_treatment <-
     ggplot(dat)+
-    geom_boxplot(aes(x = treatment, y = density))+
-    labs(y = "Local density (squirrels/ha)", x = "Treatment")+
+    geom_boxplot(aes(x = treatment_gr, y = density))+
+    labs(y = "Local density (squirrels/ha)", x = "Grid Treatment")+
     theme_bw())
 
 #plot avg annual growth rate over time and by food add
 (density_year_treatment <- ggplot(annualtrends)+
-    geom_line(aes(x = year, y = density, color = treatment), linewidth = 1)+
-    labs(x = "Year", y = "Local density (squirrels/ha)", color = "Treatment")+
+    geom_line(aes(x = year, y = density, color = treatment_gr), linewidth = 1)+
+    labs(x = "Year", y = "Local density (squirrels/ha)", color = "Grid Treatment")+
     theme_bw()+
     theme(legend.position = "inside",
     legend.position.inside = c(0.87, 0.75))
@@ -66,13 +66,13 @@ densityplot <- ggarrange(density_year, density_treatment, density_year_treatment
 
 #growth rate in response to treatments
 (gr_treatment <- ggplot(dat)+
-   geom_boxplot(aes(x = treatment, y = growthrate, fill = bucket), alpha = 0.6)+
+   geom_boxplot(aes(x = treatment_gr, y = growthrate, fill = bucket), alpha = 0.6)+
    labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket")+
    theme_bw())
 
 #litter size in response to treatments
 (ls_treatment <- ggplot(dat)+
-    geom_violin(aes(x = treatment, y = littersize, fill = bucket), alpha = 0.6)+
+    geom_violin(aes(x = treatment_gr, y = littersize, fill = bucket), alpha = 0.6)+
     labs(x = "Grid Treatment", y = "Litter size", fill = "Bucket")+
     theme_bw())
 
