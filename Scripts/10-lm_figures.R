@@ -12,31 +12,9 @@ food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
-#get density quantiles
-cache25Q <- cache[, round(quantile(cache_std)[2], 2)]
-cache75Q <- cache[, round(quantile(cache_std)[4], 2)]
-
-#make factor with levels
-cache[, cache_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 
 
 
-# Figure 1: Control data --------------------------------------------------
-
-# #this model is Growth Rate ~ Litter Size x Local Density Category
-# bmod <- lm(growthrate ~ littersize*density_cat, controls)
-# anova(bmod)
-# bmod_pred <- as.data.table(ggpredict(bmod, terms = c("littersize", "density_cat"))) #soluble biomass (sb)
-# 
-# controls[, .N]
-# 
-# #plot regressions on top of raw data
-# (control_fig <- ggplot() +
-#   geom_point(aes(x = littersize, y = growthrate, color = density_cat), alpha = 0.3, data = controls) +
-#   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2, data = bmod_pred) +
-#   geom_line(aes(x = x, y = predicted, color = group), linewidth = 1, data = bmod_pred)+
-#   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Control Grids Only", color = "Density", fill = "Density") +
-#   theme_bw())
 
 
 
@@ -62,6 +40,11 @@ food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat"
 
 
 # merge figures and save --------------------------------------------------
+
+
+
+
+
 
 
 fig <- ggarrange(control_fig, food_fig, ncol = 1, nrow = 2)
