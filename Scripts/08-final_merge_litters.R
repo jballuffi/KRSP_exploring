@@ -197,12 +197,12 @@ cache25Q <- cache[, round(quantile(cache_std, na.rm = TRUE)[2], 2)]
 cache75Q <- cache[, round(quantile(cache_std, na.rm = TRUE)[4], 2)]
 
 #categorize density based on quantiles
-cache[cache_std < cache25Q, cache_cat := "low"]
+cache[cache_std < cache25Q, cache_cat := "small"]
 cache[cache_std > cache25Q & cache_std < cache75Q, cache_cat := "medium"]
-cache[cache_std > cache75Q, cache_cat := "high"]
+cache[cache_std > cache75Q, cache_cat := "large"]
 
 #make cache cat a factor with levels
-cache[, cache_cat := factor(density_cat, levels = c("low", "medium", "high"))]
+cache[, cache_cat := factor(cache_cat, levels = c("small", "medium", "large"))]
 
 
 
