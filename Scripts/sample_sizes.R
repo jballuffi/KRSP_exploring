@@ -3,10 +3,6 @@ library(data.table)
 #read in full little data from script 09 final merge
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 
-#make treatment food option for rattle
-dat[food == 19, treatment_food := "Rattle"]
-setnames(dat, "treatment_food", "treatment_ind")
-
 #make tables for sample size
 table_treatment <- dat[, .(N = .N, 
                            Avg_density = round(mean(density), 2), 

@@ -49,6 +49,6 @@ setorder(nopb, grid, year, reflo)
 nopb[, length(unique(mother_id)), by = .(grid, year)]
 
 
-write.csv(bucketissues, "Output/Data/food_and_bucket_issues.csv")
+write.csv(bucketissues, "Output/Table/food_and_bucket_issues.csv")
 
 
