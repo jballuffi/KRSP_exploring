@@ -46,7 +46,6 @@ setnames(buckets, "squirrel_id_spring", "mother_id")
 
 #take only cols of interest
 lit2 <- lit[, .(mother_id = squirrel_id, 
-                #mother_eartag = paste0(mTagLft, "-", mTagRt),
                 MTaglft = mTagLft,
                 litter_id = id,
                 locx, locy,
@@ -92,23 +91,19 @@ extra <- extra[food == 19]
 #get list of ear tags in extra data
 extra_tags <- extra[, unique(MTaglft)]
 
-#get all the squirrel IDs from that list of ear tags in 2010 only
-#overlap_ids <- database[MTaglft %in% extra_tags, .(mother_eartag, mother_id, MTaglft)]
-#overlap_ids <- overlap_ids[duplicated(mother_eartag) == FALSE]
+#some of those squirrels exist in the database juve/litter data already but aren't scored as rattles
+#remove the moms/litters who are in extra from database 
+#find those moms based on ear tags and score as rattles 
+database[MTaglft %in% extra_tags & year == 2010, food := 19]
 
-#rename RR to LL and SX to SU
-#extra[grid == "RR", grid := "LL"]
+#return all the ear tags that are in both the extra data and the database
+overlap_tags <- database[MTaglft %in% extra_tags & year == 2010, unique(MTaglft)]
 
-#give correct squirrel IDs from database where possible
-#dat2010 <- merge(extra, overlap_ids, by = "MTaglft", all.x = TRUE)
+#remove the moms already in the database from the extras
+dat2010 <- extra[!(MTaglft %in% overlap_tags)]
 
-#make mother_id a character
-#dat2010[, mother_id := as.character(mother_id)]
-
-#make mother id using ear tags
-#dat2010[is.na(mother_id), mother_id := paste0(MTaglft, "-", MTagrt)]
-
-dat2010 <- extra[, mother_id := paste0(MTaglft, "-", MTagrt)]
+#create a pseudo ID for moms using their eartags
+dat2010 <- dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
 
 #make litter id
 dat2010[, litter_id := paste0(mother_id, "-", year, "-", ln)]
@@ -128,8 +123,6 @@ dat10 <- dat2010[, .(grid, year,
                      locx = LocX, locy = LocY,
                      squirrel_id = DNA2, weight1, weight2, sex, littersize)]
 
-#remove the moms/litters who are in extra from database 
-database <- database[!(MTaglft %in% extra_tags & year == 2010)]
 
 #rbind with data from database
 dat <- rbind(database, dat10, fill = TRUE)
