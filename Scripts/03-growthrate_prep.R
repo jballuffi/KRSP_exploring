@@ -115,7 +115,6 @@ dat2010[, littersize := .N, litter_id]
 dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
 
 #take only cols of interest
-#using DNA2 as squirrel id
 dat10 <- dat2010[, .(grid, year, 
                      mother_id, MTaglft,
                      litter_id, 
