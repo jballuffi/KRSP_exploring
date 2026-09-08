@@ -141,9 +141,6 @@ dat2[, density_std := scale(density), year]
 #standardize cones globally
 dat2[, cones_tree_std := scale(cones_tree_prev), year]
 
-#standardize cone cache globally
-dat2[, cache_std := scale(cache_prev), year]
-
 #standardize birth date by grid year
 dat2[, bjulian_std := scale(bjulian), gridyear]
 
@@ -187,17 +184,35 @@ dat2[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 
 
 
-# subset data for different analyses --------------------------------------
+# create cache data set ---------------------------------------------------
+
+#take control years with cache data
+cache <- dat2[(grid == "SU" | grid == "KL") & !is.na(cache_prev)]
+
+#standardize cone cache globally
+cache[, cache_std := scale(cache_prev), year]
+
+#get cache size quantiles
+cache25Q <- cache[, round(quantile(cache_std, na.rm = TRUE)[2], 2)]
+cache75Q <- cache[, round(quantile(cache_std, na.rm = TRUE)[4], 2)]
+
+#categorize density based on quantiles
+cache[cache_std < cache25Q, cache_cat := "low"]
+cache[cache_std > cache25Q & cache_std < cache75Q, cache_cat := "medium"]
+cache[cache_std > cache75Q, cache_cat := "high"]
+
+#make cache cat a factor with levels
+cache[, cache_cat := factor(density_cat, levels = c("low", "medium", "high"))]
+
+
+
+# subset data for other analyses --------------------------------------
 
 #make a control only data set
 controls <- dat2[grid == "SU" | grid == "KL"]
 
 #make food 2 data set: control and food add grids during food years
 food <- dat2[(food == 1 | grid == "SU" | grid == "KL")]
-
-#make cache data set
-cache_years <- dat2[!is.na(cache_prev), unique(year)]  #get years with cache size data
-cache <- dat2[(grid == "SU" | grid == "KL") & year %in% cache_years]  #only long term control grids
 
 #make rattle experiment dataset
 rattleyears <- dat2[food == 19, unique(year)] #get years with rattles
