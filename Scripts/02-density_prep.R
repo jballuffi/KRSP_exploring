@@ -32,7 +32,7 @@ data[, locX := locX*30][, locY := locY*30]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "LL" & year == 2010]
+test <- data[grid == "AG" & year == 2010]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -103,7 +103,8 @@ densities <- data[grid %in% grids,
                     locx = locX, 
                     locy = locY, 
                     neighbors, 
-                    density)]
+                    density,
+                    source)]
 
 
 
