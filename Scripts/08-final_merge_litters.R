@@ -26,10 +26,7 @@ meandensities <- dens[, .(griddensity = median(density, na.rm = TRUE)), by = .(g
 
 # initial merge -------------------------------------------------
 
-#remove sex col from and cones
-cones[, sex := NULL]
-
-#make an left ear tag for density for cases where ID was both ear tags
+#take left ear tag for density for cases where ID was both ear tags
 dens[grep("-", mother_id), MTaglft := tstrsplit(mother_id, "-", keep = 1)]
 
 #change name in overlap id
@@ -66,6 +63,9 @@ dat <- merge(m3, moms, by = c("mother_id"), all.x = TRUE)
 
 
 # create additional factors or co variate -------------------------
+
+#if mother birth year is missing still, make birth year the year before
+dat[is.na(mother_byear), mother_byear := year - 1]
 
 #calculate mother age
 dat[, mother_age := year - mother_byear]
