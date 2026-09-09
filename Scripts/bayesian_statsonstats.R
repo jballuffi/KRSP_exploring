@@ -31,7 +31,7 @@ baytest <- bf(
   family = gaussian())
 
 
-biv_control_model <- brm(
+baytest_model <- brm(
   formula = baytest,
   data = controls,
   chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
@@ -41,8 +41,8 @@ biv_control_model <- brm(
   
 )
 
-summary(biv_control_model)
-conditional_effects(biv_control_model)
+summary(baytest_model)
+conditional_effects(baytest_model)
 
 
 
