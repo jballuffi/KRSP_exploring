@@ -55,6 +55,8 @@ momlives <- merge(mombirths, momtrap, by = "mother_id", all = TRUE)
 #if birth year is missing, make it the year before first trap year
 momlives[is.na(mother_byear), mother_byear := mother_firsttrap - 1]
 
+#fix mom id
+momlives[, mother_id := as.character(mother_id)]
 
 
 # save --------------------------------------------------------------------

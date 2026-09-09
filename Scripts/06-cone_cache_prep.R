@@ -103,6 +103,9 @@ cones[, cache_prev := log(lag(cache_size_total, n = 1) + 1)] #what is the unit h
 #subset to cols of interest
 cones <- cones[grid %in% grids, .(year, grid, sex, mother_id = squirrel_id, cache_prev)]
 
+#correct mother_id
+cones[, mother_id := as.character(mother_id)]
+
 #save
 saveRDS(cones, "Output/Data/cone_cache.rds")
 
