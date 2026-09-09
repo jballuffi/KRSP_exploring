@@ -91,13 +91,16 @@ extra <- extra[food == 19]
 #get list of ear tags in extra data
 extra_tags <- extra[, unique(MTaglft)]
 
-#some of those squirrels exist in the database juve/litter data already but aren't scored as rattles
-#remove the moms/litters who are in extra from database 
+#some of those squirrels exist in the database juv/litter data already but aren't scored as rattles
+#remove the moms/litters who are in extra from database
+
 #find those moms based on ear tags and score as rattles 
 database[MTaglft %in% extra_tags & year == 2010, food := 19]
 
 #return all the ear tags that are in both the extra data and the database
 overlap_tags <- database[MTaglft %in% extra_tags & year == 2010, unique(MTaglft)]
+overlap_ids <- database[MTaglft %in% extra_tags & year == 2010, .(mother_id, MTaglft)]
+overlap_ids <- overlap_ids[duplicated(mother_id) == FALSE]
 
 #remove the moms already in the database from the extras
 dat2010 <- extra[!(MTaglft %in% overlap_tags)]
@@ -228,5 +231,8 @@ datlitter[is.na(sexratio), .N]
 #save final growth rate
 saveRDS(dat2, "Output/Data/growth_rates_juvs.rds")
 saveRDS(datlitter, "Output/Data/growth_rates_litters.rds")
+
+saveRDS(overlap_ids, "Output/Data/overlap_ids.rds")
+saveRDS(overlap_tags, "Output/Data/overlap_eartag.rds")
 
 
