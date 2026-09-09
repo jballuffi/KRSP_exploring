@@ -37,9 +37,14 @@ buckets <- buckets[!is.na(squirrel_id_spring)]
 #create a col called bucket and remove 
 buckets[, bucket := 1][, bucket_reflo := NULL]
 
+#remove duplicates
+buckets <- buckets[duplicated(buckets) == FALSE]
+
 #rename id col
 setnames(buckets, "squirrel_id_spring", "mother_id")
 
+#check for duplicates
+janitor::get_dupes(buckets)
 
 
 # prep litter data and merge with bucket list -------------------------------------------------------
@@ -53,10 +58,13 @@ lit2 <- lit[, .(mother_id = squirrel_id,
                 bdate = fieldBDate, date1, date2 = tagDt)]
 
 #create dates
-lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)][, bjulian := yday(bdate)]
+lit2[, bdate := ymd(bdate)][, date1 := ymd(date1)][, date2 := ymd(date2)]
 
 #merge litter and buckets
 lit2 <- merge(lit2, buckets, by = c("grid", "year", "mother_id"), all.x = TRUE)
+
+#check for duplicates
+janitor::get_dupes(lit2)
 
 
 
@@ -68,12 +76,12 @@ juv2 <- juv[, .(squirrel_id, litter_id, sex = factor(sex), weight1 = weight, wei
 #any weights as zero make NA 
 juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
 
-#calculate litter size
-juv2[, littersize := .N, litter_id]
+#check for duplicates
+janitor::get_dupes(juv2)
 
 
 
-# merge juvenile and litter data -----------------------------------------------------
+# merge juvenile and litter data, calculate litter size -----------------------------------------------------
 
 #merge juv and litter data by the litter ID
 database <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
@@ -81,16 +89,21 @@ database <- merge(lit2, juv2, by = "litter_id", all.y = TRUE)
 #rename RR and SX/SUX grids
 database[grid == "SX" | grid == "SUX", grid := "SU"]
 
+#check for duplicates
+janitor::get_dupes(database)
+
+#calculate litter sizes
+database[, littersize := .N, litter_id]
 
 
-# prep extra data from 2010 rattle experiments and rbind ----------------------------
+
+# add in extra data from 2010 rattle experiments ----------------------------
 
 #take just rattle data from extras
 extra <- extra[food == 19]
 
 #get list of ear tags in extra data
 extra_tags <- extra[, unique(MTaglft)]
-
 #some of those squirrels exist in the database juv/litter data already but aren't scored as rattles
 #remove the moms/litters who are in extra from database
 
@@ -99,8 +112,9 @@ database[MTaglft %in% extra_tags & year == 2010, food := 19]
 
 #return all the ear tags that are in both the extra data and the database
 overlap_tags <- database[MTaglft %in% extra_tags & year == 2010, unique(MTaglft)]
-overlap_ids <- database[MTaglft %in% extra_tags & year == 2010, .(mother_id, MTaglft)]
-overlap_ids <- overlap_ids[duplicated(mother_id) == FALSE]
+
+#get a table of the IDs associated with those overlapping ear tags
+overlap_ids <- database[MTaglft %in% extra_tags & year == 2010, .(mother_id, MTaglft)][duplicated(mother_id) == FALSE]
 
 #remove the moms already in the database from the extras
 dat2010 <- extra[!(MTaglft %in% overlap_tags)]
@@ -111,8 +125,8 @@ dat2010 <- dat2010[, mother_id := paste0(MTaglft, "-", MTagrt)]
 #make litter id
 dat2010[, litter_id := paste0(mother_id, "-", year, "-", ln)]
 
-#make litter size
-dat2010[, littersize := .N, litter_id]
+#check for duplicates
+janitor::get_dupes(dat2010)
 
 #set dates
 dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
@@ -121,17 +135,34 @@ dat2010[, date1 := mdy(date1)][, date2 := mdy(date2)][, bdate := mdy(bdate)]
 dat10 <- dat2010[, .(grid, year, 
                      mother_id, MTaglft,
                      litter_id, 
-                     food, ln, bdate, bjulian, date1, date2, 
+                     food, ln, bdate, date1, date2, 
                      locx = LocX, locy = LocY,
-                     squirrel_id = DNA2, weight1, weight2, sex, littersize)]
+                     squirrel_id = DNA2, weight1, weight2, sex)]
 
+#check for duplicates
+janitor::get_dupes(dat10)
+
+#remove two duplicates that have appeared
+dat10 <- dat10[duplicated(dat10) == FALSE]
+
+#calculate litter size
+dat10[, littersize := .N, litter_id]
 
 #rbind with data from database
 dat <- rbind(database, dat10, fill = TRUE)
 
+#check for duplicates
+janitor::get_dupes(dat)
 
 
-# Clean based on weight data  ---------------------------------------------
+
+# Fix dates and clean based on weight data  ---------------------------------------------
+
+#If birth date is missing but first date isn't, use the day before first date
+dat[is.na(bdate) & !is.na(date1), bdate := date1 - 1]
+
+#calculate julian birth day
+dat[, bjulian := yday(bdate)]
 
 #calculate the number of days in between weight measures
 dat[, days := as.integer(date2 - date1)]
@@ -158,34 +189,34 @@ dat <- dat[!weight2 > 100]
 #remove cases when there were less than 5 days in between weight measures
 dat <- dat[!days < 5]
 
-#remove duplicate squirrels
-dat2 <- dat[!duplicated(squirrel_id) == TRUE] ##WHY?
+#check for duplicates
+janitor::get_dupes(dat)
 
 
 
 # calculate growth rates --------------------------------------------------
 
 #any cases where the two dates were the same make days NA
-dat2[days == 0, days := NA]
+dat[days == 0, days := NA]
 
 #get growth rate over that time (g/day)
-dat2[, growthrate := (weight2 - weight1)/days]
+dat[, growthrate := (weight2 - weight1)/days]
 
 #quick look at distribution
-hist(dat2$growthrate)
+hist(dat$growthrate)
 
 #checking my work. This should be 0 due to prior cleaning of weights
-dat2[growthrate <= 0 | growthrate > 10, .N]
+dat[growthrate <= 0 | growthrate > 10, .N]
 
 
 
 # finalize data sets --------------------------------------------------------
 
 #remove NA growth rates
-dat3 <- dat2[!is.na(growthrate) & grid %in% grids]
+dat2 <- dat[!is.na(growthrate) & grid %in% grids]
 
 #take only cols of interest
-dat3 <- dat3[, .(litter_id, year, grid, mother_id, MTaglft, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
+dat3 <- dat2[, .(litter_id, year, grid, mother_id, MTaglft, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
 
 #average growth rate by litter
 datlitter <- dat3[, .(growthrate = mean(growthrate)),
