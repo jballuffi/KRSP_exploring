@@ -97,7 +97,7 @@ traplocs <- trapspring[, .(trapX = round(mean(locX, na.rm = TRUE), 1),
 
 
 
-# Create data to calculate density later  ---------------------------------------------------
+# Create location data to calculate density later  ---------------------------------------------------
 
 #start with the list of all squirrels censused every year and grid
 ################
@@ -116,6 +116,10 @@ c1 <- merge(c1, censusspring, by = c("squirrel_id", "grid", "year"), all.x = TRU
 
 #merge census list with trap locations
 c1 <- merge(c1, traplocs, by = c("squirrel_id", "year", "grid"), all.x = TRUE)
+
+#create the source of the location data based on whether there is location data from census
+c1[!is.na(locX), source := "census"]
+c1[is.na(locX), source := "trapping"]
 
 #if there is a missing census location, will in with average trap location
 c1[is.na(locX), locX := trapX][is.na(locY), locY := trapY]
@@ -155,6 +159,8 @@ extra <- extra[, .(grid = factor(Grid),
 census2010 <- extra[, .(locX = round(mean(locX, na.rm = TRUE), 1), 
                         locY = round(mean(locY, na.rm = TRUE), 1)),
                        by = .(squirrel_id, year, grid)]
+
+census2010[, source := "census"]
 
 
 
