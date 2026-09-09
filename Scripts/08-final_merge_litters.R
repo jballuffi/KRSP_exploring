@@ -35,10 +35,10 @@ dens[grep("-", mother_id), MTaglft := tstrsplit(mother_id, "-", keep = 1)]
 #change name in overlap id
 setnames(overlap_ids, "mother_id", "overlap_id")
 
-#merge overlap eartags to density
+#merge overlap ear tags to density
 dens1 <- merge(dens, overlap_ids, by = "MTaglft", all.x = TRUE)
 
-#where there is an overlap ID, make that the mother ID
+#where there is an overlap ID, make overlap ID the mother ID
 dens1[!is.na(overlap_id), mother_id := overlap_id][, overlap_id := NULL][, MTaglft := NULL]
 
 #merge density and growth data by mother id, year and grid
@@ -50,12 +50,12 @@ m1 <- merge(m1, meandensities, by = c("grid", "year"), all.x = TRUE)
 #first change RR to LL now that density merge is done
 m1[grid == "RR", grid := "LL"]
 
+#anyone without local density gets the median density of their grid
+m1[is.na(density) & !is.na(griddensity), source := "median"]
+m1[is.na(density), density := griddensity]
+
 #merge with tree cone counts
 m2 <- merge(m1, trees[, .(grid, year, cones_tree_prev)], by = c("year", "grid"), all.x = TRUE)
-
-#correct mother_id
-cones[, mother_id := as.character(mother_id)]
-moms[, mother_id := as.character(mother_id)]
 
 #merge with cone cache data
 m3 <- merge(m2, cones, by = c("mother_id", "year", "grid"), all.x = TRUE)
