@@ -100,6 +100,9 @@ dat[is.na(bucket), bucket := 0]
 #are there cases where not food treatment but has bucket?
 dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #Just LL 2012 which we will remove
 
+#cases where rattle has a bucket?
+dat <- dat[!(food == 19 & bucket == 1)]
+
 #create treatment col based on food col.
 dat[food == 0 | food == 18, treatment_gr := "Control"][food == 1, treatment_gr := "Food add"][food == 19, treatment_gr := "Rattle"]
 
