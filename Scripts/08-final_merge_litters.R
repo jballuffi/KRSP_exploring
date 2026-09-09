@@ -196,7 +196,7 @@ dat2[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 
 
 
-# create cache data set ---------------------------------------------------
+# make cache size categories and cache data set ---------------------------------------------------
 
 #take control years with cache data
 cache <- dat2[(grid == "SU" | grid == "KL") & !is.na(cache_prev)]
