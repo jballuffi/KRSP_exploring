@@ -106,6 +106,9 @@ cones <- cones[grid %in% grids, .(year, grid, sex, mother_id = squirrel_id, cach
 #correct mother_id
 cones[, mother_id := as.character(mother_id)]
 
+#remove sex col from and cones
+cones[, sex := NULL]
+
 #save
 saveRDS(cones, "Output/Data/cone_cache.rds")
 
