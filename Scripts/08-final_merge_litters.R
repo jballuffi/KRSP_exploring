@@ -16,6 +16,9 @@ moms <- readRDS("Output/Data/mom_lives.rds")
 trees <- readRDS("Output/Data/tree_cone_counts.rds")
 cones <- readRDS("Output/Data/cone_cache.rds")
 
+overlap_ids <- readRDS("Output/Data/overlap_ids.rds")
+overlap_tags<- readRDS("Output/Data/overlap_eartag.rds")
+
 #get median densities by grid + year
 meandensities <- dens[, .(griddensity = median(density, na.rm = TRUE)), by = .(grid, year)]
 
@@ -23,14 +26,23 @@ meandensities <- dens[, .(griddensity = median(density, na.rm = TRUE)), by = .(g
 
 # initial merge -------------------------------------------------
 
-#remove sex col from density
-dens[, sex := NULL]
-
 #remove sex col from and cones
 cones[, sex := NULL]
 
-#merge non-rattle data by mother id, year and grid
-m1 <- merge(dens, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
+#make an left ear tag for density for cases where ID was both ear tags
+dens[grep("-", mother_id), MTaglft := tstrsplit(mother_id, "-", keep = 1)]
+
+#change name in overlap id
+setnames(overlap_ids, "mother_id", "overlap_id")
+
+#merge overlap eartags to density
+dens1 <- merge(dens, overlap_ids, by = "MTaglft", all.x = TRUE)
+
+#where there is an overlap ID, make that the mother ID
+dens1[!is.na(overlap_id), mother_id := overlap_id][, overlap_id := NULL][, MTaglft := NULL]
+
+#merge density and growth data by mother id, year and grid
+m1 <- merge(dens1, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
 #merge with median densities
 m1 <- merge(m1, meandensities, by = c("grid", "year"), all.x = TRUE)
