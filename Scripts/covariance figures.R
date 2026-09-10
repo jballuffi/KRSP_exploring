@@ -11,7 +11,7 @@ library(dplyr)
 
 
 control_mod <- readRDS("Output/Models/control_model_litters.rds")
-
+dat <- readRDS("Output/Data/control_cleaned_litters.rds")
 
 
 
