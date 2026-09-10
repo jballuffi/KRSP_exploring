@@ -99,10 +99,8 @@ traplocs <- trapspring[, .(trapX = round(mean(locX, na.rm = TRUE), 1),
 
 # Create location data to calculate density later  ---------------------------------------------------
 
-#start with the list of all squirrels censused every year and grid
-################
-c1 <- census[, .(squirrel_id = unique(squirrel_id)), by = .(grid, year)]  ### SHOULD I ADD month == 5 and month == 4???
-############### QUESTIONS ^^^^
+#start with the list of all squirrels censused every spring by grid and year
+c1 <- census[month == 5 | month == 4, .(squirrel_id = unique(squirrel_id)), by = .(grid, year)]
 
 #take only spring census (April and May) and average locations
 censusspring <- census[month == 5 | month == 4, 
@@ -118,14 +116,17 @@ c1 <- merge(c1, censusspring, by = c("squirrel_id", "grid", "year"), all.x = TRU
 c1 <- merge(c1, traplocs, by = c("squirrel_id", "year", "grid"), all.x = TRUE)
 
 #create the source of the location data based on whether there is location data from census
-c1[!is.na(locX), source := "census"]
-c1[is.na(locX), source := "trapping"]
+c1[!is.na(locX), loc_source := "census"]
+c1[is.na(locX), loc_source := "trapping"]
 
 #if there is a missing census location, will in with average trap location
 c1[is.na(locX), locX := trapX][is.na(locY), locY := trapY]
 
 #remove trap cols
 c1[, trapX := NULL][, trapY := NULL]
+
+#take only data with locations
+c1 <- c1[!(is.na(locX) | is.na(locY))]
 
 
 
@@ -160,7 +161,7 @@ census2010 <- extra[, .(locX = round(mean(locX, na.rm = TRUE), 1),
                         locY = round(mean(locY, na.rm = TRUE), 1)),
                        by = .(squirrel_id, year, grid)]
 
-census2010[, source := "census"]
+census2010[, loc_source := "census"]
 
 
 
@@ -170,7 +171,7 @@ census2010[, source := "census"]
 fullcensus <- rbind(census2010, c1)
 
 #lastly, remove anyone who still does not have a location for the spring of that year
-fullcensus <- fullcensus[!is.na(locX) | !is.na(locY)]
+fullcensus <- fullcensus[!(is.na(locX) | is.na(locY))]
 
 
 
