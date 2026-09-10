@@ -47,6 +47,7 @@ setnames(buckets, "squirrel_id_spring", "mother_id")
 janitor::get_dupes(buckets)
 
 
+
 # prep litter data and merge with bucket list -------------------------------------------------------
 
 #take only cols of interest
@@ -97,7 +98,7 @@ database[, littersize := .N, litter_id]
 
 
 
-# add in extra data from 2010 rattle experiments ----------------------------
+# collect data from 2010 rattle experiments ----------------------------
 
 #take just rattle data from extras
 extra <- extra[food == 19]
@@ -148,30 +149,44 @@ dat10 <- dat10[duplicated(dat10) == FALSE]
 #calculate litter size
 dat10[, littersize := .N, litter_id]
 
+
+
+# merge 2010 data with database date --------------------------------------
+
 #rbind with data from database
 dat <- rbind(database, dat10, fill = TRUE)
 
 #check for duplicates
 janitor::get_dupes(dat)
 
-
-
-# Fix dates and clean based on weight data  ---------------------------------------------
-
-#If birth date is missing but first date isn't, use the day before first date
-dat[is.na(bdate) & !is.na(date1), bdate := date1 - 1]
-
-#calculate julian birth day
-dat[, bjulian := yday(bdate)]
-
-#calculate the number of days in between weight measures
-dat[, days := as.integer(date2 - date1)]
-
 #take only first litters for this analysis, as done by Delaney
 dat <- dat[ln == 1]
 
-#take only cases where we have both measures of weights
+
+
+# calculate sex ratios for litters ---------------------------------------------------
+
+#get number of males in every litter
+sexcounts <- dat[, .N, by = .(litter_id, sex)]
+
+#make the output wide
+sexratios <- dcast(sexcounts, litter_id ~ sex)
+
+#fill in NAs with zeros
+sexratios[is.na(M), M := 0][is.na(`F`), `F` := 0]
+
+#calculate the ratio of males in litter
+sexratios[, sexratio := M/(`F` + M)]
+
+
+
+# Clean based on weight data and dates  ---------------------------------------------
+
+#take only cases where we have both weights
 dat <- dat[!(is.na(weight1) | is.na(weight2))]
+
+#calculate the number of days in between weight measures
+dat[, days := as.integer(date2 - date1)]
 
 #remove cases where weight 1 and weight 2 are the same.
 dat <- dat[!weight1 == weight2] #this looks to be usually when first nests were missed
@@ -213,46 +228,55 @@ dat[growthrate <= 0 | growthrate > 10, .N]
 # finalize data sets --------------------------------------------------------
 
 #remove NA growth rates
-dat2 <- dat[!is.na(growthrate) & grid %in% grids]
-
-#take only cols of interest
-dat3 <- dat2[, .(litter_id, year, grid, mother_id, MTaglft, food, bucket, bdate, bjulian, sex, littersize, growthrate)]
+dat2 <- dat[grid %in% grids]
 
 #average growth rate by litter
-datlitter <- dat3[, .(growthrate = mean(growthrate)),
+datlitter <- dat2[, .(growthrate = mean(growthrate),
+                      weight1 = mean(weight1),
+                      weight2 = mean(weight2)),
                   by = .(litter_id, year, grid, mother_id, MTaglft,
-                         food, bucket, bdate, bjulian, littersize)]
+                         food, bucket, bdate, date1, date2, littersize)]
 
-#FOR SEX RATIOS IN LITTER DATASET:
-#get number of males in every litter
-sexcounts <- dat3[, .N, by = .(litter_id, sex)]
-
-#make the output wide
-sexratios <- dcast(sexcounts, litter_id ~ sex)
-
-#fill in NAs with zeros
-sexratios[is.na(M), M := 0][is.na(`F`), `F` := 0]
-
-#calculate the ratio of males in litter
-sexratios[, sexratio := M/(`F` + M)]
 
 #merge back in with litter data set
 datlitter <- merge(datlitter, sexratios[, .(litter_id, sexratio)], by = "litter_id", all.x = TRUE)
+
+#check for duplicates
+janitor::get_dupes(datlitter)
+
+
+
+# Fix birth dates ---------------------------------------------------------
+
+datlitter[is.na(bdate) & weight1 < 50]
+
+
+#create col for source of part date
+datlitter[!is.na(bdate), part_status := "observed"]
+
+#if missing part date and first weight is less than 50, it can be estimated
+datlitter[is.na(bdate) & weight1 < 50, part_status := "estimated"]
+
+#estimate part date based on weight 1 for those missing part dates
+datlitter[is.na(bdate) & weight1 < 50, bdate := date1 - round((weight1 - 8)/1.8)]
+
+#convert to julian birth day
+datlitter[, bjulian := yday(bdate)]
 
 
 
 # Get basic summaries -----------------------------------------------------
 
 #How many growth rates?
-dat3[, .N]
+datlitter[, .N]
 
 #Get sample size by treatment
-dat3[, .N, food]
+datlitter[, .N, food]
 
-#missing growth rates?
+#missing values
+datlitter[is.na(littersize), .N]
 datlitter[is.na(growthrate), .N]
-
-#missing sex ratios?
+datlitter[is.na(bjulian), .N]
 datlitter[is.na(sexratio), .N]
 
 
@@ -260,7 +284,6 @@ datlitter[is.na(sexratio), .N]
 # save ---------------------------------------------------
 
 #save final growth rate
-saveRDS(dat2, "Output/Data/growth_rates_juvs.rds")
 saveRDS(datlitter, "Output/Data/growth_rates_litters.rds")
 
 saveRDS(overlap_ids, "Output/Data/overlap_ids.rds")
