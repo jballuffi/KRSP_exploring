@@ -15,10 +15,6 @@ data[, squirrel_yr := paste0(squirrel_id, "_", year)]
 #make a squirrel_year_grid col
 data[, squirrel_yr_gr := paste0(squirrel_id, "_", year, "_", grid)]
 
-#remove any cases of duplicate squirrel year/grid
-#most likely from someone censused twice
-data <- data[!duplicated(squirrel_yr_gr)]
-
 #convert spatial locations into meters
 data[, locX := locX*30][, locY := locY*30]
 
@@ -32,7 +28,7 @@ data[, locX := locX*30][, locY := locY*30]
 #step 6 calculate density
 
 #subset the data set to test on
-test <- data[grid == "AG" & year == 2010]
+test <- data[grid == "SU" & year == 2015]
 
 #randomly pick an individual
 testid <- sample(test$squirrel_id, 1)
@@ -104,7 +100,7 @@ densities <- data[grid %in% grids,
                     locy = locY, 
                     neighbors, 
                     density,
-                    source)]
+                    loc_source)]
 
 
 
