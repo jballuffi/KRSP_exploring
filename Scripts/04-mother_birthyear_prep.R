@@ -52,11 +52,19 @@ mombirths[, litter_id := NULL]
 #merge birth year and trap year
 momlives <- merge(mombirths, momtrap, by = "mother_id", all = TRUE)
 
+#create a source col
+momlives[!is.na(mother_byear), mombirth_source := "census"]
+momlives[is.na(mother_byear), mombirth_source := "trapping"]
+
 #if birth year is missing, make it the year before first trap year
 momlives[is.na(mother_byear), mother_byear := mother_firsttrap - 1]
 
 #fix mom id
 momlives[, mother_id := as.character(mother_id)]
+
+momlives[is.na(mother_byear), .N]
+momlives[, .N, mombirth_source]
+
 
 
 # save --------------------------------------------------------------------
