@@ -39,17 +39,17 @@ summary(food_mod)
 summary(cache_mod)
 summary(rattle_mod)
 
-#fuzzy caterpillars of models
-mcmc_plot(control_mod, type = "trace")
-mcmc_plot(food_mod, type = "trace")
-mcmc_plot(cache_mod, type = "trace")
-mcmc_plot(rattle_mod, type = "trace")
-
-#results plots
-conditional_effects(control_mod)
-conditional_effects(food_mod)
-conditional_effects(cache_mod)
-conditional_effects(rattle_mod)
+# #fuzzy caterpillars of models
+# mcmc_plot(control_mod, type = "trace")
+# mcmc_plot(food_mod, type = "trace")
+# mcmc_plot(cache_mod, type = "trace")
+# mcmc_plot(rattle_mod, type = "trace")
+# 
+# #results plots
+# conditional_effects(control_mod)
+# conditional_effects(food_mod)
+# conditional_effects(cache_mod)
+# conditional_effects(rattle_mod)
 
 
 # POSTERIOR PREDICTIONS -----------------------------------------------------------
@@ -286,7 +286,7 @@ control_pred[response.level == "littersize", response.level := "Litter size"]
 
 #FOOD MODEL
 #create predictions for both responses
-food_pred <- as.data.table(ggpredict(food_mod, terms = c("density_std", "treatment_food"))) #soluble biomass (sb)
+food_pred <- as.data.table(ggpredict(food_mod, terms = c("density_std", "treatment_ind"))) #soluble biomass (sb)
 
 #rename response variables
 food_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
@@ -324,7 +324,7 @@ cache_pred[response.level == "littersize", response.level := "Litter size"]
 
 #RATTLE MODEL
 #create predictions for both responses
-rattle_pred <- as.data.table(ggpredict(rattle_mod, terms = c("density_std", "treatment_food"))) #soluble biomass (sb)
+rattle_pred <- as.data.table(ggpredict(rattle_mod, terms = c("density_std", "treatment_ind"))) #soluble biomass (sb)
 
 #rename response variables
 rattle_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
