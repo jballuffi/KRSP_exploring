@@ -12,16 +12,10 @@ library(dplyr)
 
 
 #read in finalized data
-dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
-
-#issues with rattle data need to be fixed in merge script
-rattle[food == 19, treatment_food := "Rattle"]
-rattle[is.na(mother_byear), mother_byear := year - 1]
-rattle[is.na(mother_age), mother_age := 1]
 
 
 
@@ -49,22 +43,6 @@ biv_control_model <- brm(
   
 )
 
- #this is another way to write the model
-biv_control_model <- brm(
-  formula = bf(
-    mvbind(littersize, growthrate) ~ density_std + cones_tree_prev
-    + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
-    + (1|gridyear) + (1|mother_byear),
-    family = gaussian()),
-  set_rescor(TRUE),
-  data = controls,
-  chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
-  cores = 2, # Parallel processing, dependent on computer you are using
-  iter = 10000, #how many times are you going to sample, bella says 1000
-  warmup = 1000 #if model is having a hard time to converge this will help, having some is good.
-  
-)
-
 summary(biv_control_model)
 
 
@@ -72,13 +50,13 @@ summary(biv_control_model)
 # ANALYSIS 2: FOOD ADD DATA -----------------------------------------------
 
 f_continuous <- bf(
-  growthrate ~ treatment_food*density_std + cones_tree_prev
+  growthrate ~ treatment_ind*density_std + cones_tree_prev
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 f_ordinal <- bf(
-  littersize ~ treatment_food*density_std + cones_tree_prev
+  littersize ~ treatment_ind*density_std + cones_tree_prev
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
@@ -94,7 +72,6 @@ biv_food_model <- brm(
 )
 
 summary(biv_food_model)
-
 
 
 
@@ -130,13 +107,13 @@ summary(biv_cache_model)
 # Analysis 4: Rattle Analysis ---------------------------------------------
 
 r_continuous <- bf(
-  growthrate ~ treatment_food*density_std + cones_tree_prev
+  growthrate ~ treatment_ind*density_std + cones_tree_prev
   + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 r_ordinal <- bf(
-  littersize ~ treatment_food*density_std + cones_tree_prev
+  littersize ~ treatment_ind*density_std + cones_tree_prev
   + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
