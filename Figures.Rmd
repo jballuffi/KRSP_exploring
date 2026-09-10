@@ -31,8 +31,8 @@ source("Scripts/09-summary_figures.R")
 
 ![Top: litter growth rate (g/day) in response to litter size for control grids only (n = `r controls[, .N]` , colored by local density level. Bottom: litter growth rate (g/day) in response to litter size on food add grids only (n = `r food[, .N]` ), parsed by food add treatment of the mother (with a bucket or without a bucket), and colored by local density level.](Output/Figures/lm_results.jpeg)
 
-![Results from bivariate response models that predict red squirrel litter size and growth rates in response to local density. Left to right: 1. results from control grids only, 2. results from food add experiments, where blue lines are predictions for litters whose mother had food add (buckets of peanut butter) and red lines are for litters without food add, and 3. results from control grids during years where cache sizes were measured, with lines colored by cache size (red = low, green = medium, blue = high).](Output/Figures/Bayesian_predictions.jpeg)
+![Results from bivariate response models that predict red squirrel litter size and growth rates in response to local density. Upper left: results from control grids only; upper right: results from food add experiments and control grids; lower left: results from control grids during years where cache sizes were measured; lower right: results from rattle playback experiments.](Output/Figures/Bayesian_predictions.jpeg)
 
-![Posterior predictions for each model, control, food add, and cache.](Output/Figures/Posterior_predictions.jpeg)
+![Posterior predictions for each model, control, food add, cache, and rattle](Output/Figures/Posterior_predictions.jpeg)
 
-![Posterior distributions for covariance of litter size and litter growth rate for all three models: control, food add, and cache.](Output/Figures/Posterior_distributions.jpeg)
+![Posterior distributions for covariance of litter size and litter growth rate for all three models: control, food add, cache, and rattle.](Output/Figures/Posterior_distributions.jpeg)
