@@ -5,7 +5,7 @@
 lapply(dir('R', '*.R', full.names = TRUE), source)
 
 
-# get data from database --------------------------------------------------
+# get tree cone data from database --------------------------------------------------
 
 #connect with database
 con <- krsp_connect(
@@ -30,32 +30,35 @@ cones <- cones[, .(grid = Grid, year = as.integer(Year), tree_id, N = as.integer
 years <- 1988:2026
 
 #pair with grids of interest
-grid_data <- data.table(CJ(grid = grids, year = years))
-
+frame <- data.table(CJ(grid = grids, year = years))
 
 
 
 # get cone count by grid and year -----------------------------------------
 
-#doesn't seem to be any data until 1988
+#start in 1988
 cones <- cones[year > 1987]
 
 #log transform cone count plus 1 (because of zeros)
 cones[, Nlog := log(N + 1)]
 
-#get avg cone count by grid and year
-cones_grid <- cones[, .(cones_tree_grid = mean(Nlog, na.rm = TRUE)), by = .(year,grid)]
-cones_year <- cones[, .(cones_tree_year = mean(Nlog, na.rm = TRUE)), by = .(year)]
+#calculate avg cone count by grid and year. This is what we want ideally
+cones_grid <- cones[, .(cones = mean(Nlog, na.rm = TRUE)), by = .(year,grid)]
 
+#calculate avg cone count by year. This is in case grid-year avg is missing.
+cones_year <- cones[, .(cones_year = mean(Nlog, na.rm = TRUE)), by = .(year)]
 
-#merge with starting dataframe
-dat <- merge(grid_data, cones_grid, by = c("year", "grid"), all.x = TRUE)
+#merge cone-grid-year with starting data frame
+dat <- merge(frame, cones_grid, by = c("year", "grid"), all.x = TRUE)
+
+#merge in cone-year data to fill in gaps
 dat <- merge(dat, cones_year, by = "year", all.x = TRUE)
 
-dat[is.na(cones_tree_grid), cones_tree_grid := cones_tree_year][, cones_tree_year := NULL]
+#if cones from grid-year are missing, fill in with annual avg
+dat[is.na(cones), cones := cones_year][, cones_year := NULL]
 
 #lag this value to get t-1, or last year's cones count
-dat[, cones_tree_prev := lag(cones_tree_grid), grid]
+dat[, cones_prev := lag(cones), grid]
 
 
 
