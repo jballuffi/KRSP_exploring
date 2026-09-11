@@ -62,37 +62,16 @@ dat[, cones_prev := lag(cones), grid]
 
 
 
-# Use Jo for BT when BT is missing (2010 + 2018 + 2023) --------------------------
-
-# #what years do we have prev cone count for BT
-# cones_avg[!is.na(cones_tree_prev) & grid == "BT", unique(year)]
-# #we are missing prev cone counts for BT in 2010, 2018, and 2023
-# 
-# #get prev cone count from Jo for missing BT years
-# BTgaps <- cones_avg[grid == "JO" & (year == 2010 | year == 2018 | year == 2023)]
-# BTgaps[, grid := "BT"]
-# 
-# #remove BT in 2018
-# cones_avg <- cones_avg[!(grid == "BT" & year == 2018)]
-# 
-# #merge back with data
-# cones_avg <- rbind(cones_avg, BTgaps, fill = TRUE)
-# 
-# #take only grids of interest
-# cones_avg <- cones_avg[grid %in% grids]
-
-
-
 # Plot --------------------------------------------------------------------
 
 setorder(dat, grid, year)
 
 #plot
 ggplot(dat)+
-  geom_path(aes(x = year, y = cones_tree_prev, color = grid, group = grid))
+  geom_path(aes(x = year, y = cones_prev, color = grid, group = grid))
 
 
 
 # save --------------------------------------------------------------------
 
-saveRDS(cones_avg, "Output/Data/tree_cone_counts.rds")
+saveRDS(dat, "Output/Data/tree_cone_counts.rds")
