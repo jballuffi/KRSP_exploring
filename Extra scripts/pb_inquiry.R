@@ -18,7 +18,7 @@ pb <- as.data.table(tbl(con, "pb_data") %>% collect())
 #buckets <- fread("Input/fed_squirrels.csv")
 
 #get final merged data
-dat <- readRDS("Output/Data/final_data.rds")
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 
 
 

@@ -279,6 +279,9 @@ datlitter[is.na(growthrate), .N]
 datlitter[is.na(bjulian), .N]
 datlitter[is.na(sexratio), .N]
 
+#check for duplicate litter IDs
+datlitter[duplicated(litter_id) == TRUE]
+
 
 
 # save ---------------------------------------------------
