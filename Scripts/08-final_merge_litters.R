@@ -1,7 +1,6 @@
 
-#this script is a copy of final_merge_juvs. If that script has change, recopy over.
-#script to merge and create the final data for analyses using litters as the unit
-#merges local densities and average litter growth rates + litter info data
+#script to merge all prepped data for final analyses using litters as the unit
+#merges litter growth rate and sizes, local densities, tree cone counts, cache sizes, and mother birth years
 
 
 # load libraries and data -------------------------------------------------
@@ -105,8 +104,13 @@ dat[is.na(bucket), bucket := 0]
 #are there cases where not food treatment but has bucket?
 dat[food == 0 & bucket == 1, .N, by = .(grid, year)] #Just LL 2012 which we will remove
 
-#cases where rattle has a bucket?
+#cases where rattle has a bucket? According to the PB bucket table this midden was given PB in 2010.
+#However it looks like there is a duplicate value for this mom, so I wonder if she had two middens and that one was given PB
+#and the other was off grid
 dat <- dat[!(food == 19 & bucket == 1)]
+
+#check for any duplicate litters
+dat[duplicated(litter_id) == TRUE]
 
 #create treatment col based on food col.
 dat[food == 0 | food == 18, treatment_gr := "Control"][food == 1, treatment_gr := "Food add"][food == 19, treatment_gr := "Rattle"]
