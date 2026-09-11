@@ -25,7 +25,7 @@ controls[, growthrate_resid := growthrate - growthrate_pred]
 
 
 baytest <- bf(
-  growthrate_resid ~ density_std + cones_tree_prev
+  growthrate_resid ~ density_std + cones_std
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
