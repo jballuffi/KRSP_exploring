@@ -13,8 +13,8 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 dens <- readRDS("Output/Data/local_densities.rds")
 growth <- readRDS("Output/Data/growth_rates_litters.rds") #this is avg growth rates of litters
 moms <- readRDS("Output/Data/mom_lives.rds")
-trees <- readRDS("Output/Data/tree_cone_counts.rds")
-cones <- readRDS("Output/Data/cone_cache.rds")
+cones <- readRDS("Output/Data/tree_cone_counts.rds")
+cache <- readRDS("Output/Data/cone_cache.rds")
 
 overlap_ids <- readRDS("Output/Data/overlap_ids.rds")
 overlap_tags<- readRDS("Output/Data/overlap_eartag.rds")
@@ -24,9 +24,9 @@ meandensities <- dens[, .(griddensity = median(density, na.rm = TRUE)), by = .(g
 
 
 
-# initial merge -------------------------------------------------
+# fix density data to use ear tag in cases where normal ID is missing -------------------------------------------------
 
-#take left ear tag for density for cases where ID was both ear tags
+#take left ear tag for cases where ID was both ear tags
 dens[grep("-", mother_id), MTaglft := tstrsplit(mother_id, "-", keep = 1)]
 
 #change name in overlap id
@@ -38,6 +38,10 @@ dens1 <- merge(dens, overlap_ids, by = "MTaglft", all.x = TRUE)
 #where there is an overlap ID, make overlap ID the mother ID
 dens1[!is.na(overlap_id), mother_id := overlap_id][, overlap_id := NULL][, MTaglft := NULL]
 
+
+
+# initial merge -----------------------------------------------------------
+
 #merge density and growth data by mother id, year and grid
 m1 <- merge(dens1, growth, by = c("mother_id", "year", "grid"), all.y = TRUE)
 
@@ -48,14 +52,15 @@ m1 <- merge(m1, meandensities, by = c("grid", "year"), all.x = TRUE)
 m1[grid == "RR", grid := "LL"]
 
 #anyone without local density gets the median density of their grid
-m1[is.na(density) & !is.na(griddensity), source := "median"]
+m1[!is.na(density), density_source := "count"]
+m1[is.na(density) & !is.na(griddensity), density_source := "median"]
 m1[is.na(density), density := griddensity]
 
 #merge with tree cone counts
-m2 <- merge(m1, trees[, .(grid, year, cones_tree_prev)], by = c("year", "grid"), all.x = TRUE)
+m2 <- merge(m1, cones[, .(grid, year, cones_prev)], by = c("year", "grid"), all.x = TRUE)
 
 #merge with cone cache data
-m3 <- merge(m2, cones, by = c("mother_id", "year", "grid"), all.x = TRUE)
+m3 <- merge(m2, cache, by = c("mother_id", "year", "grid"), all.x = TRUE)
 
 #merge in mom age and lifespan
 dat <- merge(m3, moms, by = c("mother_id"), all.x = TRUE)
@@ -154,7 +159,7 @@ dat2 <- dat2[!(grid == "KL" & food == 1)]
 dat2[, density_std := scale(density), year]
 
 #standardize cones globally
-dat2[, cones_tree_std := scale(cones_tree_prev), year]
+dat2[, cones_std := scale(cones_prev), year]
 
 #standardize birth date by grid year
 dat2[, bjulian_std := scale(bjulian), gridyear]
