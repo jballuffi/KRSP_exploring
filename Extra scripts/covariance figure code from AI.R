@@ -106,3 +106,14 @@ ggplot(cov_summary, aes(density_std, median)) +
   theme_minimal(base_size = 14)
 
 
+
+
+
+# Food model --------------------------------------------------------------
+
+
+
+
+
+
+
