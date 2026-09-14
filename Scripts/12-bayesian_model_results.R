@@ -10,14 +10,9 @@ library(purrr)
 library(dplyr)
 
 
-#rescor = residual correlation parameter
-
-
-
 # read in data and models ------------------------------------------------------------
 
 #read in finalized data
-dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
@@ -28,7 +23,7 @@ control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
 cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
 rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
-
+#rescor = residual correlation parameter
 
 
 # Summarize models -----------------------------------------------------------
@@ -140,7 +135,7 @@ df_joint_cache <- data.frame(
     )
 )
 
-#FOOD OPTION 2
+#RATTLE MODEL
 # 1. Generate posterior predictions for both variables across your data
 pred_growth_rattle <- posterior_predict(rattle_mod, resp = "growthrate")
 pred_litter_rattle <- posterior_predict(rattle_mod, resp = "littersize")
@@ -305,7 +300,7 @@ food_pred[response.level == "littersize", response.level := "Litter size"]
 
 #CACHE MODEL
 #create predictions for both responses
-cache_pred <- as.data.table(ggpredict(cache_mod, terms = c("density_std", "cache_std"))) #soluble biomass (sb)
+cache_pred <- as.data.table(ggpredict(cache_mod, terms = c("density_std", "cache_cat"))) #soluble biomass (sb)
 
 #rename response variables
 cache_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
