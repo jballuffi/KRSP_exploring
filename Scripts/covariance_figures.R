@@ -28,48 +28,48 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
 # FOOD MODEL COV AND COR --------------------------------------------------
 
-# Step 1: build prediction grid
+# Step 1: create the data to base the prediction on 
 
 fooddat <- expand.grid(
-  density_std = seq(min(food$density_std), max(food$density_std), length.out = 100),
-  treatment_ind = levels(food$treatment_ind),
-  cones_std = mean(food$cones_std, na.rm = TRUE),
-  mother_age_std = mean(food$mother_age_std, na.rm = TRUE),
-  bjulian_std = mean(food$bjulian_std),
-  mast = "no",              # or the modal value in your data
-  sexratio = mean(food$sexratio),
-  gridyear = NA,            # NA → population-level prediction
-  mother_byear = NA
+  density_std = seq(min(food$density_std), max(food$density_std), length.out = 100), #full range of density
+  treatment_ind = levels(food$treatment_ind),  #all treatments
+  cones_std = mean(food$cones_std, na.rm = TRUE),  #full range of tree cone count
+  mother_age_std = mean(food$mother_age_std, na.rm = TRUE),  #avg mother age
+  bjulian_std = mean(food$bjulian_std),  #avg birth date
+  mast = "no",  # predicting for a non-mast year
+  sexratio = mean(food$sexratio),  #avg sex ratio
+  gridyear = NA,  #Using NA because we want a population-level prediction
+  mother_byear = NA  # same as grid year
 )
 
 
-# Step 2 — Get expected posterior predictions
+# Step 2 — Make an array of the expected posterior predictions
 
-ep <- posterior_epred(food_mod,          #what's the model we are predicting off of
-                      newdata = fooddat,  #whats the data we are basing the prediction on
+ep_food <- posterior_epred(food_mod,  #the model we are using to create predictions
+                      newdata = fooddat,  #the data from step 1
                       re_formula = NA)   #use this argument to drop random effects and predict for the whole population
 
-growth_ep <- ep[, , 1]   # grab the expected growth rate
-litter_ep <- ep[, , 2]   # expected littersize
+growth_ep_food <- ep_food[, , 1]   # grab the expected growth rate from array
+litter_ep_food <- ep_food[, , 2]   # expected litter size from array
 
 
 # Step 3 — Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
 
 #compute covariance
-cov_df <- map_dfr(seq_len(nrow(fooddat)), function(i) {
+cov_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
   data.frame(
     density_std = fooddat$density_std[i],
     treatment_ind = fooddat$treatment_ind[i],
-    cov = cov(growth_ep[, i], litter_ep[, i])
+    cov = cov(growth_ep_food[, i], litter_ep_food[, i])
   )
 })
 
 #compute correlation
-cor_df <- map_dfr(seq_len(nrow(fooddat)), function(i) {
+cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
   data.frame(
     density_std = fooddat$density_std[i],
     treatment_ind = fooddat$treatment_ind[i],
-    cor = cor(growth_ep[, i], litter_ep[, i])
+    cor = cor(growth_ep_food[, i], litter_ep_food[, i])
   )
 })
 
@@ -77,7 +77,7 @@ cor_df <- map_dfr(seq_len(nrow(fooddat)), function(i) {
 # Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
 
 #covariance
-ggplot(cov_df, aes(density_std, cov, color = treatment_ind)) +
+ggplot(cov_df_food, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
   labs(
     x = "Density (standardized)",
@@ -87,7 +87,7 @@ ggplot(cov_df, aes(density_std, cov, color = treatment_ind)) +
   theme_minimal(base_size = 15)
 
 #correlation
-ggplot(cor_df, aes(density_std, cor, color = treatment_ind)) +
+ggplot(cor_df_food, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
   labs(
     x = "Density (standardized)",
@@ -101,32 +101,32 @@ ggplot(cor_df, aes(density_std, cor, color = treatment_ind)) +
 
 # CACHE MODEL COV AND COR -------------------------------------------------
 
-# Step 1: build prediction grid
+# Step 1:
 
 cachedat <- expand.grid(
   density_std = seq(min(cache$density_std), max(cache$density_std), length.out = 100),
-  cache_cat = levels(cache$cache_cat),
+  cache_cat = levels(cache$cache_cat),  #instead of treatment we are using categories of cache size
   cones_std = mean(cache$cones_std, na.rm = TRUE),
   mother_age_std = mean(cache$mother_age_std, na.rm = TRUE),
   bjulian_std = mean(cache$bjulian_std),
-  mast = "no",              # or the modal value in your data
+  mast = "no",              
   sexratio = mean(cache$sexratio),
-  gridyear = NA,            # NA → population-level prediction
+  gridyear = NA, 
   mother_byear = NA
 )
 
 
 # Step 2 — Get expected posterior predictions
 
-ep_cache <- posterior_epred(cache_mod,          #what's the model we are predicting off of
-                      newdata = cachedat,  #whats the data we are basing the prediction on
-                      re_formula = NA)   #use this argument to drop random effects and predict for the whole population
+ep_cache <- posterior_epred(cache_mod,          
+                      newdata = cachedat,  
+                      re_formula = NA)   
 
-growth_ep_cache <- ep_cache[, , 1]   # grab the expected growth rate
-litter_ep_cache <- ep_cache[, , 2]   # expected littersize
+growth_ep_cache <- ep_cache[, , 1]   
+litter_ep_cache <- ep_cache[, , 2]   
 
 
-# Step 3 — Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
+# Step 3 — Compute covariance and correlation at each density × cache size (uses dplyr and purrr)
 
 #compute covariance
 cov_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
@@ -147,7 +147,7 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
 })
 
 
-# Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
+# Step 4 — Plot covariance vs. density and correlation vs. density with 3 categories of cache size
 
 #covariance
 ggplot(cov_df_cache, aes(density_std, cov, color = cache_cat)) +
@@ -170,4 +170,74 @@ ggplot(cor_df_cache, aes(density_std, cor, color = cache_cat)) +
   theme_minimal(base_size = 15)
 
 
+
+# CACHE MODEL COV AND COR -------------------------------------------------
+
+# Step 1: build prediction grid
+
+rattdat <- expand.grid(
+  density_std = seq(min(rattle$density_std), max(rattle$density_std), length.out = 100),
+  treatment_ind = levels(rattle$treatment_ind),  #using treatment of rattle vs control
+  cones_std = mean(rattle$cones_std, na.rm = TRUE),
+  mother_age_std = mean(rattle$mother_age_std, na.rm = TRUE),
+  bjulian_std = mean(rattle$bjulian_std),
+  mast = "no",
+  sexratio = mean(rattle$sexratio),
+  gridyear = NA,
+  mother_byear = NA
+)
+
+
+# Step 2 — Get expected posterior predictions
+
+ep_rattle <- posterior_epred(rattle_mod,
+                      newdata = rattdat,
+                      re_formula = NA) 
+
+growth_ep_rattle <- ep_rattle[, , 1]  
+litter_ep_rattle <- ep_rattle[, , 2] 
+
+
+# Step 3 — Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
+
+#compute covariance
+cov_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
+  data.frame(
+    density_std = rattdat$density_std[i],
+    treatment_ind = rattdat$treatment_ind[i],
+    cov = cov(growth_ep_rattle[, i], litter_ep_rattle[, i])
+  )
+})
+
+#compute correlation
+cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
+  data.frame(
+    density_std = rattdat$density_std[i],
+    treatment_ind = rattdat$treatment_ind[i],
+    cor = cor(growth_ep_rattle[, i], litter_ep_rattle[, i])
+  )
+})
+
+
+# Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
+
+#covariance
+ggplot(cov_df_rattle, aes(density_std, cov, color = treatment_ind)) +
+  geom_line(size = 1.2) +
+  labs(
+    x = "Density (standardized)",
+    y = "Posterior covariance\n(growthrate × littersize)",
+    color = "Treatment"
+  ) +
+  theme_minimal(base_size = 15)
+
+#correlation
+ggplot(cor_df_rattle, aes(density_std, cor, color = treatment_ind)) +
+  geom_line(size = 1.2) +
+  labs(
+    x = "Density (standardized)",
+    y = "Posterior correlation\n(growthrate × littersize)",
+    color = "Treatment"
+  ) +
+  theme_minimal(base_size = 15)
 
