@@ -13,6 +13,8 @@ library(dplyr)
 control_mod <- readRDS("Output/Models/control_model_litters.rds")
 dat <- readRDS("Output/Data/control_cleaned_litters.rds")
 
+food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
+food <- readRDS("Output/Data/food_cleaned_litters.rds")
 
 
 
@@ -26,7 +28,7 @@ dat <- readRDS("Output/Data/control_cleaned_litters.rds")
 #First create new data based on density range and mean values
 newdat <- data.frame(
   density_std = seq(min(dat$density_std), max(dat$density_std), length.out = 100),
-  cones_tree_prev = mean(dat$cones_tree_prev, na.rm = TRUE),
+  cones_std = mean(dat$cones_std, na.rm = TRUE),
   mother_age_std = mean(dat$mother_age_std, na.rm = TRUE),
   bjulian_std = mean(dat$bjulian_std, na.rm = TRUE),
   mast = "no",
@@ -36,7 +38,7 @@ newdat <- data.frame(
 )
 
 #used control model to predict based on the new data
-pred <- posterior_epred(control_mod, newdata = newdat)
+pred <- posterior_epred(control_mod, newdata = newdat, re_formula = NA)
 
 #Take different predictions
 pred_growth <- pred[,,1]     # growthrate predictions
@@ -120,12 +122,12 @@ fooddat <- data.frame(
   mast = "no",
   sexratio = mean(food$sexratio),
   treatment_ind = "No Bucket",
-  gridyear = "LL-2008",
-  mother_byear = 2006
+  gridyear = NA,
+  mother_byear = NA
 )
 
 #used control model to predict based on the new data
-pred_food <- posterior_epred(food_mod)
+pred_food <- posterior_epred(food_mod, newdata = fooddat, re_formula = NA)
 
 #Take different predictions
 pred_food_growth <- pred_food[,,1]     # growthrate predictions
@@ -161,8 +163,9 @@ ggplot(cov_food_summary, aes(density_std, median)) +
   ) +
   theme_minimal(base_size = 14)
 
-
-
+#According to Copilot: ^^This is not covariance. This is just the product of the two predicted means for each posterior draw.
+#Product of means. This quantity: does not measure co‑movement, does not measure joint variation, does not use the covariance formula
+#does not reflect the multivariate structure, it is simply a linear transformation of the predicted means
 
 
 

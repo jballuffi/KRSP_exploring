@@ -30,69 +30,7 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
 
 
-# Control model ---------------------------------------------
-
-newdat <- data.frame(
-  density_std = seq(min(controls$density_std), max(controls$density_std), length.out = 100),
-  cones_std = mean(controls$cones_std, na.rm = TRUE),
-  mother_age_std = mean(controls$mother_age_std, na.rm = TRUE),
-  bjulian_std = mean(controls$bjulian_std, na.rm = TRUE),
-  mast = "no",
-  sexratio = mean(controls$sexratio),
-  gridyear = "SU-1999",
-  mother_byear = 1997
-)
-
-#used control model to predict based on the new data
-pred <- posterior_epred(control_mod, newdata = newdat)
-
-#Take different predictions
-pred_growth <- pred[,,1]     # growthrate predictions
-pred_litter <- pred[,,2]     # littersize predictions
-
-
-cov_by_x_full <- map_dfr(seq_len(ncol(pred_growth)), function(i) {
-  
-  g <- pred_growth[, i]
-  l <- pred_litter[, i]
-  
-  tibble(
-    density_std = newdat$density_std[i],
-    cov = g * l   # product of draws approximates covariance structure
-  )
-})
-
-cov_summary <- cov_by_x_full %>%
-  group_by(density_std) %>%
-  summarise(
-    median = median(cov),
-    lower = quantile(cov, 0.1),
-    upper = quantile(cov, 0.9)
-  )
-
-#plot covariance
-ggplot(cov_summary, aes(density_std, median)) +
-  geom_line(size = 1.1) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
-  labs(
-    x = "Density (standardized)",
-    y = "Posterior covariance (80% CI)"
-  ) +
-  theme_minimal(base_size = 14)
-
-
-
-
-
-# Food Model --------------------------------------------------------------
-
-
-
-
-
-
 # Step 1: build prediction grid
-
 
 newdat <- expand.grid(
   density_std = seq(min(food$density_std), max(food$density_std), length.out = 100),
@@ -119,8 +57,9 @@ litter_ep <- ep[, , 2]   # expected littersize
 
 
 
-# Step 3 — Compute covariance at each density × treatment (uses dplyr and purrr)
+# Step 3 — Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
 
+#covariance
 cov_df <- map_dfr(seq_len(nrow(newdat)), function(i) {
   data.frame(
     density_std = newdat$density_std[i],
@@ -129,8 +68,16 @@ cov_df <- map_dfr(seq_len(nrow(newdat)), function(i) {
   )
 })
 
+#correlation
+cor_df <- map_dfr(seq_len(nrow(newdat)), function(i) {
+  data.frame(
+    density_std = newdat$density_std[i],
+    treatment_ind = newdat$treatment_ind[i],
+    cor = cor(growth_ep[, i], litter_ep[, i])
+  )
+})
 
-# Step 4 — Plot covariance vs. density, with 3 treatment lines
+# Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
 
 ggplot(cov_df, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
@@ -141,6 +88,13 @@ ggplot(cov_df, aes(density_std, cov, color = treatment_ind)) +
   ) +
   theme_minimal(base_size = 15)
 
-
+ggplot(cor_df, aes(density_std, cor, color = treatment_ind)) +
+  geom_line(size = 1.2) +
+  labs(
+    x = "Density (standardized)",
+    y = "Posterior correlation\n(growthrate × littersize)",
+    color = "Treatment"
+  ) +
+  theme_minimal(base_size = 15)
 
 
