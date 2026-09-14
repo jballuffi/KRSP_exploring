@@ -26,8 +26,6 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
 
 
-
-
 # FOOD MODEL COV AND COR --------------------------------------------------
 
 # Step 1: build prediction grid
@@ -105,12 +103,9 @@ ggplot(cor_df, aes(density_std, cor, color = treatment_ind)) +
 
 # Step 1: build prediction grid
 
-#make category for cache size
-cachedat[, cac]
-
 cachedat <- expand.grid(
   density_std = seq(min(cache$density_std), max(cache$density_std), length.out = 100),
-  cache_std = mean(cache$cache_std),
+  cache_cat = levels(cache$cache_cat),
   cones_std = mean(cache$cones_std, na.rm = TRUE),
   mother_age_std = mean(cache$mother_age_std, na.rm = TRUE),
   bjulian_std = mean(cache$bjulian_std),
@@ -137,7 +132,7 @@ litter_ep_cache <- ep_cache[, , 2]   # expected littersize
 cov_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
   data.frame(
     density_std = cachedat$density_std[i],
-    #treatment_ind = fooddat$treatment_ind[i],
+    cache_cat = cachedat$cache_cat[i],
     cov = cov(growth_ep_cache[, i], litter_ep_cache[, i])
   )
 })
@@ -146,7 +141,7 @@ cov_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
 cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
   data.frame(
     density_std = cachedat$density_std[i],
-    #treatment_ind = fooddat$treatment_ind[i],
+    cache_cat = cachedat$cache_cat[i],
     cor = cor(growth_ep_cache[, i], litter_ep_cache[, i])
   )
 })
@@ -155,19 +150,24 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
 # Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
 
 #covariance
-ggplot(cov_df_cache, aes(density_std, cov)) +
+ggplot(cov_df_cache, aes(density_std, cov, color = cache_cat)) +
   geom_line(size = 1.2) +
   labs(
     x = "Density (standardized)",
-    y = "Posterior covariance\n(growthrate × littersize)"
+    y = "Posterior covariance\n(growthrate × littersize)",
+    color = "Cache level"
   ) +
   theme_minimal(base_size = 15)
 
 #correlation
-ggplot(cor_df_cache, aes(density_std, cor)) +
+ggplot(cor_df_cache, aes(density_std, cor, color = cache_cat)) +
   geom_line(size = 1.2) +
   labs(
     x = "Density (standardized)",
-    y = "Posterior correlation\n(growthrate × littersize)"
+    y = "Posterior correlation\n(growthrate × littersize)",
+    color = "Cache level"
   ) +
   theme_minimal(base_size = 15)
+
+
+
