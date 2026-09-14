@@ -80,13 +80,13 @@ summary(biv_food_model)
 #Data from KL/SU to assess impact of hoarded cones on co-variance.
 
 c_continuous <- bf(
-  growthrate ~ cache_std*density_std + cones_std
+  growthrate ~ cache_cat*density_std + cones_std
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 c_ordinal <- bf(
-  littersize ~ cache_std*density_std + cones_std
+  littersize ~ cache_cat*density_std + cones_std
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
