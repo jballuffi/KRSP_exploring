@@ -237,10 +237,13 @@ controls <- dat2[grid == "SU" | grid == "KL"]
 
 #make food 2 data set: control and food add grids during food years
 food <- dat2[(food == 1 | grid == "SU" | grid == "KL")]
+food[, treatment_ind := factor(treatment_ind)]
+
 
 #make rattle experiment dataset
 rattleyears <- dat2[food == 19, unique(year)] #get years with rattles
 rattle <- dat2[year %in% rattleyears & (food == 19 | food == 18 | food == 0)] #take all data from year of rattle playbacks
+rattle[, treatment_ind := factor(treatment_ind)]
 
 
 
