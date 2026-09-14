@@ -17,7 +17,6 @@ library(dplyr)
 # read in data and models ------------------------------------------------------------
 
 #read in finalized data
-dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
@@ -88,54 +87,59 @@ ggplot(cov_summary, aes(density_std, median)) +
 # Food Model --------------------------------------------------------------
 
 
-fooddat <- data.frame(
+
+
+
+
+# Step 1: build prediction grid
+
+
+newdat <- expand.grid(
   density_std = seq(min(food$density_std), max(food$density_std), length.out = 100),
+  treatment_ind = levels(food$treatment_ind),
   cones_std = mean(food$cones_std, na.rm = TRUE),
   mother_age_std = mean(food$mother_age_std, na.rm = TRUE),
-  bjulian_std = mean(food$bjulian_std, na.rm = TRUE),
-  mast = "no",
+  bjulian_std = mean(food$bjulian_std),
+  mast = "no",              # or the modal value in your data
   sexratio = mean(food$sexratio),
-  treatment_ind = "Control",
-  gridyear = "LL-2008",
-  mother_byear = 2006
+  gridyear = NA,            # NA → population-level prediction
+  mother_byear = NA
 )
 
-#used control model to predict based on the new data
-pred_food <- posterior_epred(food_mod, newdata = fooddat)
-
-#Take different predictions
-pred_food_growth <- pred_food[,,1]     # growthrate predictions
-pred_food_litter <- pred_food[,,2]     # littersize predictions
 
 
-cov_by_x_food <- map_dfr(seq_len(ncol(pred_food_growth)), function(i) {
-  
-  g <- pred_food_growth[, i]
-  l <- pred_food_litter[, i]
-  
-  tibble(
-    density_std = fooddat$density_std[i],
-    cov = g * l   # product of draws approximates covariance structure
+# Step 2 — Get expected posterior predictions
+
+ep <- posterior_epred(food_mod,          #what's the model we are predicting off of
+                      newdata = newdat,  #whats the data we are basing the prediction on
+                      re_formula = NA)   #use this argument to drop random effects and predict for the whole population
+
+growth_ep <- ep[, , 1]   # grab the expected growth rate
+litter_ep <- ep[, , 2]   # expected littersize
+
+
+
+# Step 3 — Compute covariance at each density × treatment (uses dplyr and purrr)
+
+cov_df <- map_dfr(seq_len(nrow(newdat)), function(i) {
+  data.frame(
+    density_std = newdat$density_std[i],
+    treatment_ind = newdat$treatment_ind[i],
+    cov = cov(growth_ep[, i], litter_ep[, i])
   )
 })
 
-cov_food_summary <- cov_by_x_food %>%
-  group_by(density_std) %>%
-  summarise(
-    median = median(cov),
-    lower = quantile(cov, 0.1),
-    upper = quantile(cov, 0.9)
-  )
 
-#plot covariance
-ggplot(cov_food_summary, aes(density_std, median)) +
-  geom_line(size = 1.1) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
+# Step 4 — Plot covariance vs. density, with 3 treatment lines
+
+ggplot(cov_df, aes(density_std, cov, color = treatment_ind)) +
+  geom_line(size = 1.2) +
   labs(
     x = "Density (standardized)",
-    y = "Posterior covariance (80% CI)"
+    y = "Posterior covariance\n(growthrate × littersize)",
+    color = "Treatment"
   ) +
-  theme_minimal(base_size = 14)
+  theme_minimal(base_size = 15)
 
 
 

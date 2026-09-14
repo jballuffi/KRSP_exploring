@@ -112,6 +112,56 @@ ggplot(cov_summary, aes(density_std, median)) +
 # Food model --------------------------------------------------------------
 
 
+fooddat <- data.frame(
+  density_std = seq(min(food$density_std), max(food$density_std), length.out = 100),
+  cones_std = mean(food$cones_std, na.rm = TRUE),
+  mother_age_std = mean(food$mother_age_std, na.rm = TRUE),
+  bjulian_std = mean(food$bjulian_std, na.rm = TRUE),
+  mast = "no",
+  sexratio = mean(food$sexratio),
+  treatment_ind = "No Bucket",
+  gridyear = "LL-2008",
+  mother_byear = 2006
+)
+
+#used control model to predict based on the new data
+pred_food <- posterior_epred(food_mod)
+
+#Take different predictions
+pred_food_growth <- pred_food[,,1]     # growthrate predictions
+pred_food_litter <- pred_food[,,2]     # littersize predictions
+
+
+cov_by_x_food <- map_dfr(seq_len(ncol(pred_food_growth)), function(i) {
+  
+  g <- pred_food_growth[, i]
+  l <- pred_food_litter[, i]
+  
+  tibble(
+    density_std = fooddat$density_std[i],
+    cov = g * l   # product of draws approximates covariance structure
+  )
+})
+
+cov_food_summary <- cov_by_x_food %>%
+  group_by(density_std) %>%
+  summarise(
+    median = median(cov),
+    lower = quantile(cov, 0.1),
+    upper = quantile(cov, 0.9)
+  )
+
+#plot covariance
+ggplot(cov_food_summary, aes(density_std, median)) +
+  geom_line(size = 1.1) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
+  labs(
+    x = "Density (standardized)",
+    y = "Posterior covariance (80% CI)"
+  ) +
+  theme_minimal(base_size = 14)
+
+
 
 
 
