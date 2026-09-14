@@ -1,13 +1,12 @@
 
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
 #load library
 library(brms)
 library(bayesplot)
-library(ggplot2)
-library(ggeffects)
-library(data.table)
-library(ggpubr)
 library(purrr)
-library(dplyr)
+
 
 
 # read in data and models ------------------------------------------------------------
@@ -77,25 +76,18 @@ cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
 # Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
 
 #covariance
-ggplot(cov_df_food, aes(density_std, cov, color = treatment_ind)) +
+(food_cov <- ggplot(cov_df_food, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  labs(
-    x = "Density (standardized)",
-    y = "Posterior covariance\n(growthrate × littersize)",
-    color = "Treatment"
-  ) +
-  theme_minimal(base_size = 15)
+  scale_color_manual(values = treatment_cols) +
+  labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
+  theme_bw())
 
 #correlation
-ggplot(cor_df_food, aes(density_std, cor, color = treatment_ind)) +
+(food_cor <- ggplot(cor_df_food, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  labs(
-    x = "Density (standardized)",
-    y = "Posterior correlation\n(growthrate × littersize)",
-    color = "Treatment"
-  ) +
-  theme_minimal(base_size = 15)
-
+    scale_color_manual(values = treatment_cols) +
+  labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
+  theme_bw())
 
 
 
@@ -150,24 +142,18 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
 # Step 4 — Plot covariance vs. density and correlation vs. density with 3 categories of cache size
 
 #covariance
-ggplot(cov_df_cache, aes(density_std, cov, color = cache_cat)) +
-  geom_line(size = 1.2) +
-  labs(
-    x = "Density (standardized)",
-    y = "Posterior covariance\n(growthrate × littersize)",
-    color = "Cache level"
-  ) +
-  theme_minimal(base_size = 15)
+(cache_cov <- ggplot(cov_df_cache, aes(density_std, cov, color = cache_cat)) +
+    geom_line(size = 1.2) +
+    scale_color_manual(values = cache_cols) +
+    labs(subtitle = "Cache model", x = "", y = "Posterior covariance\n(GR × LS)", color = "Cache level") +
+    theme_bw() )
 
 #correlation
-ggplot(cor_df_cache, aes(density_std, cor, color = cache_cat)) +
+(cache_cor <- ggplot(cor_df_cache, aes(density_std, cor, color = cache_cat)) +
   geom_line(size = 1.2) +
-  labs(
-    x = "Density (standardized)",
-    y = "Posterior correlation\n(growthrate × littersize)",
-    color = "Cache level"
-  ) +
-  theme_minimal(base_size = 15)
+  scale_color_manual(values = cache_cols) +
+  labs(subtitle = "Cache model", x = "", y = "Posterior correlation\n(GR × LS)", color = "Cache level") +
+    theme_bw() )
 
 
 
@@ -222,22 +208,28 @@ cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
 # Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
 
 #covariance
-ggplot(cov_df_rattle, aes(density_std, cov, color = treatment_ind)) +
+(rattle_cov <- ggplot(cov_df_rattle, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  labs(
-    x = "Density (standardized)",
-    y = "Posterior covariance\n(growthrate × littersize)",
-    color = "Treatment"
-  ) +
-  theme_minimal(base_size = 15)
+  scale_color_manual(values = treatment_cols) +
+  labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
+  theme_bw())
 
 #correlation
-ggplot(cor_df_rattle, aes(density_std, cor, color = treatment_ind)) +
+(rattle_cor <- ggplot(cor_df_rattle, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  labs(
-    x = "Density (standardized)",
-    y = "Posterior correlation\n(growthrate × littersize)",
-    color = "Treatment"
-  ) +
-  theme_minimal(base_size = 15)
+  scale_color_manual(values = treatment_cols) +
+  labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
+  theme_bw())
+
+ 
+
+
+
+# compile all figures into one --------------------------------------------
+
+cov_fig <- ggarrange(food_cov, cache_cov, rattle_cov, ncol = 1, nrow = 3, align = "hv")
+cor_fig <- ggarrange(food_cor, cache_cor, rattle_cor, ncol = 1, nrow = 3, align = "hv")
+
+ggsave("Output/Figures/covariance_results.jpeg", cov_fig, width = 5, height = 10)
+ggsave("Output/Figures/correlation_results.jpeg", cor_fig, width = 5, height = 10)
 
