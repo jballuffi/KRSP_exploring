@@ -1,13 +1,13 @@
 
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
+
 #load library
 library(brms)
 library(bayesplot)
-library(ggplot2)
-library(ggeffects)
-library(data.table)
-library(ggpubr)
 library(purrr)
-library(dplyr)
+
 
 
 # read in data and models ------------------------------------------------------------
@@ -292,6 +292,8 @@ food_pred[response.level == "littersize", response.level := "Litter size"]
     ggplot(food_pred)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+    scale_color_manual(values = treatment_cols)+
+    scale_fill_manual(values = treatment_cols)+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     labs(x = "Density (stnd)", y = "Predicted value", title = "Food Model", color = "Food treatment", fill = "Food treatment")+
     theme_bw()
@@ -311,6 +313,8 @@ cache_pred[response.level == "littersize", response.level := "Litter size"]
     ggplot(cache_pred)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+    scale_color_manual(values = cache_cols)+
+    scale_fill_manual(values = cache_cols)+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     labs(x = "Density (stnd)", y = "Predicted value", title = "Cache Model", color = "Cache level", fill = "Cache level")+
     theme_bw()
@@ -330,6 +334,8 @@ rattle_pred[response.level == "littersize", response.level := "Litter size"]
     ggplot(rattle_pred)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+    scale_color_manual(values = treatment_cols)+
+    scale_fill_manual(values = treatment_cols)+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     labs(x = "Density (stnd)", y = "Predicted value", title = "Rattle Model", color = "Rattle treatment", fill = "Rattle treatment")+
     theme_bw()
