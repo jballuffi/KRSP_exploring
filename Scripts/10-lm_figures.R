@@ -6,7 +6,6 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 # read in and prep data ---------------------------------------------------
 
 #read in finalized data
-dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
