@@ -53,8 +53,9 @@ setorder(annualdensity, year)
 
 #plot avg annual growth rate over time and by food add
 (density_year_treatment <- ggplot(annualtrends)+
-    geom_line(aes(x = year, y = density, color = treatment_gr), linewidth = 1)+
-    labs(x = "Year", y = "Local density (squirrels/ha)", color = "Grid Treatment")+
+    geom_line(aes(x = year, y = density, linetype = treatment_gr), alpha = 0.8, linewidth = 1)+
+    labs(x = "Year", y = "Local density (squirrels/ha)", linetype = "Grid Treatment")+
+    scale_linetype_manual(values = grid_lines)+
     theme_bw()+
     theme(legend.position = "inside",
     legend.position.inside = c(0.87, 0.75))
