@@ -14,25 +14,32 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r sourcing, include=FALSE}
-source("Scripts/09-summary_figures.R")
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
+#read in finalized data
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
+controls <- readRDS("Output/Data/control_cleaned_litters.rds")
+food <- readRDS("Output/Data/food_cleaned_litters.rds")
+cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
+rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
+
 ```
 
 ## Figures:
 
-![Fig 1. Example of how local density is estimated. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area ((pi\*radius\^2)/10000.](Output/Figures/local_density_visual.jpeg)
+![Fig 1. Visual example of how local density was estimated using squirrel census data. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area ((pi\*radius\^2)/10000.](Output/Figures/local_density_visual.jpeg)
 
-![Top: Mean local density in control grids across all years of the study. Middle: Local density in response to grid-level treatment. Bottom: Mean local density over time, colored by grid-level treatment.](Output/Figures/density_summary.jpeg)
+![Local densities (ind/ha) of red squirrels in response to experimental treatments. A) The local densities of squirrels on control grids across all years of the study. B) Local density in response to grid-level treatments. C) Local density over time, colored by grid-level treatment.](Output/Figures/density_summary.jpeg)
 
 ![Top: litter growth rate (g/day) in response to mother-level treatment, either control, food add with a bucket, food add without a bucket, or rattle playback. Bottom: litter size in response to the same mother-level treatment.](Output/Figures/response_summary.jpeg)
 
 ![The relationship between litter growth rate (g/day) and litter size, using control grid data only (n = `r controls[, .N]`).](Output/Figures/GR_littersize.jpeg)
 
-![The relationship between litter growth rate (g/day) and birth date (Julian day), using control grid data only (n = `r controls[, .N]`).](Output/Figures/GR_birthmonth.jpeg)
-
-![Top: litter growth rate (g/day) in response to litter size for control grids only (n = `r controls[, .N]` , colored by local density level. Bottom: litter growth rate (g/day) in response to litter size on food add grids only (n = `r food[, .N]` ), parsed by food add treatment of the mother (with a bucket or without a bucket), and colored by local density level.](Output/Figures/lm_results.jpeg)
-
-![Results from bivariate response models that predict red squirrel litter size and growth rates in response to local density. Upper left: results from control grids only; upper right: results from food add experiments and control grids; lower left: results from control grids during years where cache sizes were measured; lower right: results from rattle playback experiments.](Output/Figures/Bayesian_predictions.jpeg)
+![The relationship between litter growth rate (g/day) and litter size, categorized into three difference categories of local density (low = red, medium = green, and high = blue), described using linear models that interacted litter size with density and treatment or food levels. Left: model used control and food add grids (n = `r food[, .N]`) and interacted litter size with density and individual food treatment (control, bucket, or no bucket). Middle: model used all litters with cache size data (n = `r cache[, .N]`) and interacted litter size with density and the mother's cache size in the previous year (categorical, either small, medium, or large). Right: Model used litters from control and rattle treatment grids during years of rattle experiments (n = `r rattle[, .N]`) and interacted litter size with density and treatment (control vs. rattle).](Output/Figures/lm_full.jpeg)
 
 ![Posterior predictions for each model, control, food add, cache, and rattle](Output/Figures/Posterior_predictions.jpeg)
 
 ![Posterior distributions for covariance of litter size and litter growth rate for all three models: control, food add, cache, and rattle.](Output/Figures/Posterior_distributions.jpeg)
+
+![Bayesian predictions for the correlations between growth rate and litter size in response to local density.](Output/Figures/correlation_results.jpeg)
