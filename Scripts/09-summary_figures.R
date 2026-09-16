@@ -41,20 +41,20 @@ setorder(annualdensity, year)
 (density_year <- 
     ggplot(annualdensity)+
     geom_line(aes(x = year, y = density, group = 1), linewidth = 1, color = "grey30")+
-    labs(y = "Local density (squirrels/ha)", x = "Year")+
+    labs(y = "Local density (squirrels/ha)", x = "Year", subtitle = "A)")+
     theme_bw())
 
 #plot density by treatment
 (density_treatment <-
     ggplot(dat)+
     geom_boxplot(aes(x = treatment_gr, y = density))+
-    labs(y = "Local density (squirrels/ha)", x = "Grid Treatment")+
+    labs(y = "Local density (squirrels/ha)", x = "Grid Treatment", subtitle = "B)")+
     theme_bw())
 
 #plot avg annual growth rate over time and by food add
 (density_year_treatment <- ggplot(annualtrends)+
-    geom_line(aes(x = year, y = density, linetype = treatment_gr), alpha = 0.8, linewidth = 1)+
-    labs(x = "Year", y = "Local density (squirrels/ha)", linetype = "Grid Treatment")+
+    geom_line(aes(x = year, y = density, linetype = treatment_gr), alpha = 0.9, linewidth = 1)+
+    labs(x = "Year", y = "Local density (squirrels/ha)", linetype = "Grid Treatment", subtitle = "C)")+
     scale_linetype_manual(values = grid_lines)+
     theme_bw()+
     theme(legend.position = "inside",
@@ -68,13 +68,13 @@ densityplot <- ggarrange(density_year, density_treatment, density_year_treatment
 #growth rate in response to treatments
 (gr_treatment <- ggplot(dat)+
    geom_boxplot(aes(x = treatment_gr, y = growthrate, fill = bucket), alpha = 0.6)+
-   labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket")+
+   labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket", subtitle = "A)")+
    theme_bw())
 
 #litter size in response to treatments
 (ls_treatment <- ggplot(dat)+
     geom_violin(aes(x = treatment_gr, y = littersize, fill = bucket), alpha = 0.6)+
-    labs(x = "Grid Treatment", y = "Litter size", fill = "Bucket")+
+    labs(x = "Grid Treatment", y = "Litter size", fill = "Bucket", subtitle = "B)")+
     theme_bw())
 
 responseplot <- ggarrange(gr_treatment, ls_treatment, ncol = 1, nrow = 2)
@@ -92,14 +92,14 @@ slope <- coef(gr_ls_mod)[2]
 (ls <- ggplot(controls)+
    geom_point(aes(x = littersize, y = growthrate), alpha = 0.5)+
    geom_abline(aes(intercept = int, slope = slope), linewidth = 1)+
-   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Controls")+
+   labs(x = "Litter size", y = "Growth rate (g/day)")+
    theme_bw())
 
 #growth rate in response to birth date
 (birthmonth <- ggplot(controls)+
     geom_point(aes(x = bjulian, y = growthrate))+
     geom_smooth(aes(x = bjulian, y = growthrate), method = "lm")+
-    labs(x = "Birthday (Julian day)", y = "Growth rate (g/day)", subtitle = "Controls")+
+    labs(x = "Birthday (Julian day)", y = "Growth rate (g/day)")+
     theme_bw())
 
 
