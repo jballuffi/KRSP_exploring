@@ -160,16 +160,16 @@ dat2 <- dat2[!(grid == "KL" & food == 1)]
 # standardize continuous variables ----------------------------------------
 
 #standardize density globally
-dat2[, density_std := scale(density), year]
+dat2[, density_std := scale(density)]
 
 #standardize cones globally
-dat2[, cones_std := scale(cones_prev), year]
+dat2[, cones_std := scale(cones_prev)]
 
 #standardize birth date by grid year
 dat2[, bjulian_std := scale(bjulian), gridyear]
 
 #standardize mother age by grid year
-dat2[, mother_age_std := scale(mother_age), gridyear]
+dat2[, mother_age_std := scale(mother_age)]
 
 #standardize litter size by grid year
 dat2[, littersize_std := scale(littersize), gridyear]
@@ -214,7 +214,7 @@ dat2[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 cache <- dat2[(grid == "SU" | grid == "KL") & !is.na(cache_prev)]
 
 #standardize cone cache globally
-cache[, cache_std := scale(cache_prev), year]
+cache[, cache_std := scale(cache_prev)]
 
 #get cache size quantiles
 cache25Q <- cache[, round(quantile(cache_std, na.rm = TRUE)[2], 2)]
