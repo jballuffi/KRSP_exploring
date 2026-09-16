@@ -59,8 +59,8 @@ summary(rattle_mod)
 
 #CONTROL MODEL
 # 1. Generate posterior predictions for both variables across your data
-pred_growth_control <- posterior_predict(control_mod, resp = "growthrate")
-pred_litter_control <- posterior_predict(control_mod, resp = "littersize")
+pred_growth_control <- posterior_predict(control_mod, resp = "growthratestd")
+pred_litter_control <- posterior_predict(control_mod, resp = "littersizestd")
 
 # 2. Average the predictions across all rows to get a single vector per MCMC draw
 # This isolates the overall joint behavior of your variables
@@ -85,8 +85,8 @@ df_joint_control <- data.frame(
 
 #FOOD MODEL
 # 1. Generate posterior predictions for both variables across your data
-pred_growth_food <- posterior_predict(food_mod, resp = "growthrate")
-pred_litter_food <- posterior_predict(food_mod, resp = "littersize")
+pred_growth_food <- posterior_predict(food_mod, resp = "growthratestd")
+pred_litter_food <- posterior_predict(food_mod, resp = "littersizestd")
 
 # 2. Average the predictions across all rows to get a single vector per MCMC draw
 # This isolates the overall joint behavior of your variables
@@ -111,8 +111,8 @@ df_joint_food <- data.frame(
 
 #CACHE MODEL
 # 1. Generate posterior predictions for both variables across your data
-pred_growth_cache <- posterior_predict(cache_mod, resp = "growthrate")
-pred_litter_cache <- posterior_predict(cache_mod, resp = "littersize")
+pred_growth_cache <- posterior_predict(cache_mod, resp = "growthratestd")
+pred_litter_cache <- posterior_predict(cache_mod, resp = "littersizestd")
 
 # 2. Average the predictions across all rows to get a single vector per MCMC draw
 # This isolates the overall joint behavior of your variables
@@ -137,8 +137,8 @@ df_joint_cache <- data.frame(
 
 #RATTLE MODEL
 # 1. Generate posterior predictions for both variables across your data
-pred_growth_rattle <- posterior_predict(rattle_mod, resp = "growthrate")
-pred_litter_rattle <- posterior_predict(rattle_mod, resp = "littersize")
+pred_growth_rattle <- posterior_predict(rattle_mod, resp = "growthratestd")
+pred_litter_rattle <- posterior_predict(rattle_mod, resp = "littersizestd")
 
 # 2. Average the predictions across all rows to get a single vector per MCMC draw
 # This isolates the overall joint behavior of your variables
@@ -181,9 +181,9 @@ draws_contol <- as_draws_df(control_mod)
 
 # 2. get residual SDs
 # brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
-sig_gr_control <- draws_contol$sigma_growthrate
-sig_ls_control <- draws_contol$sigma_littersize
-rho_control  <- draws_contol$rescor__growthrate__littersize
+sig_gr_control <- draws_contol$sigma_growthratestd
+sig_ls_control <- draws_contol$sigma_littersizestd
+rho_control  <- draws_contol$rescor__growthratestd__littersizestd
 
 # 3. convert the correlation and standard deviations into the covariance metric for each posterior draw:
 cov_draws_control <- rho_control * sig_gr_control * sig_ls_control
@@ -201,9 +201,9 @@ draws_food <- as_draws_df(food_mod)
 
 # 2. get residual SDs
 # brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
-sig_gr_food <- draws_food$sigma_growthrate
-sig_ls_food <- draws_food$sigma_littersize
-rho_food  <- draws_food$rescor__growthrate__littersize
+sig_gr_food <- draws_food$sigma_growthratestd
+sig_ls_food <- draws_food$sigma_littersizestd
+rho_food  <- draws_food$rescor__growthratestd__littersizestd
 
 # 3. Convert the correlation and standard deviations into the covariance metric for each posterior draw:
 cov_draws_food <- rho_food * sig_gr_food * sig_ls_food
@@ -220,9 +220,9 @@ draws_cache <- as_draws_df(cache_mod)
 
 # 2. get residual SDs
 # brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
-sig_gr_cache <- draws_cache$sigma_growthrate
-sig_ls_cache <- draws_cache$sigma_littersize
-rho_cache  <- draws_cache$rescor__growthrate__littersize
+sig_gr_cache <- draws_cache$sigma_growthratestd
+sig_ls_cache <- draws_cache$sigma_littersizestd
+rho_cache  <- draws_cache$rescor__growthratestd__littersizestd
 
 # 3. convert the correlation and standard deviations into the covariance metric for each posterior draw:
 cov_draws_cache <- rho_cache * sig_gr_cache * sig_ls_cache
@@ -239,9 +239,9 @@ draws_rattle <- as_draws_df(rattle_mod)
 
 # 2. get residual SDs
 # brms names residual SDs as sigma_y1 and sigma_y2, and correlation as rescor__y1__y2
-sig_gr_rattle <- draws_rattle$sigma_growthrate
-sig_ls_rattle <- draws_rattle$sigma_littersize
-rho_rattle  <- draws_rattle$rescor__growthrate__littersize
+sig_gr_rattle <- draws_rattle$sigma_growthratestd
+sig_ls_rattle <- draws_rattle$sigma_littersizestd
+rho_rattle  <- draws_rattle$rescor__growthratestd__littersizestd
 
 # 3. Convert the correlation and standard deviations into the covariance metric for each posterior draw:
 cov_draws_rattle <- rho_rattle * sig_gr_rattle * sig_ls_rattle
