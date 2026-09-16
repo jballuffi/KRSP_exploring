@@ -31,7 +31,7 @@ annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x
 
 
 
-# figures for multi panel --------------------------------------------------------------------
+# Local Density in response to treatments  --------------------------------------------------------------------
 
 #plot density by treatment
 (density_treatment <-
@@ -54,6 +54,8 @@ densityplot <- ggarrange(density_treatment, density_year_treatment, ncol = 1, nr
 
 
 
+# Life History in response to treatments ----------------------------------
+
 #growth rate in response to treatments
 (gr_treatment <- ggplot(dat)+
    geom_boxplot(aes(x = treatment_gr, y = growthrate, fill = bucket), alpha = 0.6)+
@@ -70,24 +72,37 @@ responseplot <- ggarrange(gr_treatment, ls_treatment, ncol = 1, nrow = 2)
 
 
 
-# figures for stand alone -------------------------------------------------
+# Growth rate in response to litter size -------------------------------------------------
 
 #get the relationship between litter size and growth rate from control data set
 gr_ls_mod <- lm(growthrate ~ littersize, controls)
-int <- coef(gr_ls_mod)[1]
-slope <- coef(gr_ls_mod)[2]
 
-#growth rate in response to litter size
-(ls <- ggplot(controls)+
-   geom_point(aes(x = littersize, y = growthrate), alpha = 0.5)+
-   geom_abline(aes(intercept = int, slope = slope), linewidth = 1)+
-   labs(x = "Litter size", y = "Growth rate (g/day)")+
-   theme_bw())
+#get effects table
+gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize")))
+
+(ls <- ggplot()+
+    geom_point(aes(x = littersize, y = growthrate), alpha = 0.5, data = controls)+
+    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_ls_pred)+
+    geom_line(aes(x = x, y = predicted), linewidth = 1, data = gr_ls_pred)+
+    labs(x = "Litter size", y = "Growth rate (g/day)")+
+    theme_bw())
+
+
+
+# Growth rate in response to birth date -----------------------------------
+
+#get the relationship between litter size and growth rate from control data set
+gr_bd_mod <- lm(growthrate ~ bjulian, controls)
+
+#get effects table
+gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
+
 
 #growth rate in response to birth date
-(birthmonth <- ggplot(controls)+
-    geom_point(aes(x = bjulian, y = growthrate))+
-    geom_smooth(aes(x = bjulian, y = growthrate), method = "lm")+
+(birthmonth <- ggplot()+
+    geom_point(aes(x = bjulian, y = growthrate), data = controls)+
+    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_bd_pred)+
+    geom_line(aes(x = x, y = predicted), linewidth = 1, data = gr_bd_pred)+
     labs(x = "Birthday (Julian day)", y = "Growth rate (g/day)")+
     theme_bw())
 
@@ -96,7 +111,7 @@ slope <- coef(gr_ls_mod)[2]
 # save --------------------------------------------------------------------
 
 #save figs
-ggsave("Output/Figures/density_summary.jpeg", densityplot, width = 5, height = 10, unit = "in")
+ggsave("Output/Figures/density_summary.jpeg", densityplot, width = 5, height = 7, unit = "in")
 ggsave("Output/Figures/response_summary.jpeg", responseplot, width = 5, height = 8, unit = "in")
 ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 6, height = 4, unit = "in")
 
