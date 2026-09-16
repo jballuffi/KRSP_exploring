@@ -80,12 +80,16 @@ cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
   geom_line(size = 1.2) +
   scale_color_manual(values = treatment_cols) +
   labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
-  theme_bw())
+  theme_bw()+
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.25, 0.3),
+        legend.key.size = unit(.3, "cm"))
+  )
 
 #correlation
 (food_cor <- ggplot(cor_df_food, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
-    scale_color_manual(values = treatment_cols) +
+  scale_color_manual(values = treatment_cols, guide = NULL) +
   labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
   theme_bw())
 
@@ -146,12 +150,16 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
     geom_line(size = 1.2) +
     scale_color_manual(values = cache_cols) +
     labs(subtitle = "Cache model", x = "", y = "Posterior covariance\n(GR × LS)", color = "Cache level") +
-    theme_bw() )
+    theme_bw()+
+    theme(legend.position = "inside",
+          legend.position.inside = c(0.25, 0.3),
+          legend.key.size = unit(.3, "cm"))
+  )
 
 #correlation
 (cache_cor <- ggplot(cor_df_cache, aes(density_std, cor, color = cache_cat)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = cache_cols) +
+  scale_color_manual(values = cache_cols, guide = NULL) +
   labs(subtitle = "Cache model", x = "", y = "Posterior correlation\n(GR × LS)", color = "Cache level") +
     theme_bw() )
 
@@ -212,16 +220,19 @@ cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
   geom_line(size = 1.2) +
   scale_color_manual(values = treatment_cols) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
-  theme_bw())
+  theme_bw()+
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.25, 0.2),
+        legend.key.size = unit(.3, "cm"))
+  )
 
 #correlation
 (rattle_cor <- ggplot(cor_df_rattle, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = treatment_cols) +
+  scale_color_manual(values = treatment_cols, guide = NULL) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
   theme_bw())
 
- 
 
 
 
@@ -230,6 +241,9 @@ cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
 cov_fig <- ggarrange(food_cov, cache_cov, rattle_cov, ncol = 1, nrow = 3, align = "hv")
 cor_fig <- ggarrange(food_cor, cache_cor, rattle_cor, ncol = 1, nrow = 3, align = "hv")
 
-ggsave("Output/Figures/covariance_results.jpeg", cov_fig, width = 5, height = 10)
-ggsave("Output/Figures/correlation_results.jpeg", cor_fig, width = 5, height = 10)
+cor_cov_fig <- ggarrange(food_cov, food_cor, cache_cov, cache_cor, rattle_cov, rattle_cor, ncol = 2, nrow = 3, align = "hv")
 
+#ggsave("Output/Figures/covariance_results.jpeg", cov_fig, width = 5, height = 10)
+#ggsave("Output/Figures/correlation_results.jpeg", cor_fig, width = 5, height = 10)
+
+ggsave("Output/Figures/covariance_correlation_predictions.jpeg", cor_cov_fig, width = 7, height = 9)
