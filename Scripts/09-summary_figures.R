@@ -99,7 +99,7 @@ gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
 
 
 #growth rate in response to birth date
-(birthmonth <- ggplot()+
+(bd <- ggplot()+
     geom_point(aes(x = bjulian, y = growthrate), data = controls)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_bd_pred)+
     geom_line(aes(x = x, y = predicted), linewidth = 1, data = gr_bd_pred)+
@@ -114,4 +114,5 @@ gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
 ggsave("Output/Figures/density_summary.jpeg", densityplot, width = 5, height = 7, unit = "in")
 ggsave("Output/Figures/response_summary.jpeg", responseplot, width = 5, height = 8, unit = "in")
 ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 6, height = 4, unit = "in")
+ggsave("Output/Figures/GR_birthmonth.jpeg", bd, width = 6, height = 4, unit = "in")
 
