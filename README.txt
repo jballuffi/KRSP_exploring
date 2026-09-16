@@ -20,8 +20,6 @@ Output/ Products generated from scripts.
 
 R/ System requirements. This is loaded at the start of each script and includes any packages, variables, or custom functions etc. (see first line of each script for how to source this folder)
 
-Markdown/ Markdown files for summaries of figures and results.
-
 Examples scripts/ Test code or sourced code from other authors.
 
 Extra scripts/ Retired scripts.
