@@ -29,39 +29,28 @@ annualgrowth <- dat[, .(growthrate = mean(growthrate, na.rm = TRUE),
 #merge with years
 annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x = TRUE)
 
-#get mean density by year for controls only
-annualdensity <- controls[, .(density = mean(density)), year]
-setorder(annualdensity, year)
-
 
 
 # figures for multi panel --------------------------------------------------------------------
-
-#plot mean density on controls by year
-(density_year <- 
-    ggplot(annualdensity)+
-    geom_line(aes(x = year, y = density, group = 1), linewidth = 1, color = "grey30")+
-    labs(y = "Local density (squirrels/ha)", x = "Year", subtitle = "A)")+
-    theme_bw())
 
 #plot density by treatment
 (density_treatment <-
     ggplot(dat)+
     geom_boxplot(aes(x = treatment_gr, y = density))+
-    labs(y = "Local density (squirrels/ha)", x = "Grid Treatment", subtitle = "B)")+
+    labs(y = "Local density (squirrels/ha)", x = "Grid Treatment", subtitle = "A)")+
     theme_bw())
 
 #plot avg annual growth rate over time and by food add
 (density_year_treatment <- ggplot(annualtrends)+
     geom_line(aes(x = year, y = density, linetype = treatment_gr), alpha = 0.9, linewidth = 1)+
-    labs(x = "Year", y = "Local density (squirrels/ha)", linetype = "Grid Treatment", subtitle = "C)")+
+    labs(x = "Year", y = "Local density (squirrels/ha)", linetype = "Grid Treatment", subtitle = "B)")+
     scale_linetype_manual(values = grid_lines)+
     theme_bw()+
     theme(legend.position = "inside",
     legend.position.inside = c(0.87, 0.75))
   )
 
-densityplot <- ggarrange(density_year, density_treatment, density_year_treatment, ncol = 1, nrow = 3, align = "h")
+densityplot <- ggarrange(density_treatment, density_year_treatment, ncol = 1, nrow = 2, align = "h")
 
 
 
