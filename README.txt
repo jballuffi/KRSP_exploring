@@ -4,7 +4,7 @@ Additional code sources: Erin Siracusa and Andrew McAdam
 
 Working exploratory project for a study testing how a common reproductive trade-off in red squirrels, litter size and growth rate, is influenced by the mother's local density, food conditions, and perceived local density.
 
-Data is mostly sourced from the Kluane Red Squirrel Project (KRSP) database. To run this kind of code requires access to the KRSP database.
+To run code: Download and load all packages in the R/packages.R script. Some additional Bayesian packages are required in the Bayesian scripts. Data is mostly sourced from the Kluane Red Squirrel Project (KRSP) database. To run any code linked to the database requires access to the KRSP database.
 
 
 Folder Organization:
