@@ -56,7 +56,7 @@ m1[is.na(density) & !is.na(griddensity), density_source := "median"]
 m1[is.na(density), density := griddensity]
 
 #merge with tree cone counts
-m2 <- merge(m1, cones[, .(grid, year, cones_prev)], by = c("year", "grid"), all.x = TRUE)
+m2 <- merge(m1, cones[, .(grid, year, cones_prev, cones_prev_source)], by = c("year", "grid"), all.x = TRUE)
 
 #merge with cone cache data
 m3 <- merge(m2, cache, by = c("mother_id", "year", "grid"), all.x = TRUE)
