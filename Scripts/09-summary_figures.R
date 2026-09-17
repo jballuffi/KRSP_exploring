@@ -47,10 +47,11 @@ annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x
     scale_linetype_manual(values = grid_lines)+
     theme_bw()+
     theme(legend.position = "inside",
-    legend.position.inside = c(0.87, 0.75))
+          legend.key.size = unit(.3, "cm"),
+          legend.position.inside = c(0.82, 0.88))
   )
 
-densityplot <- ggarrange(density_treatment, density_year_treatment, ncol = 1, nrow = 2, align = "h")
+#densityplot <- ggarrange(density_treatment, density_year_treatment, ncol = 1, nrow = 2, align = "h")
 
 
 
@@ -59,16 +60,18 @@ densityplot <- ggarrange(density_treatment, density_year_treatment, ncol = 1, nr
 #growth rate in response to treatments
 (gr_treatment <- ggplot(dat)+
    geom_boxplot(aes(x = treatment_gr, y = growthrate, fill = bucket), alpha = 0.6)+
-   labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket", subtitle = "A)")+
+   scale_fill_discrete(guide = NULL)+
+   labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket", subtitle = "C)")+
    theme_bw())
 
 #litter size in response to treatments
 (ls_treatment <- ggplot(dat)+
     geom_violin(aes(x = treatment_gr, y = littersize, fill = bucket), alpha = 0.6)+
-    labs(x = "Grid Treatment", y = "Litter size", fill = "Bucket", subtitle = "B)")+
+    labs(x = "Grid Treatment", y = "Litter size", fill = "Bucket", subtitle = "D)")+
     theme_bw())
 
-responseplot <- ggarrange(gr_treatment, ls_treatment, ncol = 1, nrow = 2)
+#responseplot <- ggarrange(gr_treatment, ls_treatment, ncol = 1, nrow = 2)
+full_sum <- ggarrange(density_treatment, density_year_treatment, gr_treatment, ls_treatment, nrow = 2, ncol = 2, align = "hv")
 
 
 
@@ -110,9 +113,14 @@ gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
 
 # save --------------------------------------------------------------------
 
+
 #save figs
-ggsave("Output/Figures/density_summary.jpeg", densityplot, width = 5, height = 7, unit = "in")
-ggsave("Output/Figures/response_summary.jpeg", responseplot, width = 5, height = 8, unit = "in")
+#ggsave("Output/Figures/density_summary.jpeg", densityplot, width = 5, height = 7, unit = "in")
+#ggsave("Output/Figures/response_summary.jpeg", responseplot, width = 5, height = 8, unit = "in")
+
+
+ggsave("Output/Figures/full_summary.jpeg", full_sum, width = 10, height = 9, unit = "in")
+
 ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 6, height = 4, unit = "in")
 ggsave("Output/Figures/GR_birthmonth.jpeg", bd, width = 6, height = 4, unit = "in")
 
