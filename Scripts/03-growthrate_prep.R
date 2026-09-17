@@ -252,10 +252,10 @@ datlitter[is.na(bdate) & weight1 < 50]
 
 
 #create col for source of part date
-datlitter[!is.na(bdate), part_status := "observed"]
+datlitter[!is.na(bdate), part_source := "observed"]
 
 #if missing part date and first weight is less than 50, it can be estimated
-datlitter[is.na(bdate) & weight1 < 50, part_status := "estimated"]
+datlitter[is.na(bdate) & weight1 < 50, part_source := "estimated"]
 
 #estimate part date based on weight 1 for those missing part dates
 datlitter[is.na(bdate) & weight1 < 50, bdate := date1 - round((weight1 - 8)/1.8)]
