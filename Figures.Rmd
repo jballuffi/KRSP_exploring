@@ -32,7 +32,7 @@ Figure 1. Summary of density and life history outcomes in response to treatments
 
 Figure 2. Raw data from control grids (n = `r controls[, .N]`) showing the overall negative trade-off between litter size and litter growth rate (g/day). Linear relationship is shown.
 
-Figure 3. Best linear unbiased predictors from all three Bayesian models, food, cache, and rattle, that test how growth rate and litter size respond to local density. After all fixed effects and random effects are accounted for, this is how litter size and growth rate relate to one another in each scenario. Data points represent litters, red ellipses represent the 50% confidence levels, and orange ellipses represent the 95% confidence levels.
+Figure 3. Best linear unbiased predictors from all three Bayesian models, food (n = `r food[, .N]`), cache (n = `r cache[, .N]`), and rattle (n = `r rattle[, .N]`), that test how growth rate and litter size respond to local density. After all fixed effects and random effects are accounted for, this is how litter size and growth rate relate to one another in each scenario. Data points represent litters, red ellipses represent the 50% confidence levels, and orange ellipses represent the 95% confidence levels.
 
 Figure 4. Separate
 
@@ -59,3 +59,7 @@ S2. The relationship between litter growth rate (g/day) and litter size, categor
 S3. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
 
 ![S1](Output/Figures/local_density_visual.jpeg)
+
+![S2](Output/Figures/lm_full.jpeg)
+
+![S3](Output/Figures/Posterior_distributions.jpeg)
