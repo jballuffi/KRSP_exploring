@@ -1,0 +1,68 @@
+---
+title: "Methods"
+author: "Juliana Balluffi-Fry"
+date: "2026-09-17"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
+
+#input data
+cones <- readRDS("Output/Data/tree_cone_counts.rds")
+
+#finalized data
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
+controls <- readRDS("Output/Data/control_cleaned_litters.rds")
+food <- readRDS("Output/Data/food_cleaned_litters.rds")
+cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
+rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
+
+
+
+```
+Reproductive Outcomes
+
+Every spring from 1988 to 2026, we trapped female squirrels (n = `r length(unique(dat$mother_id))`) repeatedly during their gestation to palpate them and track their pregnancies. When pregnant females were estimated to be within five days of their parturition date, we fit them with a very high frequency (VHF) radio collar. Once post-partum, using the VHF collar, we tracked the female to her nest. We extracted the pups from the nest to determine litter size, and individual sex and weight. We weighed individual pups to the nearest 0.1 g and gave them a unique ear notch to collect a DNA sample and identify them within the litter later. Approximately 35 days after the first visit, we re-located the nest and retrieved the pups. Now developed enough, we ear tagged the pups with unique identification codes and weighed them again to the nearest 0.1 g. To calculate juvenile growth rate, we subtracted the weight at the first visit from the weight at the second weight and divided the difference by the number of days in between visits. If a litter did not survive to its second measurement it could not be used. For this analysis we only used data from a mother’s first litter on a given year. We removed cases where the number of days in between measurements was less than 5 because pup growth is not perfectly linear. We also removed cases where the first weight was greater than 50 g or the second weight was greater than 100 g because this indicates that the nests were sampled too late after birth to be compared. We then averaged the growth rates for each litter. 
+
+We had a total sample size of `r dat[, .N]` litters total. The final life history measurements were litter size (ranged from `r min(dat$littersize)` to `r max(dat$littersize)`), litter growth rate (ranged from `r round(min(dat$growthrate), 2)` to `r round(max(dat$growthrate), 2)` g/day), litter sex ratio (proportion being male), litter parturition date (mean = `r round(mean(dat$bjulian))` Julian Day), and mother age (mean = `r round(mean(dat$mother_age))` years). If a litter's parturition date was unknown (n = `r dat[part_source == "estimated", .N]`), e.g., the first nest visit occurred later than normal, we estimated it by subtracting the number of days from the first nest visit to when the pup size would have been the average birth weight of 8 g via the average growth rate of 1.8 g per day. If a mother's age was unknown (n = `r dat[mombirth_source == "trapping", .N]`), i.e., we do not have a birth record of her, we assumed it to be the year before she was first entered into the study based on trapping records.
+
+
+Food Availability Estimates
+
+Natural food availability was measured three different ways, the cone production during the previous year, the mast year status of the current year, and the mother' cache size from the previous year. To assess annual cone production, we counted the number of new cones on 100 trees (average) stratified within each of the `r cones[, length(unique(grid))]` study grids every August from 1988 to 2026. We log transformed the tree cone counts, and took the average for every grid every year. If a grid was not assessed on a given year, we gave it the average tree cone count of all grids measured that year (n = `r dat[cones_prev_source == "average", .N]` litters). Based on cone count data, we categorized years as having normal amounts of cone production or as being mast years, when there were an exponentially high amount of cones produced that autumn (stat?). Over the course of this long term study, `r mast_years` were the mast years. To assess squirrel cache sizes, we counted the number of cones cached in squirrels' primary middens every September starting in 2007 (probably needs more detail). We log transformed the counts and paired them to litters born the year following a mother's midden cone count. In total, `r cache[, .N]` litters had associated cache size data.
+
+
+Food Add Experiment
+
+
+
+Rattle Playback Experiment
+
+In order to test if higher densities affected squirrels non-directly, e.g., through stress responses, we experimentally manipulate squirrel perception of density using rattle playbacks. From 2018 to 2022, XX speakers were deployed on the Joe grid, at an average density of XX and were programmed to play squirrel rattles every XX minutes.
+
+
+
+
+Local Density
+
+We used the long term census and trapping data to calculate the local density (squirrels per hectare) experienced by each mother every spring. 
+
+BiTo do this, we tallied the number of squirrels who lived within a 130 m radius of every occupied midden on a grid each year (See example in Fig XX) and divided this count by the circle area, or 5.31 hectares. Grid edges naturally had lower densities because grids were surrounded by unusable habitat, such as marshes, aspen forests, or the Alaska highway. Therefore, we did not have to extrapolate squirrel densities outside of grid boundaries. Food supplementation caused an increase in local density over time, with the average local density on Agnes grid increasing at a rate of 0.13 squirrels/ha every year over the 12 years of its food experiment. Over the entire study, squirrels on food supplemented grids experienced higher local densities, with an average of 2.44 squirrels/ha, compared to those on control grids, that had on average 2.05 squirrels/ha.
+
+
+
+
+
+Statistical Analysis
+
+We standardized all numeric independent variables. Local density, cone density, and cache size were all standardized within years, while Julian birth date and mother age were standardized within grid-year. We categorized squirrels into one of four treatment groups: controls, food adds with a bucket (henceforth, ‘bucket’), food add without a bucket (henceforth, ‘no bucket’), and rattle playbacks (henceforth, ‘rattle’). To assess how the covariance between litter size and juvenile growth rate is affected by food availability, density, and perceived density, we conducted bivariate response analyses using a Bayesian framework. To coherently meet the objectives of this study, we conducted three separate analyses using different subsets of the data. All data cleaning and statistical analyses were conducted using R language software (cite version). Bayesian analyses were conducted using the ‘brms’ package (cite).
+
+To test how food supplementation affected the relationship between juvenile growth rates and litter size in response to density and natural food availability, our first analysis used only data from the control and food add grids across all years of the study. This dataset therefore had three treatment groups: control, bucket, and no bucket. 
+
+To assess the impact of The second analysis used data from control grids only, 
+
