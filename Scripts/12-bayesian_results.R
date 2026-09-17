@@ -163,8 +163,7 @@ df_joint_rattle <- data.frame(
 
 
 #merge all
-PostPred <- ggarrange(PostPred_control, PostPred_food, PostPred_cache, PostPred_rattle,
-                      nrow = 2, ncol = 2, align = "hv")
+PostPred <- ggarrange(PostPred_food, PostPred_cache, PostPred_rattle, nrow = 3, ncol = 1, align = "hv")
 PostPred
 
 
@@ -253,8 +252,7 @@ cov_draws_rattle <- rho_rattle * sig_gr_rattle * sig_ls_rattle
 )
 
 #merge 
-PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_cache, PostDist_rattle, 
-                      nrow = 2, ncol = 2, align = "hv")
+PostDist <- ggarrange(PostDist_food, PostDist_cache, PostDist_rattle, ncol = 1, nrow = 3, align = "hv")
 PostDist
 
 
@@ -266,17 +264,18 @@ PostDist
 control_pred <- as.data.table(ggpredict(control_mod, terms = c("density_std"))) #soluble biomass (sb)
 
 #rename response variables
-control_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
-control_pred[response.level == "littersize", response.level := "Litter size"]
+control_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+control_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
 (Pred_control <- 
   ggplot(control_pred)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2)+
   geom_line(aes(x = x, y = predicted), linewidth = 1)+
+  labs(x = "Density", y = "Predicted value", title = "Control Model")+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-  labs(x = "Density (stnd)", y = "Predicted value", title = "Control Model")+
-  theme_bw()
+  theme_bw()+
+  theme(strip.background = element_blank())
 )
 
 #FOOD MODEL
@@ -284,8 +283,8 @@ control_pred[response.level == "littersize", response.level := "Litter size"]
 food_pred <- as.data.table(ggpredict(food_mod, terms = c("density_std", "treatment_ind"))) #soluble biomass (sb)
 
 #rename response variables
-food_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
-food_pred[response.level == "littersize", response.level := "Litter size"]
+food_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+food_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
 (Pred_food <- 
@@ -294,10 +293,13 @@ food_pred[response.level == "littersize", response.level := "Litter size"]
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
     scale_color_manual(values = treatment_cols)+
     scale_fill_manual(values = treatment_cols)+
+    guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
+    labs(x = "Density", y = "Predicted value", subtitle = "A)", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-    labs(x = "Density (stnd)", y = "Predicted value", title = "Food Model", color = "Food treatment", fill = "Food treatment")+
-    theme_bw()
-    #theme(legend.position = "top")
+    theme_bw()+
+    theme(legend.position = "bottom",
+          legend.key.size = unit(.4, "cm"),
+          strip.background = element_blank())
 )
 
 #CACHE MODEL
@@ -305,8 +307,8 @@ food_pred[response.level == "littersize", response.level := "Litter size"]
 cache_pred <- as.data.table(ggpredict(cache_mod, terms = c("density_std", "cache_cat"))) #soluble biomass (sb)
 
 #rename response variables
-cache_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
-cache_pred[response.level == "littersize", response.level := "Litter size"]
+cache_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+cache_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
 (Pred_cache <- 
@@ -315,10 +317,13 @@ cache_pred[response.level == "littersize", response.level := "Litter size"]
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
     scale_color_manual(values = cache_cols)+
     scale_fill_manual(values = cache_cols)+
+    guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
+    labs(x = "Density", y = "Predicted value", subtitle = "B)", color = "Cache", fill = "Cache")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-    labs(x = "Density (stnd)", y = "Predicted value", title = "Cache Model", color = "Cache level", fill = "Cache level")+
-    theme_bw()
-    #theme(legend.position = "top")
+    theme_bw()+
+    theme(legend.position = "bottom",
+          legend.key.size = unit(.4, "cm"),
+          strip.background = element_blank())
 )
 
 #RATTLE MODEL
@@ -326,8 +331,8 @@ cache_pred[response.level == "littersize", response.level := "Litter size"]
 rattle_pred <- as.data.table(ggpredict(rattle_mod, terms = c("density_std", "treatment_ind"))) #soluble biomass (sb)
 
 #rename response variables
-rattle_pred[response.level == "growthrate", response.level := "Growth rate (g/day)"]
-rattle_pred[response.level == "littersize", response.level := "Litter size"]
+rattle_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+rattle_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
 (Pred_rattle <- 
@@ -336,21 +341,24 @@ rattle_pred[response.level == "littersize", response.level := "Litter size"]
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
     scale_color_manual(values = treatment_cols)+
     scale_fill_manual(values = treatment_cols)+
+    guides(color = guide_legend(nrow = 2), fill = guide_legend(nrow = 2))+
+    labs(x = "Density", y = "Predicted value", subtitle = "C)", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-    labs(x = "Density (stnd)", y = "Predicted value", title = "Rattle Model", color = "Rattle treatment", fill = "Rattle treatment")+
-    theme_bw()
-    #theme(legend.position = "top")
+    theme_bw()+
+    theme(legend.position = "bottom", 
+          legend.key.size = unit(.4, "cm"),
+          strip.background = element_blank())
 )
 
 
 #merge all
-Predictions <- ggarrange(Pred_control, Pred_food, Pred_cache, Pred_rattle, nrow = 2, ncol = 2, align = "hv")
+Predictions <- ggarrange(Pred_food, Pred_cache, Pred_rattle, nrow = 1, ncol = 3, align = "hv")
 Predictions
 
 
 
 # save Figures ---------------------------------------------------------
 
-ggsave("Output/Figures/Posterior_predictions.jpeg", PostPred, width = 10, height = 8, unit = "in")
-ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 10, height = 8, unit = "in")
-ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 9, height = 12, unit = "in")
+ggsave("Output/Figures/Posterior_predictions.jpeg", PostPred, width = 5, height = 9, unit = "in")
+ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 6, height = 9, unit = "in")
+ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 9, height = 6, unit = "in")
