@@ -153,7 +153,7 @@ dat2 <- dat2[!(grid == "AG" & year == 2019)]
 dat2 <- dat2[!(grid == "LL" & (year < 2006 | year == 2012))]
 
 #remove weird years with food add on KL
-dat2 <- dat2[!(grid == "KL" & food == 1)]
+dat2 <- dat2[!(food == 1 & (grid == "SU" | grid == "KL"))]
 
 
 
