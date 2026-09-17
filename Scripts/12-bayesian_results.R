@@ -77,7 +77,7 @@ df_joint_control <- data.frame(
   stat_ellipse(level = 0.50, color = "red", size = 1.2) +
   theme_bw() +
   labs(
-    title = "Control Model",
+    subtitle = "Control Model",
     x = "Predicted Growth Rate",
     y = "Predicted Litter Size"
   )
@@ -103,7 +103,7 @@ df_joint_food <- data.frame(
     stat_ellipse(level = 0.50, color = "red", size = 1.2) +
     theme_bw() +
     labs(
-      title = "Food Model",
+      subtitle = "A) Food Model",
       x = "Predicted Growth Rate",
       y = "Predicted Litter Size"
     )
@@ -129,7 +129,7 @@ df_joint_cache <- data.frame(
     stat_ellipse(level = 0.50, color = "red", size = 1.2) +
     theme_bw() +
     labs(
-      title = "Cache Model",
+      subtitle = "B) Cache Model",
       x = "Predicted Growth Rate",
       y = "Predicted Litter Size"
     )
@@ -155,7 +155,7 @@ df_joint_rattle <- data.frame(
     stat_ellipse(level = 0.50, color = "red", size = 1.2) +
     theme_bw() +
     labs(
-      title = "Rattle Model",
+      subtitle = "C) Rattle Model",
       x = "Predicted Growth Rate",
       y = "Predicted Litter Size"
     )
@@ -294,7 +294,7 @@ food_pred[response.level == "littersizestd", response.level := "Litter size"]
     scale_color_manual(values = treatment_cols)+
     scale_fill_manual(values = treatment_cols)+
     guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
-    labs(x = "Density", y = "Predicted value", subtitle = "A)", color = "Treatment", fill = "Treatment")+
+    labs(x = "Density", y = "Predicted value", subtitle = "A) Food model", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     theme_bw()+
     theme(legend.position = "bottom",
@@ -318,7 +318,7 @@ cache_pred[response.level == "littersizestd", response.level := "Litter size"]
     scale_color_manual(values = cache_cols)+
     scale_fill_manual(values = cache_cols)+
     guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
-    labs(x = "Density", y = "Predicted value", subtitle = "B)", color = "Cache", fill = "Cache")+
+    labs(x = "Density", y = "Predicted value", subtitle = "B) Cache model", color = "Cache", fill = "Cache")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     theme_bw()+
     theme(legend.position = "bottom",
@@ -342,7 +342,7 @@ rattle_pred[response.level == "littersizestd", response.level := "Litter size"]
     scale_color_manual(values = treatment_cols)+
     scale_fill_manual(values = treatment_cols)+
     guides(color = guide_legend(nrow = 2), fill = guide_legend(nrow = 2))+
-    labs(x = "Density", y = "Predicted value", subtitle = "C)", color = "Treatment", fill = "Treatment")+
+    labs(x = "Density", y = "Predicted value", subtitle = "C) Rattle model", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     theme_bw()+
     theme(legend.position = "bottom", 
