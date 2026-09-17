@@ -264,7 +264,7 @@ PostDist
 control_pred <- as.data.table(ggpredict(control_mod, terms = c("density_std"))) #soluble biomass (sb)
 
 #rename response variables
-control_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+control_pred[response.level == "growthratestd", response.level := "Growth rate"]
 control_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
@@ -283,7 +283,7 @@ control_pred[response.level == "littersizestd", response.level := "Litter size"]
 food_pred <- as.data.table(ggpredict(food_mod, terms = c("density_std", "treatment_ind"))) #soluble biomass (sb)
 
 #rename response variables
-food_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+food_pred[response.level == "growthratestd", response.level := "Growth rate"]
 food_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
@@ -307,7 +307,7 @@ food_pred[response.level == "littersizestd", response.level := "Litter size"]
 cache_pred <- as.data.table(ggpredict(cache_mod, terms = c("density_std", "cache_cat"))) #soluble biomass (sb)
 
 #rename response variables
-cache_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+cache_pred[response.level == "growthratestd", response.level := "Growth rate"]
 cache_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
@@ -331,7 +331,7 @@ cache_pred[response.level == "littersizestd", response.level := "Litter size"]
 rattle_pred <- as.data.table(ggpredict(rattle_mod, terms = c("density_std", "treatment_ind"))) #soluble biomass (sb)
 
 #rename response variables
-rattle_pred[response.level == "growthratestd", response.level := "Growth rate (g/day)"]
+rattle_pred[response.level == "growthratestd", response.level := "Growth rate"]
 rattle_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 #plot
