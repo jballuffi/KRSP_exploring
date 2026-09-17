@@ -29,7 +29,8 @@ food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat"
   scale_color_discrete(guide = NULL)+
   labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food treatment", color = "Density", fill = "Density")+
   facet_wrap(~facet, ncol = 1)+
-  theme_bw())
+  theme_bw()+
+    theme(strip.background = element_blank()))
 
 
 
@@ -48,7 +49,8 @@ rattle_effs <- as.data.table(ggpredict(rmod, terms = c("littersize", "density_ca
     labs(x = "Litter size", y = "", subtitle = "Rattle treatment", color = "Density", fill = "Density")+
     facet_wrap(~facet, ncol = 1, nrow = 3)+
     theme_bw()+
-    theme(legend.position = "bottom"))
+    theme(legend.position = "bottom")+
+    theme(strip.background = element_blank()))
 
 
 
@@ -68,7 +70,8 @@ cache_effs <- as.data.table(ggpredict(cmod, terms = c("littersize", "density_cat
     scale_color_discrete(guide = NULL)+
     labs(x = "Litter size", y = "", subtitle = "Cache size", color = "Density", fill = "Density")+
     facet_wrap(~facet, ncol = 1)+
-    theme_bw())
+    theme_bw()+
+    theme(strip.background = element_blank()))
 
 
 
