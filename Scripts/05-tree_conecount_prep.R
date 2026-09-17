@@ -51,6 +51,10 @@ cones_year <- cones[, .(cones_year = mean(Nlog, na.rm = TRUE)), by = .(year)]
 #merge cone-grid-year with starting data frame
 dat <- merge(frame, cones_grid, by = c("year", "grid"), all.x = TRUE)
 
+#make a source column
+dat[is.na(cones), cones_source := "average"]
+dat[!is.na(cones), cones_source := "measured"]
+
 #merge in cone-year data to fill in gaps
 dat <- merge(dat, cones_year, by = "year", all.x = TRUE)
 
@@ -59,6 +63,7 @@ dat[is.na(cones), cones := cones_year][, cones_year := NULL]
 
 #lag this value to get t-1, or last year's cones count
 dat[, cones_prev := lag(cones), grid]
+dat[, cones_prev_source := lag(cones_source), grid]
 
 
 
