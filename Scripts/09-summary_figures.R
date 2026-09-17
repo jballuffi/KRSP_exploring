@@ -119,7 +119,7 @@ gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
 #ggsave("Output/Figures/response_summary.jpeg", responseplot, width = 5, height = 8, unit = "in")
 
 
-ggsave("Output/Figures/full_summary.jpeg", full_sum, width = 10, height = 9, unit = "in")
+ggsave("Output/Figures/full_summary.jpeg", full_sum, width = 11, height = 9, unit = "in")
 ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 5, height = 5, unit = "in")
 ggsave("Output/Figures/GR_birthmonth.jpeg", bd, width = 6, height = 4, unit = "in")
 
