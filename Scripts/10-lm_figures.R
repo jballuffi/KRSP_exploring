@@ -6,51 +6,48 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 # read in and prep data ---------------------------------------------------
 
 #read in finalized data
-controls <- readRDS("Output/Data/control_cleaned_litters.rds")
-food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
-rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 
 
 
-# Figure 1: Control and Food Add data set -----------------------------------------------------------
+# Figure 1: Control, Food Add, and Rattl -----------------------------------------------------------
 
-#this model is Growth Rate ~ Litter Size x Density Category x Individual Treatment
-fmod <- lm(growthrate ~ littersize*density_cat*treatment_ind, food)
+#make model for just controls
+Cmod <- lm(growthrate ~ littersize*density_cat, dat[treatment_ind == "Control"])
+Ceffs <- as.data.table(ggpredict(Cmod, terms = c("littersize", "density_cat")))
+Ceffs[, facet := "Control"]
 
-#get effects table
-food_effs <- as.data.table(ggpredict(fmod, terms = c("littersize", "density_cat", "treatment_ind")))
+#make model for just buckets
+Bmod <- lm(growthrate ~ littersize*density_cat, dat[treatment_ind == "Bucket"])
+Beffs <- as.data.table(ggpredict(Bmod, terms = c("littersize", "density_cat")))
+Beffs[, facet := "Bucket"]
+
+#make model for just no buckets
+Nmod <- lm(growthrate ~ littersize*density_cat, dat[treatment_ind == "No Bucket"])
+Neffs <- as.data.table(ggpredict(Nmod, terms = c("littersize", "density_cat")))
+Neffs[, facet := "No Bucket"]
+
+#make model for just no buckets
+Rmod <- lm(growthrate ~ littersize*density_cat, dat[treatment_ind == "Rattle"])
+Reffs <- as.data.table(ggpredict(Rmod, terms = c("littersize", "density_cat")))
+Reffs[, facet := "Rattle"]
+
+#bind rattle and food add together
+effs <- rbind(Ceffs, Beffs, Neffs, Reffs)
+
 
 #plot regressions 
-(food_fig <- ggplot(food_effs)+
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
-  geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-  scale_fill_discrete(guide = NULL)+
-  scale_color_discrete(guide = NULL)+
-  labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Food treatment", color = "Density", fill = "Density")+
-  facet_wrap(~facet, ncol = 1)+
-  theme_bw()+
-    theme(strip.background = element_blank()))
-
-
-
-# Rattle data set ----------------------------------------------------------
-
-#create model that interacts litter size, density and rattle treatment
-rmod <- lm(growthrate ~ littersize*density_cat*treatment_ind, rattle)
-
-#get effects table
-rattle_effs <- as.data.table(ggpredict(rmod, terms = c("littersize", "density_cat", "treatment_ind")))
-
-#plot regressions 
-(rattle_fig <- ggplot(rattle_effs)+
+(treatment_fig <- ggplot(effs)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
     geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-    labs(x = "Litter size", y = "", subtitle = "Rattle treatment", color = "Density", fill = "Density")+
-    facet_wrap(~facet, ncol = 1, nrow = 3)+
+    scale_fill_discrete(guide = NULL)+
+    scale_color_discrete(guide = NULL)+
+    labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Individual treatment", color = "Density", fill = "Density")+
+    facet_wrap(~facet, ncol = 1, scales = "free")+
     theme_bw()+
-    theme(legend.position = "bottom")+
-    theme(strip.background = element_blank()))
+    theme(strip.background = element_blank())
+  )
 
 
 
@@ -66,26 +63,19 @@ cache_effs <- as.data.table(ggpredict(cmod, terms = c("littersize", "density_cat
 (cache_fig <- ggplot(cache_effs)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group, fill = group), alpha = 0.2)+
     geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
-    scale_fill_discrete(guide = NULL)+
-    scale_color_discrete(guide = NULL)+
     labs(x = "Litter size", y = "", subtitle = "Cache size", color = "Density", fill = "Density")+
-    facet_wrap(~facet, ncol = 1)+
+    facet_wrap(~facet, ncol = 1, scales = "free")+
     theme_bw()+
-    theme(strip.background = element_blank()))
+    theme(strip.background = element_blank(), legend.position = "bottom")
+  )
 
 
 
-fullfig <- ggarrange(food_fig, cache_fig, rattle_fig, ncol = 3, nrow = 1, align = "hv")
+fullfig <- ggarrange(treatment_fig, cache_fig, ncol = 2, nrow = 1, align = "hv")
 fullfig
 
 
 
 # save figures --------------------------------------------------
 
-ggsave("Output/Figures/lm_full.jpeg", fullfig, width = 9, height = 6, unit = "in")
-
-# ggsave("Output/Figures/lm_foodtreament.jpeg", food_fig, width = 5, height = 10, unit = "in")
-# ggsave("Output/Figures/lm_cachesize.jpeg", cache_fig, width = 5, height = 10, unit = "in")
-# ggsave("Output/Figures/lm_rattletreatment.jpeg", rattle_fig, width = 5, height = 7, unit = "in")
-
-
+ggsave("Output/Figures/lm_full.jpeg", fullfig, width = 6.5, height = 10, unit = "in")
