@@ -3,9 +3,9 @@ title: "Preliminary Results"
 author: "Juliana Balluffi-Fry"
 date: "2026-06-01"
 output:
+  word_document: default
   html_document:
     df_print: paged
-  word_document: default
   pdf_document: default
 ---
 
