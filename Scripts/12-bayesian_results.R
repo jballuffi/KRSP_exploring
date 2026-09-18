@@ -39,12 +39,19 @@ summary(rattle_mod)
 # mcmc_plot(food_mod, type = "trace")
 # mcmc_plot(cache_mod, type = "trace")
 # mcmc_plot(rattle_mod, type = "trace")
-# 
-# #results plots
-# conditional_effects(control_mod)
-# conditional_effects(food_mod)
-# conditional_effects(cache_mod)
-# conditional_effects(rattle_mod)
+
+
+
+
+# All results from control model ------------------------------------------
+
+# get conditional effects plots from control mod
+ce <- conditional_effects(control_mod)
+plots <- plot(ce, plot = FALSE)
+
+#use the patchwork package to paste them together
+combined_plot <- patchwork::wrap_plots(plots)
+
 
 
 # POSTERIOR PREDICTIONS -----------------------------------------------------------
@@ -359,6 +366,7 @@ Predictions
 
 # save Figures ---------------------------------------------------------
 
+ggsave("Output/Figures/Control_model_full_results.jpeg", combined_plot, width = 10, height = 6, unit = "in")
 ggsave("Output/Figures/Posterior_predictions.jpeg", PostPred, width = 5, height = 9, unit = "in")
 ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 6, height = 9, unit = "in")
 ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 9, height = 6, unit = "in")

@@ -58,10 +58,14 @@ S1. Visual example of how local density was estimated using squirrel census data
 
 S2. Linear model predictions for the relationship between squirrel litter growth rate (g/day) and litter size as an interaction with three categories of squirrel density (low = red, medium = green, and high = blue). Left column: results from four different models, each using data subset to a different experimental treatment, controls (n = `r dat[treatment_ind == "Control", .N]`), buckets (n = `r dat[treatment_ind == "Bucket", .N]`), no buckets (n = `r dat[treatment_ind == "No Bucket", .N]`), and rattles (n = `r dat[treatment_ind == "Rattle", .N]`). Right column: results from one model that used all litters with cache size data (n = `r cache[, .N]`) and interacted litter size with density and the mother's cache size (categorical, either small, medium, or large).
 
+S3. Predictions for all fixed effects from the control model which did not include any interacting term with density. Litters used in this model were from control grids across all years, and the model did not test for any effect of cache size.
+
 S3. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
 
 ![S1](Output/Figures/local_density_visual.jpeg)
 
 ![S2](Output/Figures/lm_full.jpeg)
 
-![S3](Output/Figures/Posterior_distributions.jpeg)
+![S3](Output/Figures/Control_model_full_results.jpeg)
+
+![S4](Output/Figures/Posterior_distributions.jpeg)
