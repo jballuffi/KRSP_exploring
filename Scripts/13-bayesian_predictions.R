@@ -25,11 +25,10 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
 
 
-# FOOD MODEL COV AND COR --------------------------------------------------
+# Create data sets to base predictions off of ------------------------------
 
-# Step 1: create the data to base the prediction on 
-
-fooddat <- expand.grid(
+#all food treatments and means from food data set
+fooddat <- as.data.table(expand.grid(
   density_std = seq(min(food$density_std), max(food$density_std), length.out = 100), #full range of density
   treatment_ind = levels(food$treatment_ind),  #all treatments
   cones_std = mean(food$cones_std, na.rm = TRUE),  #full range of tree cone count
@@ -39,11 +38,156 @@ fooddat <- expand.grid(
   sexratio = mean(food$sexratio),  #avg sex ratio
   gridyear = NA,  #Using NA because we want a population-level prediction
   mother_byear = NA  # same as grid year
+))
+
+#all cache levels and means from cache dataset
+cachedat <- as.data.table(expand.grid(
+  density_std = seq(min(cache$density_std), max(cache$density_std), length.out = 100),
+  cache_cat = levels(cache$cache_cat),  #instead of treatment we are using categories of cache size
+  cones_std = mean(cache$cones_std, na.rm = TRUE),
+  mother_age_std = mean(cache$mother_age_std, na.rm = TRUE),
+  bjulian_std = mean(cache$bjulian_std),
+  mast = "no",              
+  sexratio = mean(cache$sexratio),
+  gridyear = NA, 
+  mother_byear = NA
+))
+
+#all rattle treatments and means from rattle data set
+rattdat <- as.data.table(expand.grid(
+  density_std = seq(min(rattle$density_std), max(rattle$density_std), length.out = 100),
+  treatment_ind = levels(rattle$treatment_ind),  #using treatment of rattle vs control
+  cones_std = mean(rattle$cones_std, na.rm = TRUE),
+  mother_age_std = mean(rattle$mother_age_std, na.rm = TRUE),
+  bjulian_std = mean(rattle$bjulian_std),
+  mast = "no",
+  sexratio = mean(rattle$sexratio),
+  gridyear = NA,
+  mother_byear = NA
+))
+
+
+
+
+# Food Model Ellipse ------------------------------------------------------
+
+#Generate posterior predictions for controls
+control_gr <- posterior_predict(food_mod, resp = "growthratestd", newdata = fooddat[treatment_ind == "Control"], re_formula = NA)
+control_ls <- posterior_predict(food_mod, resp = "littersizestd", newdata = fooddat[treatment_ind == "Control"], re_formula = NA)
+control_joint <- data.frame(
+  gr_pred = rowMeans(control_gr),
+  ls_pred = rowMeans(control_ls),
+  treatment_ind = "Control"
 )
 
+#generate posterior predictions for buckets
+bucket_gr <- posterior_predict(food_mod, resp = "growthratestd", newdata = fooddat[treatment_ind == "Bucket"], re_formula = NA)
+bucket_ls <- posterior_predict(food_mod, resp = "littersizestd", newdata = fooddat[treatment_ind == "Bucket"], re_formula = NA)
+bucket_joint <- data.frame(
+  gr_pred = rowMeans(bucket_gr),
+  ls_pred = rowMeans(bucket_ls),
+  treatment_ind = "Bucket"
+)
 
-# Step 2 — Make an array of the expected posterior predictions
+#generate posterior predictions for no buckets
+nobucket_gr <- posterior_predict(food_mod, resp = "growthratestd", newdata = fooddat[treatment_ind == "No Bucket"], re_formula = NA)
+nobucket_ls <- posterior_predict(food_mod, resp = "littersizestd", newdata = fooddat[treatment_ind == "No Bucket"], re_formula = NA)
+nobucket_joint <- data.frame(
+  gr_pred = rowMeans(nobucket_gr),
+  ls_pred = rowMeans(nobucket_ls),
+  treatment_ind = "No Bucket"
+)
 
+#rbind all predictions together
+food_joint <- rbind(control_joint, bucket_joint, nobucket_joint)
+
+#plot growth rate against litter size and add ellipse
+(food_ellipse <- ggplot(food_joint, aes(x = ls_pred, y = gr_pred)) +
+  geom_point(aes(color = treatment_ind), alpha = 0.05) +
+  stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
+  scale_color_manual(values = treatment_cols) +
+  labs(subtitle = "A) Food Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment") +
+  theme_bw())
+
+
+
+# Cache Model Ellipse -----------------------------------------------------
+
+#Generate posterior predictions for small cache sizes
+small_gr <- posterior_predict(cache_mod, resp = "growthratestd", newdata = cachedat[cache_cat == "small"], re_formula = NA)
+small_ls <- posterior_predict(cache_mod, resp = "littersizestd", newdata = cachedat[cache_cat == "small"], re_formula = NA)
+small_joint <- data.frame(
+  gr_pred = rowMeans(small_gr),
+  ls_pred = rowMeans(small_ls),
+  cache_cat = "small"
+)
+
+#Generate posterior predictions for medium cache sizes
+medium_gr <- posterior_predict(cache_mod, resp = "growthratestd", newdata = cachedat[cache_cat == "medium"], re_formula = NA)
+medium_ls <- posterior_predict(cache_mod, resp = "littersizestd", newdata = cachedat[cache_cat == "medium"], re_formula = NA)
+medium_joint <- data.frame(
+  gr_pred = rowMeans(medium_gr),
+  ls_pred = rowMeans(medium_ls),
+  cache_cat = "medium"
+)
+
+#Generate posterior predictions for controls
+large_gr <- posterior_predict(cache_mod, resp = "growthratestd", newdata = cachedat[cache_cat == "large"], re_formula = NA)
+large_ls <- posterior_predict(cache_mod, resp = "littersizestd", newdata = cachedat[cache_cat == "large"], re_formula = NA)
+large_joint <- data.frame(
+  gr_pred = rowMeans(large_gr),
+  ls_pred = rowMeans(large_ls),
+  cache_cat = "large"
+)
+
+#rbind all three
+cache_joint <- rbind(small_joint, medium_joint, large_joint)
+
+#plot growth rate against litter size and add ellipse
+(cache_ellipse <- ggplot(cache_joint, aes(x = ls_pred, y = gr_pred)) +
+  geom_point(aes(color = cache_cat), alpha = 0.05) +
+  stat_ellipse(aes(color = cache_cat), level = 0.95, size = 1.2) +
+  scale_color_manual(values = cache_cols) +
+  labs(subtitle = "B) Cache Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Cache size")+
+  theme_bw())
+
+
+
+# Rattle Model Ellipse ----------------------------------------------------------
+
+#Generate posterior predictions for controls
+controlrat_gr <- posterior_predict(rattle_mod, resp = "growthratestd", newdata = rattdat[treatment_ind == "Control"], re_formula = NA)
+controlrat_ls <- posterior_predict(rattle_mod, resp = "littersizestd", newdata = rattdat[treatment_ind == "Control"], re_formula = NA)
+controlrat_joint <- data.frame(
+  gr_pred = rowMeans(controlrat_gr),
+  ls_pred = rowMeans(controlrat_ls),
+  treatment_ind = "Control"
+)
+
+#Generate posterior predictions for controls
+rattle_gr <- posterior_predict(rattle_mod, resp = "growthratestd", newdata = rattdat[treatment_ind == "Rattle"], re_formula = NA)
+rattle_ls <- posterior_predict(rattle_mod, resp = "littersizestd", newdata = rattdat[treatment_ind == "Rattle"], re_formula = NA)
+rat_joint <- data.frame(
+  gr_pred = rowMeans(rattle_gr),
+  ls_pred = rowMeans(rattle_ls),
+  treatment_ind = "Rattle"
+)
+
+rattle_joint <- rbind(controlrat_joint, rat_joint)
+
+#plot growth rate against litter size and add ellipse
+(rattle_ellipse <- ggplot(rattle_joint, aes(x = ls_pred, y = gr_pred)) +
+  geom_point(aes(color = treatment_ind), alpha = 0.05) +
+  stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
+  scale_color_manual(values = treatment_cols) +
+  theme_bw() +
+  labs(subtitle = "C) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment"))
+
+
+
+# Food model covariance and correlation predictions --------------------------------------------------
+
+#Make an array of the expected posterior predictions
 ep_food <- posterior_epred(food_mod,  #the model we are using to create predictions
                       newdata = fooddat,  #the data from step 1
                       re_formula = NA)   #use this argument to drop random effects and predict for the whole population
@@ -52,8 +196,7 @@ growth_ep_food <- ep_food[, , 1]   # grab the expected growth rate from array
 litter_ep_food <- ep_food[, , 2]   # expected litter size from array
 
 
-# Step 3 — Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
-
+#Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
 #compute covariance
 cov_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
   data.frame(
@@ -73,8 +216,7 @@ cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
 })
 
 
-# Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
-
+#Plot covariance vs. density and correlation vs. density with 3 treatment lines
 #covariance
 (food_cov <- ggplot(cov_df_food, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
@@ -95,25 +237,9 @@ cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
 
 
 
-# CACHE MODEL COV AND COR -------------------------------------------------
+# Cache model covariance and correlation predictions -------------------------------------------------
 
-# Step 1:
-
-cachedat <- expand.grid(
-  density_std = seq(min(cache$density_std), max(cache$density_std), length.out = 100),
-  cache_cat = levels(cache$cache_cat),  #instead of treatment we are using categories of cache size
-  cones_std = mean(cache$cones_std, na.rm = TRUE),
-  mother_age_std = mean(cache$mother_age_std, na.rm = TRUE),
-  bjulian_std = mean(cache$bjulian_std),
-  mast = "no",              
-  sexratio = mean(cache$sexratio),
-  gridyear = NA, 
-  mother_byear = NA
-)
-
-
-# Step 2 — Get expected posterior predictions
-
+# Get posterior predictions
 ep_cache <- posterior_epred(cache_mod,          
                       newdata = cachedat,  
                       re_formula = NA)   
@@ -122,8 +248,7 @@ growth_ep_cache <- ep_cache[, , 1]
 litter_ep_cache <- ep_cache[, , 2]   
 
 
-# Step 3 — Compute covariance and correlation at each density × cache size (uses dplyr and purrr)
-
+#Compute covariance and correlation at each density × cache size (uses dplyr and purrr)
 #compute covariance
 cov_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
   data.frame(
@@ -143,8 +268,7 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
 })
 
 
-# Step 4 — Plot covariance vs. density and correlation vs. density with 3 categories of cache size
-
+#Plot covariance vs. density and correlation vs. density with 3 categories of cache size
 #covariance
 (cache_cov <- ggplot(cov_df_cache, aes(density_std, cov, color = cache_cat)) +
     geom_line(size = 1.2) +
@@ -165,25 +289,9 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
 
 
 
-# CACHE MODEL COV AND COR -------------------------------------------------
+# Rattle model covariance and correlation predictions -------------------------------------------------
 
-# Step 1: build prediction grid
-
-rattdat <- expand.grid(
-  density_std = seq(min(rattle$density_std), max(rattle$density_std), length.out = 100),
-  treatment_ind = levels(rattle$treatment_ind),  #using treatment of rattle vs control
-  cones_std = mean(rattle$cones_std, na.rm = TRUE),
-  mother_age_std = mean(rattle$mother_age_std, na.rm = TRUE),
-  bjulian_std = mean(rattle$bjulian_std),
-  mast = "no",
-  sexratio = mean(rattle$sexratio),
-  gridyear = NA,
-  mother_byear = NA
-)
-
-
-# Step 2 — Get expected posterior predictions
-
+#Get expected posterior predictions
 ep_rattle <- posterior_epred(rattle_mod,
                       newdata = rattdat,
                       re_formula = NA) 
@@ -192,8 +300,7 @@ growth_ep_rattle <- ep_rattle[, , 1]
 litter_ep_rattle <- ep_rattle[, , 2] 
 
 
-# Step 3 — Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
-
+#Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
 #compute covariance
 cov_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
   data.frame(
@@ -213,8 +320,7 @@ cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
 })
 
 
-# Step 4 — Plot covariance vs. density and correlation vs. density with 3 treatment lines
-
+#Plot covariance vs. density and correlation vs. density with 3 treatment lines
 #covariance
 (rattle_cov <- ggplot(cov_df_rattle, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
@@ -235,15 +341,13 @@ cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
 
 
 
-
 # compile all figures into one --------------------------------------------
 
-cov_fig <- ggarrange(food_cov, cache_cov, rattle_cov, ncol = 1, nrow = 3, align = "hv")
-cor_fig <- ggarrange(food_cor, cache_cor, rattle_cor, ncol = 1, nrow = 3, align = "hv")
+#collect all ellipse figures
+ellipse_fig <- ggarrange(food_ellipse, cache_ellipse, rattle_ellipse, ncol = 1, nrow = 3, align = "hv")
 
+#collect all cor and cov prediction figures
 cor_cov_fig <- ggarrange(food_cov, food_cor, cache_cov, cache_cor, rattle_cov, rattle_cor, ncol = 2, nrow = 3, align = "hv")
 
-#ggsave("Output/Figures/covariance_results.jpeg", cov_fig, width = 5, height = 10)
-#ggsave("Output/Figures/correlation_results.jpeg", cor_fig, width = 5, height = 10)
-
-ggsave("Output/Figures/covariance_correlation_predictions.jpeg", cor_cov_fig, width = 7, height = 9)
+ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 5, height = 9, unit = "in")
+ggsave("Output/Figures/covariance_correlation_predictions.jpeg", cor_cov_fig, width = 7, height = 9, unit = "in")
