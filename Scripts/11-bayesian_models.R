@@ -21,26 +21,28 @@ rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 # ANALYSIS 1: CONTROL DATA -----------------------------------
 
+#formula for growth rate
 b_continuous <- bf(
   growthrate_std ~ density_std + cones_std
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
+#formula for litter size
 b_ordinal <- bf(
   littersize_std ~ density_std + cones_std
   + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
+#run model using brm function. chains, cores, iterations, and warm ups are pre-loaded in the 'R/bayesian_values.R'
 biv_control_model <- brm(
-  formula = b_continuous + b_ordinal,
-  data = controls,
-  chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
-  cores = 2, # Parallel processing, dependent on computer you are using
-  iter = 10000, #how many times are you going to sample, bella says 1000
-  warmup = 1000 #if model is having a hard time to converge this will help, having some is good.
-  
+  formula = b_continuous + b_ordinal, #merge both formulas
+  data = controls, #call data set
+  chains = chain, #The more chains the longer it will take to run, bella said 4 chains is ideal
+  cores = core, # Parallel processing, dependent on computer you are using
+  iter = iters, #how many times are you going to sample
+  warmup = warms #how many warm ups to help model converge
 )
 
 summary(biv_control_model)
@@ -64,11 +66,10 @@ f_ordinal <- bf(
 biv_food_model <- brm(
   formula = f_continuous + f_ordinal,
   data = food,
-  chains = 2, #are the chains fuzzy? The more chains the longer, ideal is 4. (bella)
-  cores = 2, # Parallel processing, dependent on computer you are using
-  iter = 10000, #how many times are you going to sample, bella says 1000
-  warmup = 1000 #if model is having a hard time to converge this will help, having some is good.
-  
+  chains = chain, 
+  cores = core, 
+  iter = iters, 
+  warmup = warms 
 )
 
 summary(biv_food_model)
@@ -95,10 +96,10 @@ c_ordinal <- bf(
 biv_cache_model <- brm(
   formula = c_continuous + c_ordinal,
   data = cache,
-  chains = 2,
-  cores = 2, # Parallel processing
-  iter = 10000,
-  warmup = 1000
+  chains = chain,
+  cores = core,
+  iter = iters,
+  warmup = warms
 )
 
 summary(biv_cache_model)
@@ -122,10 +123,10 @@ r_ordinal <- bf(
 biv_rattle_model <- brm(
   formula = r_continuous + r_ordinal,
   data = rattle,
-  chains = 2,
-  cores = 2, # Parallel processing
-  iter = 10000,
-  warmup = 1000
+  chains = chain,
+  cores = core,
+  iter = iters,
+  warmup = warms
 )
 
 summary(biv_rattle_model)
