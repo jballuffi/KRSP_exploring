@@ -54,128 +54,6 @@ combined_plot <- patchwork::wrap_plots(plots)
 
 
 
-# POSTERIOR PREDICTIONS -----------------------------------------------------------
-
-#These would be the best linear unbiased predictors
-#Each point is a litter, how the model measures covariance
-#Accounts for all fixed effects and random effects, this is how they relate after that
-#These models do a lot of work as is. We know the system well.
-#We've already partitioned a ton of variance.
-#Can add line for predicted geometric mean regression
-#standardize axes or layer elipses on top of each other
-
-#CONTROL MODEL
-# 1. Generate posterior predictions for both variables across your data
-pred_growth_control <- posterior_predict(control_mod, resp = "growthratestd")
-pred_litter_control <- posterior_predict(control_mod, resp = "littersizestd")
-
-# 2. Average the predictions across all rows to get a single vector per MCMC draw
-# This isolates the overall joint behavior of your variables
-df_joint_control <- data.frame(
-  Growth_Rate_Pred = rowMeans(pred_growth_control),
-  Litter_Size_Pred = rowMeans(pred_litter_control)
-)
-
-# 3. Plot the joint distribution with a 95% Credible Ellipse
-(PostPred_control <- 
-  ggplot(df_joint_control, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
-  geom_point(alpha = 0.1, color = "darkblue") +
-  stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
-  stat_ellipse(level = 0.50, color = "red", size = 1.2) +
-  theme_bw() +
-  labs(
-    subtitle = "Control Model",
-    x = "Predicted Growth Rate",
-    y = "Predicted Litter Size"
-  )
-)
-
-#FOOD MODEL
-# 1. Generate posterior predictions for both variables across your data
-pred_growth_food <- posterior_predict(food_mod, resp = "growthratestd")
-pred_litter_food <- posterior_predict(food_mod, resp = "littersizestd")
-
-# 2. Average the predictions across all rows to get a single vector per MCMC draw
-# This isolates the overall joint behavior of your variables
-df_joint_food <- data.frame(
-  Growth_Rate_Pred = rowMeans(pred_growth_food),
-  Litter_Size_Pred = rowMeans(pred_litter_food)
-)
-
-# 3. Plot the joint distribution with a 95% Credible Ellipse
-(PostPred_food <-
-    ggplot(df_joint_food, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
-    geom_point(alpha = 0.1, color = "darkblue") +
-    stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
-    stat_ellipse(level = 0.50, color = "red", size = 1.2) +
-    theme_bw() +
-    labs(
-      subtitle = "A) Food Model",
-      x = "Predicted Growth Rate",
-      y = "Predicted Litter Size"
-    )
-)
-
-#CACHE MODEL
-# 1. Generate posterior predictions for both variables across your data
-pred_growth_cache <- posterior_predict(cache_mod, resp = "growthratestd")
-pred_litter_cache <- posterior_predict(cache_mod, resp = "littersizestd")
-
-# 2. Average the predictions across all rows to get a single vector per MCMC draw
-# This isolates the overall joint behavior of your variables
-df_joint_cache <- data.frame(
-  Growth_Rate_Pred = rowMeans(pred_growth_cache),
-  Litter_Size_Pred = rowMeans(pred_litter_cache)
-)
-
-# 3. Plot the joint distribution with a 95% Credible Ellipse
-(PostPred_cache <- 
-    ggplot(df_joint_cache, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
-    geom_point(alpha = 0.1, color = "darkblue") +
-    stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
-    stat_ellipse(level = 0.50, color = "red", size = 1.2) +
-    theme_bw() +
-    labs(
-      subtitle = "B) Cache Model",
-      x = "Predicted Growth Rate",
-      y = "Predicted Litter Size"
-    )
-)
-
-#RATTLE MODEL
-# 1. Generate posterior predictions for both variables across your data
-pred_growth_rattle <- posterior_predict(rattle_mod, resp = "growthratestd")
-pred_litter_rattle <- posterior_predict(rattle_mod, resp = "littersizestd")
-
-# 2. Average the predictions across all rows to get a single vector per MCMC draw
-# This isolates the overall joint behavior of your variables
-df_joint_rattle <- data.frame(
-  Growth_Rate_Pred = rowMeans(pred_growth_rattle),
-  Litter_Size_Pred = rowMeans(pred_litter_rattle)
-)
-
-# 3. Plot the joint distribution with a 95% Credible Ellipse
-(PostPred_rattle <-
-    ggplot(df_joint_rattle, aes(x = Growth_Rate_Pred, y = Litter_Size_Pred)) +
-    geom_point(alpha = 0.1, color = "darkblue") +
-    stat_ellipse(level = 0.95, color = "orange", size = 1.2) +
-    stat_ellipse(level = 0.50, color = "red", size = 1.2) +
-    theme_bw() +
-    labs(
-      subtitle = "C) Rattle Model",
-      x = "Predicted Growth Rate",
-      y = "Predicted Litter Size"
-    )
-)
-
-
-#merge all
-PostPred <- ggarrange(PostPred_food, PostPred_cache, PostPred_rattle, nrow = 3, ncol = 1, align = "hv")
-PostPred
-
-
-
-
 # POSTERIOR DISTRIBUTIONS OF RESPONSE COVARIANCE -------------------------------------------------
 
 #Can add them all to the same panel or set the axes distribution
@@ -199,7 +77,6 @@ cov_draws_control <- rho_control * sig_gr_control * sig_ls_control
 (PostDist_control <- mcmc_areas(data.frame(covariance = cov_draws_control), pars = "covariance", prob = 0.95) +
   labs(title = "Control Model", x = "Covariance (GR, LS)")
 )
-
 
 #FOOD MODEL
 # 1. extract draws from the model
@@ -367,6 +244,5 @@ Predictions
 # save Figures ---------------------------------------------------------
 
 ggsave("Output/Figures/Control_model_full_results.jpeg", combined_plot, width = 10, height = 6, unit = "in")
-ggsave("Output/Figures/Posterior_predictions.jpeg", PostPred, width = 5, height = 9, unit = "in")
 ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 6, height = 9, unit = "in")
 ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 9, height = 6, unit = "in")
