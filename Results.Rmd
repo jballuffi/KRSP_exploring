@@ -1,0 +1,38 @@
+---
+title: "Results"
+author: "Juliana Balluffi-Fry"
+date: "2026-09-18"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
+
+#input data
+cones <- readRDS("Output/Data/tree_cone_counts.rds")
+
+#finalized data
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
+controls <- readRDS("Output/Data/control_cleaned_litters.rds")
+food <- readRDS("Output/Data/food_cleaned_litters.rds")
+cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
+rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
+
+
+```
+
+Results
+
+Litter size ranged from `r min(dat$littersize)` to `r max(dat$littersize)` pups. Litter growth rate ranged from `r round(min(dat$growthrate), 2)` to `r round(max(dat$growthrate), 2)` g/day.
+
+Mean partrition date was `r round(mean(dat$bjulian))` Julian day.
+
+The average mother age was `r round(mean(dat$mother_age))` years.
+
+with the average local density on Agnes grid increasing at a rate of 0.13 squirrels/ha every year over the 12 years of its food experiment. Over the entire study, squirrels on food supplemented grids experienced higher local densities, with an average of 2.44 squirrels/ha, compared to those on control grids, that had on average 2.05 squirrels/ha.
+
+
