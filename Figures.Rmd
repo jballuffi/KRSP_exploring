@@ -32,7 +32,7 @@ Figure 1. Summary of density and life history outcomes in response to treatments
 
 Figure 2. Raw data from control grids (n = `r controls[, .N]`) showing the overall negative trade-off between litter size and litter growth rate (g/day). Linear relationship is shown.
 
-Figure 3. Best linear unbiased predictors from all three Bayesian models, food (n = `r food[, .N]`), cache (n = `r cache[, .N]`), and rattle (n = `r rattle[, .N]`), that test how growth rate and litter size respond to local density. After all fixed effects and random effects are accounted for, this is how litter size and growth rate relate to one another in each scenario. Data points represent litters, red ellipses represent the 50% confidence levels, and orange ellipses represent the 95% confidence levels.
+Figure 3. Best linear unbiased predictors from all three Bayesian models, food (n = `r food[, .N]`), cache (n = `r cache[, .N]`), and rattle (n = `r rattle[, .N]`), that test how growth rate and litter size respond to local density. After all fixed effects and random effects are accounted for, this is how litter size and growth rate relate to one another in each scenario. Data points represent litters, ellipses represent the 95% confidence levels, and both data points and ellipses are colored based on either A) food treatment, B) cache size, or C) rattle treatment.
 
 Figure 4. Linear predictions for litter growth rate (top row) and litter size (bottom row), separately, in response to local density based on three Bayesian models: A) Food model, B) Cache model, and C) Rattle model. Each model tested a different scenario or experiment. A) Predictions from the Food model (n = `r food[, .N]`) that tested how the interaction between a mother's local density and her food treatment (control = grey, food add grid with a bucket = red, food add grid with no bucket = blue) affects the relationship between litter growth rate and litter size. B) Predictions from the Cache model (n = `r cache[, .N]`) that tested how the interaction between a mother's local density and her cache size in the previous autumn (small = yellow, medium = light green, large = dark green) affects the relationship between litter growth rate and litter size. C) Predictions from the Rattle model (n = `r rattle[, .N]`) that tested how the interaction between a mother's local density and her perceived density treatment (control = grey, rattle playback = violet) affects the relationship between litter growth rate and litter size.
 
@@ -44,7 +44,7 @@ Figures
 
 ![Figure 2](Output/Figures/GR_littersize.jpeg)
 
-![Figure 3](Output/Figures/Posterior_predictions.jpeg)
+![Figure 3](Output/Figures/ellipse_predictions.jpeg)
 
 ![Figure 4](Output/Figures/Bayesian_predictions.jpeg)
 
