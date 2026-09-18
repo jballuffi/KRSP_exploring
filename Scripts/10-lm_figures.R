@@ -35,7 +35,7 @@ Reffs[, facet := "Rattle"]
 
 #bind rattle and food add together
 effs <- rbind(Ceffs, Beffs, Neffs, Reffs)
-
+effs[, facet := factor(facet, levels = c("Control", "Bucket", "No Bucket", "Rattle"))]
 
 #plot regressions 
 (treatment_fig <- ggplot(effs)+
