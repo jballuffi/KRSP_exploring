@@ -24,13 +24,14 @@ data[, locX := locX*30][, locY := locY*30]
 
 #build function for full data set
 getneighbors <- function(id){
-  #get the x and y locations for that test individual
-  testx <- data[squirrel_yr_gr == id, locX]
-  testy <- data[squirrel_yr_gr == id, locY]
-  testyear <- data[squirrel_yr_gr == id, year]
-  testgrid <- data[squirrel_yr_gr == id, grid]
+  testx <- data[squirrel_yr_gr == id, locX] #get the x location of that ind-year
+  testy <- data[squirrel_yr_gr == id, locY] #get the y location of that ind-year
+  testyear <- data[squirrel_yr_gr == id, year] #get the year of that ind-year
+  testgrid <- data[squirrel_yr_gr == id, grid] #get the grid of that ind-year
+  
   #count the number of other individuals within the radius (minus 1 to remove the test ind's location)
   count <- data[(testx - locX)^2 + (testy - locY)^2 <= (radius)^2 & year %in% testyear & grid %in% testgrid, .N] - 1
+  
   return(count) #squirrels per hectare
 }
 
@@ -41,9 +42,6 @@ getneighbors <- function(id){
 #run function on the entire list of squirrel yr grids
 data$neighbors <- lapply(data$squirrel_yr_gr, getneighbors)
 data$neighbors <- unlist(data$neighbors)
-
-#fix neg 1's (these were cases where there we no neighbors)
-data[neighbors < 0, neighbors := 0]
 
 #convert to densities (squirrels/ha)
 data[, density := neighbors/((pi*radius^2)/10000)]
