@@ -80,6 +80,8 @@ full_sum <- ggarrange(density_treatment, density_year_treatment, gr_treatment, l
 #get the relationship between litter size and growth rate from control data set
 gr_ls_mod <- lm(growthrate ~ littersize, controls)
 
+gr_ls_slope <- round(coef(gr_ls_mod)[2], 1)
+
 #get effects table
 gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize")))
 
