@@ -1,9 +1,10 @@
 
+#source the R folder to load any packages and functions
+lapply(dir('R', '*.R', full.names = TRUE), source)
+
 #load library
-library(data.table)
 library(brms)
 library(tidybayes)
-library(dplyr)
 
 # library(cmdstanr)
 # check_cmdstan_toolchain()
