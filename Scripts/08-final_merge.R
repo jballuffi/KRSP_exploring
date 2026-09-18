@@ -216,6 +216,8 @@ cache <- dat2[(grid == "SU" | grid == "KL") & !is.na(cache_prev)]
 #standardize cone cache globally
 cache[, cache_std := scale(cache_prev)]
 
+#cache[, cache_cat := cut(cache_std, breaks = 3, labels = c("small", "medium", "large"))]
+
 #get cache size quantiles
 cache25Q <- cache[, round(quantile(cache_std, na.rm = TRUE)[2], 2)]
 cache75Q <- cache[, round(quantile(cache_std, na.rm = TRUE)[4], 2)]
