@@ -23,51 +23,78 @@ years$treatment_gr <- rep(unique(dat$treatment_gr), each = years[, .N]/3)
 
 #get mean densities, growth rates, and litter size by year and treatment
 annualgrowth <- dat[, .(growthrate = mean(growthrate, na.rm = TRUE),
+                        growthrate_sd = sd(growthrate, na.rm = TRUE),
                         density = mean(density, na.rm = TRUE),
-                        littersize = mean(littersize, na.rm = TRUE)), by = .(year, treatment_gr)]
+                        density_sd = sd(density, na.rm = TRUE),
+                        littersize = mean(littersize, na.rm = TRUE),
+                        littersize_sd = sd(littersize, na.rm = TRUE),
+                        cones = mean(cones_prev, na.rm = TRUE),
+                        cones_sd = mean(cones_prev, na.rm = TRUE)), by = .(year, treatment_gr)]
 
 #merge with years
 annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x = TRUE)
 
 
 
-# Local Density in response to treatments  --------------------------------------------------------------------
+# Response over time ------------------------------------------------------
 
-#plot density by treatment
+#plot density over time by treatment
+(cones_year <- ggplot(annualtrends)+
+   geom_ribbon(aes(x = year+1, ymin = cones - cones_sd, ymax = cones + cones_sd, fill = treatment_gr), alpha = .3)+
+   geom_line(aes(x = year+1, y = cones, color = treatment_gr), alpha = 0.9, linewidth = 1)+
+   labs(x = "Year", y = "Log cone production (cones/tree)", subtitle = "B)", fill = "Grid treatment", color = "Grid treatment")+
+   scale_fill_manual(values = grid_cols)+
+   scale_color_manual(values = grid_cols)+
+   theme_bw()+
+   theme(legend.position = "inside",
+         legend.key.size = unit(.3, "cm"),
+         legend.position.inside = c(0.82, 0.88))
+)
+
+#plot density over time by treatment
+(density_year <- ggplot(annualtrends)+
+   geom_ribbon(aes(x = year, ymin = density - density_sd, ymax = density + density_sd, fill = treatment_gr), alpha = .3)+
+   geom_line(aes(x = year, y = density, color = treatment_gr), alpha = 0.9, linewidth = 1)+
+   labs(x = "Year", y = "Local density (squirrels/ha)", subtitle = "B)", fill = "Grid treatment", color = "Grid treatment")+
+   scale_fill_manual(values = grid_cols)+
+   scale_color_manual(values = grid_cols)+
+   theme_bw()+
+   theme(legend.position = "inside",
+         legend.key.size = unit(.3, "cm"),
+         legend.position.inside = c(0.82, 0.88))
+)
+
+#annualplot <- ggarrange(density_treatment, density_year_treatment, ncol = 1, nrow = 2, align = "h")
+
+
+
+
+
+# response to treatments  --------------------------------------------------------------------
+
+#density by grid treatment
 (density_treatment <-
     ggplot(dat)+
-    geom_boxplot(aes(x = treatment_gr, y = density))+
+    geom_jitter(aes(x = treatment_gr, y = density), width = .25, alpha= .2)+
+    geom_boxplot(aes(x = treatment_gr, y = density), fill = NA, outliers = FALSE)+
     labs(y = "Local density (squirrels/ha)", x = "Grid Treatment", subtitle = "A)")+
     theme_bw())
 
-#plot avg annual growth rate over time and by food add
-(density_year_treatment <- ggplot(annualtrends)+
-    geom_line(aes(x = year, y = density, linetype = treatment_gr), alpha = 0.9, linewidth = 1)+
-    labs(x = "Year", y = "Local density (squirrels/ha)", linetype = "Grid Treatment", subtitle = "B)")+
-    scale_linetype_manual(values = grid_lines)+
-    theme_bw()+
-    theme(legend.position = "inside",
-          legend.key.size = unit(.3, "cm"),
-          legend.position.inside = c(0.82, 0.88))
-  )
-
-#densityplot <- ggarrange(density_treatment, density_year_treatment, ncol = 1, nrow = 2, align = "h")
-
-
-
-# Life History in response to treatments ----------------------------------
-
-#growth rate in response to treatments
+#growth rate by individual treatments
 (gr_treatment <- ggplot(dat)+
-   geom_boxplot(aes(x = treatment_gr, y = growthrate, fill = bucket), alpha = 0.6)+
-   scale_fill_discrete(guide = NULL)+
-   labs(x = "Grid Treatment", y = "Growth rate (g/day)", fill = "Bucket", subtitle = "C)")+
-   theme_bw())
+    geom_boxplot(aes(x = treatment_ind, y = growthrate, color = treatment_ind), fill = NA, alpha = 0.6, outliers = FALSE)+
+    geom_jitter(aes(x = treatment_ind, y = growthrate, color = treatment_ind), width = .25, alpha = .2)+
+    scale_color_manual(values = treatment_cols, guide = NULL)+
+    labs(x = "Mother Treatment", y = "Litter growth rate (g/day)", subtitle = "C)")+
+    theme_bw())
 
-#litter size in response to treatments
+#litter size by treatments
 (ls_treatment <- ggplot(dat)+
-    geom_violin(aes(x = treatment_gr, y = littersize, fill = bucket), alpha = 0.6)+
-    labs(x = "Grid Treatment", y = "Litter size", fill = "Bucket", subtitle = "D)")+
+    geom_violin(aes(x = treatment_ind, y = littersize, fill = treatment_ind), alpha = 0.4)+
+    geom_jitter(aes(x = treatment_ind, y = littersize, color = treatment_ind), width = .25, alpha = .2)+
+    scale_fill_manual(values = treatment_cols, guide = NULL)+
+    scale_color_manual(values = treatment_cols, guide = NULL)+
+    labs(x = "Mother Treatment", y = "Litter size", subtitle = "D)")+
     theme_bw())
 
 #responseplot <- ggarrange(gr_treatment, ls_treatment, ncol = 1, nrow = 2)

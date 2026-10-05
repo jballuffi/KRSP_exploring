@@ -43,7 +43,7 @@ cones <- cones[year > 1987]
 cones[, Nlog := log(N + 1)]
 
 #calculate avg cone count by grid and year. This is what we want ideally
-cones_grid <- cones[, .(cones = mean(Nlog, na.rm = TRUE)), by = .(year,grid)]
+cones_grid <- cones[, .(cones = mean(Nlog, na.rm = TRUE)), by = .(year, grid)]
 
 #calculate avg cone count by year. This is in case grid-year avg is missing.
 cones_year <- cones[, .(cones_year = mean(Nlog, na.rm = TRUE)), by = .(year)]
