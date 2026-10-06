@@ -27,45 +27,29 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
 # Create data sets to base predictions off of ------------------------------
 
-#all food treatments and means from food data set
-fooddat <- as.data.table(expand.grid(
-  density_std = seq(min(food$density_std), max(food$density_std), length.out = 100), #full range of density
-  treatment_ind = levels(food$treatment_ind),  #all treatments
-  cones_std = mean(food$cones_std, na.rm = TRUE),  #full range of tree cone count
-  mother_age_std = mean(food$mother_age_std, na.rm = TRUE),  #avg mother age
-  bjulian_std = mean(food$bjulian_std),  #avg birth date
-  mast = "no",  # predicting for a non-mast year
-  sexratio = mean(food$sexratio),  #avg sex ratio
-  gridyear = NA,  #Using NA because we want a population-level prediction
-  mother_byear = NA  # same as grid year
-))
+#function that makes data based on a dataframe (x) and a treatment/category (t)
+make_dataset <- function(x, t){
+  dat <- as.data.table(expand.grid(
+    density_std = seq(min(x$density_std), max(x$density_std), length.out = 100), #full range of density
+    treatment_ind = levels(t),  #all treatments
+    cones_std = mean(x$cones_std, na.rm = TRUE),  #full range of tree cone count
+    mother_age_std = mean(x$mother_age_std, na.rm = TRUE),  #avg mother age
+    bjulian_std = mean(x$bjulian_std),  #avg birth date
+    mast = "no",  # predicting for a non-mast year
+    sexratio = mean(x$sexratio),  #avg sex ratio
+    gridyear = NA,  #Using NA because we want a population-level prediction
+    mother_byear = NA  # same as grid year
+    ))
+  return(dat)
+}
 
-#all cache levels and means from cache dataset
-cachedat <- as.data.table(expand.grid(
-  density_std = seq(min(cache$density_std), max(cache$density_std), length.out = 100),
-  cache_cat = levels(cache$cache_cat),  #instead of treatment we are using categories of cache size
-  cones_std = mean(cache$cones_std, na.rm = TRUE),
-  mother_age_std = mean(cache$mother_age_std, na.rm = TRUE),
-  bjulian_std = mean(cache$bjulian_std),
-  mast = "no",              
-  sexratio = mean(cache$sexratio),
-  gridyear = NA, 
-  mother_byear = NA
-))
+#use function to make three diff data sets
+fooddat <- make_dataset(x = food, t = food$treatment_ind)
+cachedat <- make_dataset(x = cache, t = cache$cache_cat)
+rattdat <- make_dataset(x = rattle, t = rattle$treatment_ind)
 
-#all rattle treatments and means from rattle data set
-rattdat <- as.data.table(expand.grid(
-  density_std = seq(min(rattle$density_std), max(rattle$density_std), length.out = 100),
-  treatment_ind = levels(rattle$treatment_ind),  #using treatment of rattle vs control
-  cones_std = mean(rattle$cones_std, na.rm = TRUE),
-  mother_age_std = mean(rattle$mother_age_std, na.rm = TRUE),
-  bjulian_std = mean(rattle$bjulian_std),
-  mast = "no",
-  sexratio = mean(rattle$sexratio),
-  gridyear = NA,
-  mother_byear = NA
-))
-
+#rename treatment col in cache dataset
+setnames(cachedat, "treatment_ind", "cache_cat")
 
 
 
