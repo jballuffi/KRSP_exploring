@@ -32,40 +32,42 @@ Figure 1. Summary of density and life history outcomes in response to treatments
 
 Figure 2. Raw data from control grids (n = `r controls[, .N]`) showing the overall negative trade-off between litter size and litter growth rate (g/day). Linear relationship is shown.
 
-Figure 3. Best linear unbiased predictors from all three Bayesian models, food (n = `r food[, .N]`), cache (n = `r cache[, .N]`), and rattle (n = `r rattle[, .N]`), that test how growth rate and litter size respond to local density. After all fixed effects and random effects are accounted for, this is how litter size and growth rate relate to one another in each scenario. Data points represent litters, ellipses represent the 95% confidence levels, and both data points and ellipses are colored based on either A) food treatment, B) cache size, or C) rattle treatment.
+Figure 3. Best linear unbiased predictors from all three Bayesian models, food (n = `r food[, .N]`), cache (n = `r cache[, .N]`), and rattle (n = `r rattle[, .N]`), that test how growth rate and litter size respond to local density. After all fixed effects and random effects are accounted for, this is how litter size and growth rate relate to one another in each scenario. Data points represent litters and are colored based on either A) food treatment, B) cache size, or C) rattle treatment. Linear relationships and 95% confidence levels are represented by lines and ellipses, respectively.
 
-Figure 4. Linear predictions for litter growth rate (top row) and litter size (bottom row), separately, in response to local density based on three Bayesian models: A) Food model, B) Cache model, and C) Rattle model. Each model tested a different scenario or experiment. A) Predictions from the Food model (n = `r food[, .N]`) that tested how the interaction between a mother's local density and her food treatment (control = grey, food add grid with a bucket = red, food add grid with no bucket = blue) affects the relationship between litter growth rate and litter size. B) Predictions from the Cache model (n = `r cache[, .N]`) that tested how the interaction between a mother's local density and her cache size in the previous autumn (small = yellow, medium = light green, large = dark green) affects the relationship between litter growth rate and litter size. C) Predictions from the Rattle model (n = `r rattle[, .N]`) that tested how the interaction between a mother's local density and her perceived density treatment (control = grey, rattle playback = violet) affects the relationship between litter growth rate and litter size.
+Figure 4. Predictions of the covariance (left column) and correlation (right column) between litter growth rate (GR) and litter size (LS) in response to local density based on three Bayesian models: Food model (top row), Cache model (middle row), and Rattle model (bottom row). Each model tested a different scenario or experiment. The Food model (n = `r food[, .N]`) tested how the interaction between a mother's local density and her food treatment (control = grey, food add grid with a bucket = red, food add grid with no bucket = blue) affects the relationship between litter growth rate and litter size. The Cache model (n = `r cache[, .N]`) tested how the interaction between a mother's local density and her cache size in the previous autumn (small = yellow, medium = light green, large = dark green) affects the relationship between litter growth rate and litter size. The Rattle model (n = `r rattle[, .N]`) tested how the interaction between a mother's local density and her perceived density treatment (control = grey, rattle playback = violet) affects the relationship between litter growth rate and litter size.
 
-Figure 5. Predictions of the covariance (left column) and correlation (right column) between litter growth rate (GR) and litter size (LS) in response to local density based on three Bayesian models: Food model (top row), Cache model (middle row), and Rattle model (bottom row). Each model tested a different scenario or experiment. The Food model (n = `r food[, .N]`) tested how the interaction between a mother's local density and her food treatment (control = grey, food add grid with a bucket = red, food add grid with no bucket = blue) affects the relationship between litter growth rate and litter size. The Cache model (n = `r cache[, .N]`) tested how the interaction between a mother's local density and her cache size in the previous autumn (small = yellow, medium = light green, large = dark green) affects the relationship between litter growth rate and litter size. The Rattle model (n = `r rattle[, .N]`) tested how the interaction between a mother's local density and her perceived density treatment (control = grey, rattle playback = violet) affects the relationship between litter growth rate and litter size.
+Figure 5. Linear predictions for litter growth rate (top row) and litter size (bottom row), separately, in response to local density based on three Bayesian models: A) Food model, B) Cache model, and C) Rattle model. Each model tested a different scenario or experiment. A) Predictions from the Food model (n = `r food[, .N]`) that tested how the interaction between a mother's local density and her food treatment (control = grey, food add grid with a bucket = red, food add grid with no bucket = blue) affects the relationship between litter growth rate and litter size. B) Predictions from the Cache model (n = `r cache[, .N]`) that tested how the interaction between a mother's local density and her cache size in the previous autumn (small = yellow, medium = light green, large = dark green) affects the relationship between litter growth rate and litter size. C) Predictions from the Rattle model (n = `r rattle[, .N]`) that tested how the interaction between a mother's local density and her perceived density treatment (control = grey, rattle playback = violet) affects the relationship between litter growth rate and litter size.
 
 Figures
 
-![Figure 1](Output/Figures/full_summary.jpeg)
+![Figure 1](Output/Figures/annual_summary.jpeg)
 
 ![Figure 2](Output/Figures/GR_littersize.jpeg)
 
 ![Figure 3](Output/Figures/ellipse_predictions.jpeg)
 
-![Figure 4](Output/Figures/Bayesian_predictions.jpeg)
+![Figure 4](Output/Figures/covariance_correlation_predictions.jpeg)
 
-![Figure 5](Output/Figures/covariance_correlation_predictions.jpeg)
+![Figure 5.](Output/Figures/Bayesian_predictions.jpeg)
 
 Supplementary Figures
 
-(these are just extra things I thought would be handy to keep for now)
+S1. Visual example of how local density was estimated using squirrel census data. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area (pi\*radius\^2)/10000.
 
-S1. Visual example of how local density was estimated using squirrel census data. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a r radius m radius (red circle) of that squirrel's location divided by the area (pi\*radius\^2)/10000 .
+S2. Summary of density and life history outcomes in response to treatments (n = `r dat[, .N]`). A) Local densities (ind/ha) of red squirrels in response to treatment at the grid level, where grids housed either food-add experiments, rattle playback experiments, or were controls. B) Litter growth rate (g/day) and C) litter size in response to treatment of the mother. A mother was either on a control grid, was on a food grid and had a bucket, was on a food grid but did not have a bucket, or was on a rattle playback grid.
 
-S2. Linear model predictions for the relationship between squirrel litter growth rate (g/day) and litter size as an interaction with three categories of squirrel density (low = red, medium = green, and high = blue). Left column: results from four different models, each using data subset to a different experimental treatment, controls (n = `r dat[treatment_ind == "Control", .N]`), buckets (n = `r dat[treatment_ind == "Bucket", .N]`), no buckets (n = `r dat[treatment_ind == "No Bucket", .N]`), and rattles (n = `r dat[treatment_ind == "Rattle", .N]`). Right column: results from one model that used all litters with cache size data (n = `r cache[, .N]`) and interacted litter size with density and the mother's cache size (categorical, either small, medium, or large).
+S3. Linear model predictions for the relationship between squirrel litter growth rate (g/day) and litter size as an interaction with three categories of squirrel density (low = red, medium = green, and high = blue). Left column: results from four different models, each using data subset to a different experimental treatment, controls (n = `r dat[treatment_ind == "Control", .N]`), buckets (n = `r dat[treatment_ind == "Bucket", .N]`), no buckets (n = `r dat[treatment_ind == "No Bucket", .N]`), and rattles (n = `r dat[treatment_ind == "Rattle", .N]`). Right column: results from one model that used all litters with cache size data (n = `r cache[, .N]`) and interacted litter size with density and the mother's cache size (categorical, either small, medium, or large).
 
-S3. Predictions for all fixed effects from the control model which did not include any interacting term with density. Litters used in this model were from control grids across all years, and the model did not test for any effect of cache size.
+S4. Predictions for all fixed effects from the control model which did not include any interacting term with density. Litters used in this model were from control grids across all years, and the model did not test for any effect of cache size.
 
-S3. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
+S5. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
 
 ![S1](Output/Figures/local_density_visual.jpeg)
 
-![S2](Output/Figures/lm_full.jpeg)
+![S2](Output/Figures/treatment_summary.jpeg)
 
-![S3](Output/Figures/Control_model_full_results.jpeg)
+![S3](Output/Figures/lm_full.jpeg)
 
-![S4](Output/Figures/Posterior_distributions.jpeg)
+![S4](Output/Figures/Control_model_full_results.jpeg)
+
+![S5](Output/Figures/Posterior_distributions.jpeg)
