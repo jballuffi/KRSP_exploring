@@ -28,13 +28,13 @@ trapping <- as.data.table(tbl(con, "trapping") %>% collect())
 # subset and collect data --------------------------------------------------------------
 
 #subset juvenile data to just mom id and litter id
-juv2 <- juv[sex == "F", .(mother_id = squirrel_id, litter_id)]
+juv2 <- juv[, .(mother_id = squirrel_id, litter_id)]
 
 #take just litter id and birth year
 lit2 <- lit[, .(litter_id = id, mother_byear = yr)]
 
 #take just mother id and trap dates
-trap2 <- trapping[sex == "F", .(mother_id = squirrel_id, trapdate = ymd(date))]
+trap2 <- trapping[, .(mother_id = squirrel_id, trapdate = ymd(date))]
 
 #collect first year trapped for each mom in case they don't have a birth year 
 momtrap <- trap2[, .(mother_firsttrap = year(min(trapdate, na.rm = TRUE))), mother_id]
@@ -53,7 +53,7 @@ mombirths[, litter_id := NULL]
 momlives <- merge(mombirths, momtrap, by = "mother_id", all = TRUE)
 
 #create a source col
-momlives[!is.na(mother_byear), mombirth_source := "census"]
+momlives[!is.na(mother_byear), mombirth_source := "birthrecord"]
 momlives[is.na(mother_byear), mombirth_source := "trapping"]
 
 #if birth year is missing, make it the year before first trap year
@@ -61,6 +61,8 @@ momlives[is.na(mother_byear), mother_byear := mother_firsttrap - 1]
 
 #fix mom id
 momlives[, mother_id := as.character(mother_id)]
+
+momlives <- momlives[!is.na(mother_id)]
 
 momlives[is.na(mother_byear), .N]
 momlives[, .N, mombirth_source]
