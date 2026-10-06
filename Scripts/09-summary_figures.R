@@ -43,12 +43,11 @@ annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x
    geom_ribbon(aes(x = year, ymin = density - density_sd, ymax = density + density_sd, fill = treatment_gr), alpha = .3)+
    geom_line(aes(x = year, y = density, color = treatment_gr), alpha = 0.9, linewidth = 1)+
    labs(x = "Year", y = "Local density (squirrels/ha)", subtitle = "A)", fill = "Grid treatment", color = "Grid treatment")+
-   scale_fill_manual(values = grid_cols)+
-   scale_color_manual(values = grid_cols)+
+   scale_fill_manual(values = treatment_gr_cols)+
+   scale_color_manual(values = treatment_gr_cols)+
    theme1+
    theme(legend.position = "inside",
-         legend.key.size = unit(.25, "in"),
-         legend.position.inside = c(0.9, 0.80))
+         legend.position.inside = c(0.9, 0.78))
 )
 
 #plot density over time by treatment
@@ -56,8 +55,8 @@ annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x
    geom_ribbon(aes(x = year+1, ymin = cones - cones_sd, ymax = cones + cones_sd, fill = treatment_gr), alpha = .3)+
    geom_line(aes(x = year+1, y = cones, color = treatment_gr), alpha = 0.9, linewidth = 1)+
    labs(x = "Year", y = "Log cone production (cones/tree)", subtitle = "B)", fill = "Grid treatment", color = "Grid treatment")+
-   scale_fill_manual(values = grid_cols, guide = NULL)+
-   scale_color_manual(values = grid_cols, guide = NULL)+
+   scale_fill_manual(values = treatment_gr_cols, guide = NULL)+
+   scale_color_manual(values = treatment_gr_cols, guide = NULL)+
    theme1
 )
 
@@ -79,8 +78,8 @@ annualplot <- ggarrange(density_year, cones_year, ncol = 1, nrow = 2, align = "h
 (gr_treatment <- ggplot(dat)+
     geom_jitter(aes(x = treatment_ind, y = growthrate, color = treatment_ind), shape = 1, width = .25, alpha = .15)+
     geom_boxplot(aes(x = treatment_ind, y = growthrate, fill = treatment_ind, color = treatment_ind), alpha = 0.4, outliers = FALSE)+
-    scale_fill_manual(values = treatment_cols, guide = NULL)+
-    scale_color_manual(values = treatment_cols, guide = NULL)+
+    scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
+    scale_color_manual(values = treatment_ind_cols, guide = NULL)+
     labs(x = "Mother Treatment", y = "Litter growth rate (g/day)", subtitle = "B)")+
     theme1)
 
@@ -88,8 +87,8 @@ annualplot <- ggarrange(density_year, cones_year, ncol = 1, nrow = 2, align = "h
 (ls_treatment <- ggplot(dat)+
     geom_jitter(aes(x = treatment_ind, y = littersize, color = treatment_ind), shape = 1, width = .25, alpha = .15)+
     geom_violin(aes(x = treatment_ind, y = littersize, fill = treatment_ind, color = treatment_ind), alpha = 0.4)+
-    scale_fill_manual(values = treatment_cols, guide = NULL)+
-    scale_color_manual(values = treatment_cols, guide = NULL)+
+    scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
+    scale_color_manual(values = treatment_ind_cols, guide = NULL)+
     labs(x = "Mother Treatment", y = "Litter size", subtitle = "C)")+
     theme1)
 
