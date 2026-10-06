@@ -87,11 +87,13 @@ food_joint <- rbind(control_joint, bucket_joint, nobucket_joint)
 
 #plot growth rate against litter size and add ellipse
 (food_ellipse <- ggplot(food_joint, aes(x = ls_pred, y = gr_pred)) +
-  geom_point(aes(color = treatment_ind), alpha = 0.05) +
-  stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
-  scale_color_manual(values = treatment_cols) +
-  labs(subtitle = "A) Food Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment") +
-  theme_bw())
+    geom_point(aes(color = treatment_ind), shape = 1, alpha = 0.1) +
+    geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
+    scale_color_manual(values = treatment_ind_cols) +
+    lims(y = c(-1, 1), x = c(-1, 1))+
+    labs(subtitle = "A) Food Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment") +
+    theme1)
 
 
 
@@ -129,11 +131,13 @@ cache_joint <- rbind(small_joint, medium_joint, large_joint)
 
 #plot growth rate against litter size and add ellipse
 (cache_ellipse <- ggplot(cache_joint, aes(x = ls_pred, y = gr_pred)) +
-  geom_point(aes(color = cache_cat), alpha = 0.05) +
-  stat_ellipse(aes(color = cache_cat), level = 0.95, size = 1.2) +
-  scale_color_manual(values = cache_cols) +
-  labs(subtitle = "B) Cache Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Cache size")+
-  theme_bw())
+    geom_point(aes(color = cache_cat), shape = 1, alpha = 0.1) +
+    geom_smooth(aes(color = cache_cat), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = cache_cat), level = 0.95, size = 1.2) +
+    scale_color_manual(values = cache_cols) +
+    lims(y = c(-1, 1), x = c(-1, 1))+
+    labs(subtitle = "B) Cache Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Cache")+
+    theme1)
 
 
 
@@ -161,11 +165,13 @@ rattle_joint <- rbind(controlrat_joint, rat_joint)
 
 #plot growth rate against litter size and add ellipse
 (rattle_ellipse <- ggplot(rattle_joint, aes(x = ls_pred, y = gr_pred)) +
-  geom_point(aes(color = treatment_ind), alpha = 0.05) +
-  stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
-  scale_color_manual(values = treatment_cols) +
-  theme_bw() +
-  labs(subtitle = "C) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment"))
+    geom_point(aes(color = treatment_ind), shape = 1, alpha = 0.1) +
+    geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
+    scale_color_manual(values = treatment_ind_cols) +
+    lims(y = c(-1, 1), x = c(-1, 1))+
+    labs(subtitle = "C) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment")+
+    theme1)
 
 
 
@@ -204,20 +210,18 @@ cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
 #covariance
 (food_cov <- ggplot(cov_df_food, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = treatment_cols) +
+  scale_color_manual(values = treatment_ind_cols) +
   labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
-  theme_bw()+
-  theme(legend.position = "inside",
-        legend.position.inside = c(0.25, 0.3),
-        legend.key.size = unit(.3, "cm"))
+  theme1+
+  theme(legend.position = "inside", legend.position.inside = c(0.25, 0.3))
   )
 
 #correlation
 (food_cor <- ggplot(cor_df_food, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = treatment_cols, guide = NULL) +
+  scale_color_manual(values = treatment_ind_cols, guide = NULL) +
   labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
-  theme_bw())
+  theme1)
 
 
 
@@ -258,10 +262,8 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
     geom_line(size = 1.2) +
     scale_color_manual(values = cache_cols) +
     labs(subtitle = "Cache model", x = "", y = "Posterior covariance\n(GR × LS)", color = "Cache level") +
-    theme_bw()+
-    theme(legend.position = "inside",
-          legend.position.inside = c(0.25, 0.3),
-          legend.key.size = unit(.3, "cm"))
+    theme1+
+    theme(legend.position = "inside", legend.position.inside = c(0.25, 0.3))
   )
 
 #correlation
@@ -269,7 +271,7 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
   geom_line(size = 1.2) +
   scale_color_manual(values = cache_cols, guide = NULL) +
   labs(subtitle = "Cache model", x = "", y = "Posterior correlation\n(GR × LS)", color = "Cache level") +
-    theme_bw() )
+    theme1)
 
 
 
@@ -308,20 +310,18 @@ cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
 #covariance
 (rattle_cov <- ggplot(cov_df_rattle, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = treatment_cols) +
+  scale_color_manual(values = treatment_ind_cols) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
-  theme_bw()+
-  theme(legend.position = "inside",
-        legend.position.inside = c(0.25, 0.2),
-        legend.key.size = unit(.3, "cm"))
+  theme1+
+  theme(legend.position = "inside", legend.position.inside = c(0.25, 0.2))
   )
 
 #correlation
 (rattle_cor <- ggplot(cor_df_rattle, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = treatment_cols, guide = NULL) +
+  scale_color_manual(values = treatment_ind_cols, guide = NULL) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
-  theme_bw())
+  theme1)
 
 
 
@@ -333,5 +333,6 @@ ellipse_fig <- ggarrange(food_ellipse, cache_ellipse, rattle_ellipse, ncol = 1, 
 #collect all cor and cov prediction figures
 cor_cov_fig <- ggarrange(food_cov, food_cor, cache_cov, cache_cor, rattle_cov, rattle_cor, ncol = 2, nrow = 3, align = "hv")
 
-ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 5, height = 9, unit = "in")
+ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 5, height = 10, unit = "in")
 ggsave("Output/Figures/covariance_correlation_predictions.jpeg", cor_cov_fig, width = 7, height = 9, unit = "in")
+
