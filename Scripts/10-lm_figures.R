@@ -45,8 +45,7 @@ effs[, facet := factor(facet, levels = c("Control", "Bucket", "No Bucket", "Ratt
     scale_color_discrete(guide = NULL)+
     labs(x = "Litter size", y = "Growth rate (g/day)", subtitle = "Individual treatment", color = "Density", fill = "Density")+
     facet_wrap(~facet, ncol = 1, scales = "free")+
-    theme_bw()+
-    theme(strip.background = element_blank())
+    theme1
   )
 
 
@@ -65,8 +64,8 @@ cache_effs <- as.data.table(ggpredict(cmod, terms = c("littersize", "density_cat
     geom_line(aes(y = predicted, x = x, color = group, group = group), linewidth = 1)+
     labs(x = "Litter size", y = "", subtitle = "Cache size", color = "Density", fill = "Density")+
     facet_wrap(~facet, ncol = 1, scales = "free")+
-    theme_bw()+
-    theme(strip.background = element_blank(), legend.position = "bottom")
+    theme1+
+    theme(legend.position = "bottom")
   )
 
 
