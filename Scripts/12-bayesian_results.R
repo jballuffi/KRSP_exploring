@@ -42,7 +42,6 @@ summary(rattle_mod)
 
 
 
-
 # All results from control model ------------------------------------------
 
 # get conditional effects plots from control mod
@@ -158,8 +157,7 @@ control_pred[response.level == "littersizestd", response.level := "Litter size"]
   geom_line(aes(x = x, y = predicted), linewidth = 1)+
   labs(x = "Density", y = "Predicted value", title = "Control Model")+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-  theme_bw()+
-  theme(strip.background = element_blank())
+  theme1
 )
 
 #FOOD MODEL
@@ -175,15 +173,13 @@ food_pred[response.level == "littersizestd", response.level := "Litter size"]
     ggplot(food_pred)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
-    scale_color_manual(values = treatment_cols)+
-    scale_fill_manual(values = treatment_cols)+
+    scale_color_manual(values = treatment_ind_cols)+
+    scale_fill_manual(values = treatment_ind_cols)+
     guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
     labs(x = "Density", y = "Predicted value", subtitle = "A) Food model", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-    theme_bw()+
-    theme(legend.position = "bottom",
-          legend.key.size = unit(.4, "cm"),
-          strip.background = element_blank())
+    theme1+
+    theme(legend.position = "bottom", legend.key.size = unit(.4, "cm"))
 )
 
 #CACHE MODEL
@@ -204,10 +200,8 @@ cache_pred[response.level == "littersizestd", response.level := "Litter size"]
     guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
     labs(x = "Density", y = "Predicted value", subtitle = "B) Cache model", color = "Cache", fill = "Cache")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-    theme_bw()+
-    theme(legend.position = "bottom",
-          legend.key.size = unit(.4, "cm"),
-          strip.background = element_blank())
+    theme1+
+    theme(legend.position = "bottom", legend.key.size = unit(.4, "cm"))
 )
 
 #RATTLE MODEL
@@ -223,15 +217,13 @@ rattle_pred[response.level == "littersizestd", response.level := "Litter size"]
     ggplot(rattle_pred)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, fill = group), alpha = 0.2)+
     geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
-    scale_color_manual(values = treatment_cols)+
-    scale_fill_manual(values = treatment_cols)+
+    scale_color_manual(values = treatment_ind_cols)+
+    scale_fill_manual(values = treatment_ind_cols)+
     guides(color = guide_legend(nrow = 2), fill = guide_legend(nrow = 2))+
     labs(x = "Density", y = "Predicted value", subtitle = "C) Rattle model", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
-    theme_bw()+
-    theme(legend.position = "bottom", 
-          legend.key.size = unit(.4, "cm"),
-          strip.background = element_blank())
+    theme1+
+    theme(legend.position = "bottom", legend.key.size = unit(.4, "cm"))
 )
 
 
