@@ -50,7 +50,7 @@ testshapes <- c("yes" = 16, "no" = 1)
     xlim(-200, 700)+
     ylim(-50, 650)+
     coord_fixed()+
-    theme_bw())
+    theme1)
 
 #get the x and y locations for that test individual
 testx <- test[squirrel_id == testid, locX]
