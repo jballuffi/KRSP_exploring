@@ -74,7 +74,7 @@ cov_draws_control <- rho_control * sig_gr_control * sig_ls_control
 
 # 4. plot using Using bayesplot
 (PostDist_control <- mcmc_areas(data.frame(covariance = cov_draws_control), pars = "covariance", prob = 0.95) +
-  labs(title = "Control Model", x = "Covariance (GR, LS)")
+  labs(subtitle = "Control Model", x = NULL)
 )
 
 #FOOD MODEL
@@ -93,7 +93,7 @@ cov_draws_food <- rho_food * sig_gr_food * sig_ls_food
 
 # 4. plot using Using bayesplot
 (PostDist_food <- mcmc_areas(data.frame(covariance = cov_draws_food), pars = "covariance", prob = 0.95) +
-    labs(title = "Food Model", x = "Covariance (GR, LS)")
+    labs(subtitle = "Food Model", x = NULL)
 )
 
 #CACHE MODEL
@@ -112,7 +112,7 @@ cov_draws_cache <- rho_cache * sig_gr_cache * sig_ls_cache
 
 # 4. plot using Using bayesplot
 (PostDist_cache <- mcmc_areas(data.frame(covariance = cov_draws_cache), pars = "covariance", prob = 0.95) +
-    labs(title = "Cache Model", x = "Covariance (GR, LS)")
+    labs(subtitle = "Cache Model", x = NULL)
 )
 
 #RATTLE MODEL
@@ -131,11 +131,12 @@ cov_draws_rattle <- rho_rattle * sig_gr_rattle * sig_ls_rattle
 
 # 4. plot using Using bayesplot
 (PostDist_rattle <- mcmc_areas(data.frame(covariance = cov_draws_rattle), pars = "covariance", prob = 0.95) +
-    labs(title = "Rattle Model", x = "Covariance (GR, LS)")
+    labs(subtitle = "Rattle Model", x = "Covariance (GR, LS)")
 )
 
 #merge 
-PostDist <- ggarrange(PostDist_food, PostDist_cache, PostDist_rattle, ncol = 1, nrow = 3, align = "hv")
+PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_cache, PostDist_rattle, 
+                      ncol = 1, nrow = 4, align = "hv")
 PostDist
 
 
