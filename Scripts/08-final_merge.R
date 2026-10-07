@@ -208,7 +208,7 @@ dat2[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
 
 
 
-# make cache size categories and cache data set ---------------------------------------------------
+# make cache size data set ---------------------------------------------------
 
 #take control years with cache data
 cache <- dat2[(grid == "SU" | grid == "KL") & !is.na(cache_prev)]
@@ -239,14 +239,15 @@ controls <- dat2[grid == "SU" | grid == "KL"]
 controls[, treatment_ind := factor(treatment_ind)][, treatment_gr := factor(treatment_gr)]
 
 #make food 2 data set: control and food add grids during food years
-food <- dat2[(food == 1 | grid == "SU" | grid == "KL")]
-food[, treatment_ind := factor(treatment_ind)]
+foodyears <- dat2[food == 1, unique(year)] #get years with rattles
+food <- dat2[year %in% foodyears & (food == 1 | grid == "SU" | grid == "KL")]
+food[, treatment_ind := factor(treatment_ind)][, treatment_gr := factor(treatment_gr)]
 
 
 #make rattle experiment dataset
 rattleyears <- dat2[food == 19, unique(year)] #get years with rattles
 rattle <- dat2[year %in% rattleyears & (food == 19 | food == 18 | food == 0)] #take all data from year of rattle playbacks
-rattle[, treatment_ind := factor(treatment_ind)]
+rattle[, treatment_ind := factor(treatment_ind)][, treatment_gr := factor(treatment_gr)]
 
 
 

@@ -44,6 +44,7 @@ make_dataset <- function(x, t){
 }
 
 #use function to make three diff data sets
+controldat <- make_dataset(x = controls, t = controls$treatment_ind)
 fooddat <- make_dataset(x = food, t = food$treatment_ind)
 cachedat <- make_dataset(x = cache, t = cache$cache_cat)
 rattdat <- make_dataset(x = rattle, t = rattle$treatment_ind)
@@ -172,6 +173,54 @@ rattle_joint <- rbind(controlrat_joint, rat_joint)
     lims(y = c(-1, 1), x = c(-1, 1))+
     labs(subtitle = "C) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment")+
     theme1)
+
+
+
+
+# Control model covariance and correlation predictions --------------------------------------------------
+
+#Make an array of the expected posterior predictions
+ep_control <- posterior_epred(control_mod,  #the model we are using to create predictions
+                           newdata = controldat,  #the data from step 1
+                           re_formula = NA)   #use this argument to drop random effects and predict for the whole population
+
+growth_ep_control <- ep_control[, , 1]   # grab the expected growth rate from array
+litter_ep_control <- ep_control[, , 2]   # expected litter size from array
+
+#Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
+#compute covariance
+cov_df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
+  data.frame(
+    density_std = controldat$density_std[i],
+    #treatment_ind = fooddat$treatment_ind[i],
+    cov = cov(growth_ep_control[, i], litter_ep_control[, i])
+  )
+})
+
+#compute correlation
+cor_df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
+  data.frame(
+    density_std = controldat$density_std[i],
+    #treatment_ind = fooddat$treatment_ind[i],
+    cor = cor(growth_ep_control[, i], litter_ep_control[, i])
+  )
+})
+
+#Plot covariance vs. density and correlation vs. density with 3 treatment lines
+#covariance
+(control_cov <- ggplot(cov_df_control, aes(density_std, cov)) +
+    geom_line(size = 1.2) +
+    labs(subtitle = "Control model", x = "", y = "", color = "Treatment") +
+    theme1+
+    theme(legend.position = "inside", legend.position.inside = c(0.25, 0.3))
+)
+
+#correlation
+(control_cor <- ggplot(cor_df_control, aes(density_std, cor)) +
+    geom_line(size = 1.2) +
+    labs(subtitle = "Control model", x = "", y = "", color = "Treatment") +
+    theme1)
+
 
 
 
