@@ -77,7 +77,6 @@ summary(biv_food_model)
 
 
 
-
 # ANALYSIS 3: CONE CACHE DATA --------------------------------------------------------------
 
 #Data from KL/SU to assess impact of hoarded cones on co-variance.
