@@ -236,6 +236,7 @@ cache[, cache_cat := factor(cache_cat, levels = c("small", "medium", "large"))]
 
 #make a control only data set
 controls <- dat2[grid == "SU" | grid == "KL"]
+controls[, treatment_ind := factor(treatment_ind)][, treatment_gr := factor(treatment_gr)]
 
 #make food 2 data set: control and food add grids during food years
 food <- dat2[(food == 1 | grid == "SU" | grid == "KL")]
