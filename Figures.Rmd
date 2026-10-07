@@ -28,7 +28,7 @@ rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 Figure Captions
 
-Figure 1. Summary of density and life history outcomes in response to treatments (n = `r dat[, .N]`). A) Local densities (ind/ha) of red squirrels in response to treatment at the grid level. B) Average local density (ind/ha) of squirrels over time and in response to grid-level treatment (line type). C) litter growth rate (g/day) in response to treatment. D) litter size in response to treatment. In C and D treatment is shown as a combination of grid-level and mother-level treatment; a mother was either on a control grid, was on a food grid and had a bucket (turquoise fill), was on a food grid but did not have a bucket, or was on a rattle playback grid.
+Figure 1. Summary of he annual changes in A) squirrel densities (squirrels/ha) and B) spruce cone production (log cones/tree) over the `r dat[, length(unique(year))]`-long study in Kluane, Yukon. Lines are colored by treatment of the study area (grey = food add, red = food add, fuchsia = rattle playbacks). Lines represent annual means and shaded areas represent the standard deviation.
 
 Figure 2. Raw data from control grids (n = `r controls[, .N]`) showing the overall negative trade-off between litter size and litter growth rate (g/day). Linear relationship is shown.
 
