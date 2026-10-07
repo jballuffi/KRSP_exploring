@@ -92,7 +92,7 @@ food_joint <- rbind(control_joint, bucket_joint, nobucket_joint)
     geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
     stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
     scale_color_manual(values = treatment_ind_cols) +
-    lims(y = c(-1, 1), x = c(-1, 1))+
+    #lims(y = c(-1, 1), x = c(-1, 1))+
     labs(subtitle = "A) Food Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment") +
     theme1)
 
@@ -136,7 +136,7 @@ cache_joint <- rbind(small_joint, medium_joint, large_joint)
     geom_smooth(aes(color = cache_cat), method = "lm", fill = NA)+
     stat_ellipse(aes(color = cache_cat), level = 0.95, size = 1.2) +
     scale_color_manual(values = cache_cols) +
-    lims(y = c(-1, 1), x = c(-1, 1))+
+    #lims(y = c(-1, 1), x = c(-1, 1))+
     labs(subtitle = "B) Cache Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Cache")+
     theme1)
 
@@ -170,7 +170,7 @@ rattle_joint <- rbind(controlrat_joint, rat_joint)
     geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
     stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
     scale_color_manual(values = treatment_ind_cols) +
-    lims(y = c(-1, 1), x = c(-1, 1))+
+    #lims(y = c(-1, 1), x = c(-1, 1))+
     labs(subtitle = "C) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment")+
     theme1)
 
