@@ -26,6 +26,7 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 #rescor = residual correlation parameter
 
 
+
 # Summarize models -----------------------------------------------------------
 
 #look at summary of models
@@ -156,7 +157,7 @@ control_pred[response.level == "littersizestd", response.level := "Litter size"]
   ggplot(control_pred)+
   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2)+
   geom_line(aes(x = x, y = predicted), linewidth = 1)+
-  labs(x = "Density", y = "Predicted value", title = "Control Model")+
+  labs(x = "Density", y = "Predicted value", subtitle = "A) Control Model")+
   facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
   theme1
 )
@@ -177,7 +178,7 @@ food_pred[response.level == "littersizestd", response.level := "Litter size"]
     scale_color_manual(values = treatment_ind_cols)+
     scale_fill_manual(values = treatment_ind_cols)+
     guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
-    labs(x = "Density", y = "Predicted value", subtitle = "A) Food model", color = "Treatment", fill = "Treatment")+
+    labs(x = "Density", y = NULL, subtitle = "B) Food model", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     theme1+
     theme(legend.position = "bottom", legend.key.size = unit(.4, "cm"))
@@ -199,7 +200,7 @@ cache_pred[response.level == "littersizestd", response.level := "Litter size"]
     scale_color_manual(values = cache_cols)+
     scale_fill_manual(values = cache_cols)+
     guides(color = guide_legend(nrow = 3), fill = guide_legend(nrow = 3))+
-    labs(x = "Density", y = "Predicted value", subtitle = "B) Cache model", color = "Cache", fill = "Cache")+
+    labs(x = "Density", y = NULL, subtitle = "C) Cache model", color = "Cache", fill = "Cache")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     theme1+
     theme(legend.position = "bottom", legend.key.size = unit(.4, "cm"))
@@ -221,7 +222,7 @@ rattle_pred[response.level == "littersizestd", response.level := "Litter size"]
     scale_color_manual(values = treatment_ind_cols)+
     scale_fill_manual(values = treatment_ind_cols)+
     guides(color = guide_legend(nrow = 2), fill = guide_legend(nrow = 2))+
-    labs(x = "Density", y = "Predicted value", subtitle = "C) Rattle model", color = "Treatment", fill = "Treatment")+
+    labs(x = "Density", y = NULL, subtitle = "D) Rattle model", color = "Treatment", fill = "Treatment")+
     facet_wrap(~response.level, ncol = 1, nrow = 2, scales = "free")+
     theme1+
     theme(legend.position = "bottom", legend.key.size = unit(.4, "cm"))
@@ -229,7 +230,7 @@ rattle_pred[response.level == "littersizestd", response.level := "Litter size"]
 
 
 #merge all
-Predictions <- ggarrange(Pred_food, Pred_cache, Pred_rattle, nrow = 1, ncol = 3, align = "hv")
+Predictions <- ggarrange(Pred_control, Pred_food, Pred_cache, Pred_rattle, nrow = 1, ncol = 4, align = "hv")
 Predictions
 
 
@@ -237,5 +238,5 @@ Predictions
 # save Figures ---------------------------------------------------------
 
 ggsave("Output/Figures/Control_model_full_results.jpeg", combined_plot, width = 10, height = 6, unit = "in")
-ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 6, height = 9, unit = "in")
-ggsave("Output/Figures/Bayesian_predictions.jpeg", Predictions, width = 9, height = 6, unit = "in")
+ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 5, height = 10, unit = "in")
+ggsave("Output/Figures/Bayesian_separate_predictions.jpeg", Predictions, width = 10, height = 6, unit = "in")
