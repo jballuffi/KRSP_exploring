@@ -198,7 +198,7 @@ df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
 
 #Plot covariance vs. density and correlation vs. density with 3 treatment lines
 #covariance
-(control_cov <- ggplot(cov_df_control, aes(density_std, cov)) +
+(control_cov <- ggplot(df_control, aes(density_std, cov)) +
     geom_line(size = 1.2) +
     labs(subtitle = "Control model", x = "", y = "", color = "Treatment") +
     theme1+
@@ -206,7 +206,7 @@ df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
 )
 
 #correlation
-(control_cor <- ggplot(cov_df_control, aes(density_std, cor)) +
+(control_cor <- ggplot(df_control, aes(density_std, cor)) +
     geom_line(size = 1.2) +
     labs(subtitle = "Control model", x = "", y = "", color = "Treatment") +
     theme1)
