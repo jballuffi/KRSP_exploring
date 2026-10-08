@@ -188,19 +188,10 @@ litter_ep_control <- ep_control[, , 2]   # expected litter size from array
 
 #Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
 #compute covariance
-cov_df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
+df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
   data.frame(
     density_std = controldat$density_std[i],
-    #treatment_ind = fooddat$treatment_ind[i],
-    cov = cov(growth_ep_control[, i], litter_ep_control[, i])
-  )
-})
-
-#compute correlation
-cor_df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
-  data.frame(
-    density_std = controldat$density_std[i],
-    #treatment_ind = fooddat$treatment_ind[i],
+    cov = cov(growth_ep_control[, i], litter_ep_control[, i]),
     cor = cor(growth_ep_control[, i], litter_ep_control[, i])
   )
 })
@@ -215,11 +206,10 @@ cor_df_control <- map_dfr(seq_len(nrow(controldat)), function(i) {
 )
 
 #correlation
-(control_cor <- ggplot(cor_df_control, aes(density_std, cor)) +
+(control_cor <- ggplot(cov_df_control, aes(density_std, cor)) +
     geom_line(size = 1.2) +
     labs(subtitle = "Control model", x = "", y = "", color = "Treatment") +
     theme1)
-
 
 
 
@@ -235,20 +225,11 @@ litter_ep_food <- ep_food[, , 2]   # expected litter size from array
 
 
 #Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
-#compute covariance
-cov_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
+df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
   data.frame(
     density_std = fooddat$density_std[i],
     treatment_ind = fooddat$treatment_ind[i],
-    cov = cov(growth_ep_food[, i], litter_ep_food[, i])
-  )
-})
-
-#compute correlation
-cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
-  data.frame(
-    density_std = fooddat$density_std[i],
-    treatment_ind = fooddat$treatment_ind[i],
+    cov = cov(growth_ep_food[, i], litter_ep_food[, i]),
     cor = cor(growth_ep_food[, i], litter_ep_food[, i])
   )
 })
@@ -256,7 +237,7 @@ cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
 
 #Plot covariance vs. density and correlation vs. density with 3 treatment lines
 #covariance
-(food_cov <- ggplot(cov_df_food, aes(density_std, cov, color = treatment_ind)) +
+(food_cov <- ggplot(df_food, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
   scale_color_manual(values = treatment_ind_cols) +
   labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
@@ -265,7 +246,7 @@ cor_df_food <- map_dfr(seq_len(nrow(fooddat)), function(i) {
   )
 
 #correlation
-(food_cor <- ggplot(cor_df_food, aes(density_std, cor, color = treatment_ind)) +
+(food_cor <- ggplot(df_food, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
   scale_color_manual(values = treatment_ind_cols, guide = NULL) +
   labs(subtitle = "Food model", x = "", y = "", color = "Treatment") +
@@ -285,20 +266,11 @@ litter_ep_cache <- ep_cache[, , 2]
 
 
 #Compute covariance and correlation at each density × cache size (uses dplyr and purrr)
-#compute covariance
-cov_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
+df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
   data.frame(
     density_std = cachedat$density_std[i],
     cache_cat = cachedat$cache_cat[i],
-    cov = cov(growth_ep_cache[, i], litter_ep_cache[, i])
-  )
-})
-
-#compute correlation
-cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
-  data.frame(
-    density_std = cachedat$density_std[i],
-    cache_cat = cachedat$cache_cat[i],
+    cov = cov(growth_ep_cache[, i], litter_ep_cache[, i]),
     cor = cor(growth_ep_cache[, i], litter_ep_cache[, i])
   )
 })
@@ -306,7 +278,7 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
 
 #Plot covariance vs. density and correlation vs. density with 3 categories of cache size
 #covariance
-(cache_cov <- ggplot(cov_df_cache, aes(density_std, cov, color = cache_cat)) +
+(cache_cov <- ggplot(df_cache, aes(density_std, cov, color = cache_cat)) +
     geom_line(size = 1.2) +
     scale_color_manual(values = cache_cols) +
     labs(subtitle = "Cache model", x = "", y = "Posterior covariance\n(GR × LS)", color = "Cache level") +
@@ -315,7 +287,7 @@ cor_df_cache <- map_dfr(seq_len(nrow(cachedat)), function(i) {
   )
 
 #correlation
-(cache_cor <- ggplot(cor_df_cache, aes(density_std, cor, color = cache_cat)) +
+(cache_cor <- ggplot(df_cache, aes(density_std, cor, color = cache_cat)) +
   geom_line(size = 1.2) +
   scale_color_manual(values = cache_cols, guide = NULL) +
   labs(subtitle = "Cache model", x = "", y = "Posterior correlation\n(GR × LS)", color = "Cache level") +
@@ -335,28 +307,18 @@ litter_ep_rattle <- ep_rattle[, , 2]
 
 
 #Compute covariance and correlation at each density × treatment (uses dplyr and purrr)
-#compute covariance
-cov_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
+df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
   data.frame(
     density_std = rattdat$density_std[i],
     treatment_ind = rattdat$treatment_ind[i],
-    cov = cov(growth_ep_rattle[, i], litter_ep_rattle[, i])
-  )
-})
-
-#compute correlation
-cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
-  data.frame(
-    density_std = rattdat$density_std[i],
-    treatment_ind = rattdat$treatment_ind[i],
+    cov = cov(growth_ep_rattle[, i], litter_ep_rattle[, i]),
     cor = cor(growth_ep_rattle[, i], litter_ep_rattle[, i])
   )
 })
 
-
 #Plot covariance vs. density and correlation vs. density with 3 treatment lines
 #covariance
-(rattle_cov <- ggplot(cov_df_rattle, aes(density_std, cov, color = treatment_ind)) +
+(rattle_cov <- ggplot(df_rattle, aes(density_std, cov, color = treatment_ind)) +
   geom_line(size = 1.2) +
   scale_color_manual(values = treatment_ind_cols) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
@@ -365,7 +327,7 @@ cor_df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
   )
 
 #correlation
-(rattle_cor <- ggplot(cor_df_rattle, aes(density_std, cor, color = treatment_ind)) +
+(rattle_cor <- ggplot(df_rattle, aes(density_std, cor, color = treatment_ind)) +
   geom_line(size = 1.2) +
   scale_color_manual(values = treatment_ind_cols, guide = NULL) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
