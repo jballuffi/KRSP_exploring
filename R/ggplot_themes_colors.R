@@ -18,7 +18,7 @@ bucket_cols <- c("1" = "firebrick1", "0" = "grey60")
 cache_cols <- c("small" = "lightgoldenrod1", "medium" = "olivedrab4", "large" = "darkgreen")
 
 #point size for mast years
-mast_sizes <- c("yes" = 2.7, "no" = .1)
+mast_sizes <- c("yes" = 4, "no" = .1)
 
 
 #theme option 1

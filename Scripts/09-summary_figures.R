@@ -25,12 +25,12 @@ years <- data.table(year = rep(seq(min(dat$year), max(dat$year)), 3))
 #next, add in all three treatments to year seq
 years$treatment_gr <- rep(unique(dat$treatment_gr), each = years[, .N]/3)
 
-#OPTION 1: use the data from post litter merge
-#get mean + SD for densities, cones, growth rates, and litter size by year and treatment
-env1 <- dat[, .(density = mean(density, na.rm = TRUE),
-                density_sd = sd(density, na.rm = TRUE),
-                cones = mean(cones_current, na.rm = TRUE),
-                cones_sd = mean(cones_current, na.rm = TRUE)), by = .(year, treatment_gr)]
+# #OPTION 1: use the data from post litter merge
+# #get mean + SD for densities, cones, growth rates, and litter size by year and treatment
+# env1 <- dat[, .(density = mean(density, na.rm = TRUE),
+#                 density_sd = sd(density, na.rm = TRUE),
+#                 cones = mean(cones_current, na.rm = TRUE),
+#                 cones_sd = mean(cones_current, na.rm = TRUE)), by = .(year, treatment_gr)]
 
 #OPTION 2: use data pre litter merge
 #get the treatment of every grid every year
@@ -79,25 +79,25 @@ cones_yr[, treatment_gr := "Control"]
          legend.position.inside = c(0.1, 0.78))
 )
 
-#plot density over time by treatment
-(cones_year_treatment <- ggplot(annualtrends)+
-    geom_vline(aes(xintercept = 2005), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
-    geom_vline(aes(xintercept = 2017), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
-    geom_vline(aes(xintercept = 2018), linewidth = 0.9, color = "orchid1", alpha = .7, linetype = "dashed")+
-    geom_vline(aes(xintercept = 2022), linewidth = 0.9, color = "orchid1", alpha = .7, linetype = "dashed")+
-    geom_ribbon(aes(x = year, ymin = cones - cones_sd, ymax = cones + cones_sd, fill = treatment_gr), alpha = .3)+
-    geom_line(aes(x = year, y = cones, color = treatment_gr), alpha = 0.9, linewidth = 0.9)+
-    labs(x = "Year", y = "Log cone production (cones/tree)", subtitle = "B)", fill = "Grid treatment", color = "Grid treatment")+
-    scale_fill_manual(values = treatment_gr_cols, guide = NULL)+
-    scale_color_manual(values = treatment_gr_cols, guide = NULL)+
-    theme1
-)
+# #plot density over time by treatment
+# (cones_year_treatment <- ggplot(annualtrends)+
+#     geom_vline(aes(xintercept = 2005), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
+#     geom_vline(aes(xintercept = 2017), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
+#     geom_vline(aes(xintercept = 2018), linewidth = 0.9, color = "orchid1", alpha = .7, linetype = "dashed")+
+#     geom_vline(aes(xintercept = 2022), linewidth = 0.9, color = "orchid1", alpha = .7, linetype = "dashed")+
+#     geom_ribbon(aes(x = year, ymin = cones - cones_sd, ymax = cones + cones_sd, fill = treatment_gr), alpha = .3)+
+#     geom_line(aes(x = year, y = cones, color = treatment_gr), alpha = 0.9, linewidth = 0.9)+
+#     labs(x = "Year", y = "Log cone production (cones/tree)", subtitle = "B)", fill = "Grid treatment", color = "Grid treatment")+
+#     scale_fill_manual(values = treatment_gr_cols, guide = NULL)+
+#     scale_color_manual(values = treatment_gr_cols, guide = NULL)+
+#     theme1
+# )
 
 #plot density over time by treatment
 (cones_year <- ggplot(cones_yr)+
     geom_ribbon(aes(x = year, ymin = cones_low, ymax = cones_max), fill = "grey40", alpha = .3)+
     geom_line(aes(x = year, y = cones), color = "grey40", linewidth = 0.9)+
-    geom_point(aes(x = year, y = cones, size = mast), shape = 15, color = "grey40")+
+    geom_point(aes(x = year, y = cones, size = mast), shape = 18, color = "grey40")+
     scale_size_manual(values = mast_sizes, guide = NULL)+
     labs(x = "Year", y = "Log cone production (cones/tree)", subtitle = "B)")+
     theme1
