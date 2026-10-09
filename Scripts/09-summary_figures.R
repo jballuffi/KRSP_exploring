@@ -36,12 +36,12 @@ annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x
 
 
 
-# Response over time ------------------------------------------------------
+# Cone production and density over time ------------------------------------------------------
 
 #plot density over time by treatment
 (density_year <- ggplot(annualtrends)+
    geom_ribbon(aes(x = year, ymin = density - density_sd, ymax = density + density_sd, fill = treatment_gr), alpha = .3)+
-   geom_line(aes(x = year, y = density, color = treatment_gr), alpha = 0.9, linewidth = 1)+
+   geom_line(aes(x = year, y = density, color = treatment_gr), alpha = 0.9, linewidth = .9)+
    labs(x = "Year", y = "Local density (squirrels/ha)", subtitle = "A)", fill = "Grid treatment", color = "Grid treatment")+
    scale_fill_manual(values = treatment_gr_cols)+
    scale_color_manual(values = treatment_gr_cols)+
@@ -53,7 +53,7 @@ annualtrends <- merge(years, annualgrowth, by = c("year", "treatment_gr"), all.x
 #plot density over time by treatment
 (cones_year <- ggplot(annualtrends)+
    geom_ribbon(aes(x = year+1, ymin = cones - cones_sd, ymax = cones + cones_sd, fill = treatment_gr), alpha = .3)+
-   geom_line(aes(x = year+1, y = cones, color = treatment_gr), alpha = 0.9, linewidth = 1)+
+   geom_line(aes(x = year+1, y = cones, color = treatment_gr), alpha = 0.9, linewidth = .9)+
    labs(x = "Year", y = "Log cone production (cones/tree)", subtitle = "B)", fill = "Grid treatment", color = "Grid treatment")+
    scale_fill_manual(values = treatment_gr_cols, guide = NULL)+
    scale_color_manual(values = treatment_gr_cols, guide = NULL)+
@@ -64,7 +64,7 @@ annualplot <- ggarrange(density_year, cones_year, ncol = 1, nrow = 2, align = "h
 
 
 
-# response to treatments  --------------------------------------------------------------------
+# Density, growth rate, and litter size in response to treatments  --------------------------------------------------------------------
 
 #density by grid treatment
 (density_treatment <-
@@ -76,19 +76,19 @@ annualplot <- ggarrange(density_year, cones_year, ncol = 1, nrow = 2, align = "h
 
 #growth rate by individual treatments
 (gr_treatment <- ggplot(dat)+
-    geom_jitter(aes(x = treatment_ind, y = growthrate, color = treatment_ind), shape = 1, width = .25, alpha = .15)+
-    geom_boxplot(aes(x = treatment_ind, y = growthrate, fill = treatment_ind, color = treatment_ind), alpha = 0.4, outliers = FALSE)+
-    scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
-    scale_color_manual(values = treatment_ind_cols, guide = NULL)+
+    geom_jitter(aes(x = treatment_ind, y = growthrate), shape = 1, color = "grey40", width = .25, alpha = .15)+
+    geom_boxplot(aes(x = treatment_ind, y = growthrate), fill = "grey50", alpha = 0.4, outliers = FALSE)+
+    #scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
+    #scale_color_manual(values = treatment_ind_cols, guide = NULL)+
     labs(x = "Mother Treatment", y = "Litter growth rate (g/day)", subtitle = "B)")+
     theme1)
 
 #litter size by treatments
 (ls_treatment <- ggplot(dat)+
-    geom_jitter(aes(x = treatment_ind, y = littersize, color = treatment_ind), shape = 1, width = .25, alpha = .15)+
-    geom_violin(aes(x = treatment_ind, y = littersize, fill = treatment_ind, color = treatment_ind), alpha = 0.4)+
-    scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
-    scale_color_manual(values = treatment_ind_cols, guide = NULL)+
+    geom_jitter(aes(x = treatment_ind, y = littersize), shape = 1, color = "grey40", width = .25, alpha = .15)+
+    geom_violin(aes(x = treatment_ind, y = littersize), fill = "grey50", alpha = 0.4)+
+    # scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
+    # scale_color_manual(values = treatment_ind_cols, guide = NULL)+
     labs(x = "Mother Treatment", y = "Litter size", subtitle = "C)")+
     theme1)
 
@@ -98,17 +98,17 @@ treatmentplot <- ggarrange(density_treatment, gr_treatment, ls_treatment, nrow =
 
 # Growth rate in response to litter size -------------------------------------------------
 
-#get the relationship between litter size and growth rate from control data set
+#linear model for GR ~ LS from control data set
 gr_ls_mod <- lm(growthrate ~ littersize, controls)
-gr_ls_slope <- round(coef(gr_ls_mod)[2], 1)
 
-#get effects table
+#get predictions from the linear model
 gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize")))
 
+#plot control data and linear model
 (ls <- ggplot()+
     geom_point(aes(x = littersize, y = growthrate), shape = 1, color = "grey40", alpha = 0.3, data = controls)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_ls_pred)+
-    geom_line(aes(x = x, y = predicted), linewidth = 1, data = gr_ls_pred)+
+    geom_line(aes(x = x, y = predicted), linewidth = .9, data = gr_ls_pred)+
     labs(x = "Litter size", y = "Growth rate (g/day)")+
     theme1)
 
@@ -116,18 +116,17 @@ gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize")))
 
 # Growth rate in response to birth date -----------------------------------
 
-#get the relationship between litter size and growth rate from control data set
+#linear model for GR ~ Birthdate from control data set
 gr_bd_mod <- lm(growthrate ~ bjulian, controls)
 
-#get effects table
+#get predictions from the linear model
 gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
 
-
-#growth rate in response to birth date
+#plot control data and linear model
 (bd <- ggplot()+
     geom_point(aes(x = bjulian, y = growthrate), shape = 1, color = "grey40", alpha = 0.3,  data = controls)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_bd_pred)+
-    geom_line(aes(x = x, y = predicted), linewidth = 1, data = gr_bd_pred)+
+    geom_line(aes(x = x, y = predicted), linewidth = .9, data = gr_bd_pred)+
     labs(x = "Birthday (Julian day)", y = "Growth rate (g/day)")+
     theme1)
 
