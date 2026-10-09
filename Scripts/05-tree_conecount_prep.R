@@ -43,10 +43,12 @@ cones <- cones[year > 1987]
 cones[, Nlog := log(N + 1)]
 
 #calculate avg cone count by grid and year. This is what we want ideally
-cones_grid <- cones[, .(cones = mean(Nlog, na.rm = TRUE)), by = .(year, grid)]
+cones_grid <- cones[, .(cones = mean(Nlog, na.rm = TRUE), 
+                        cones_sd = sd(Nlog, na.rm = TRUE)), by = .(year, grid)]
 
 #calculate avg cone count by year. This is in case grid-year avg is missing.
-cones_year <- cones[, .(cones_year = mean(Nlog, na.rm = TRUE)), by = .(year)]
+cones_year <- cones[, .(cones_year = mean(Nlog, na.rm = TRUE),
+                        cones_year_sd = sd(Nlog, na.rm = TRUE)), by = .(year)]
 
 #merge cone-grid-year with starting data frame
 dat <- merge(frame, cones_grid, by = c("year", "grid"), all.x = TRUE)
@@ -60,6 +62,7 @@ dat <- merge(dat, cones_year, by = "year", all.x = TRUE)
 
 #if cones from grid-year are missing, fill in with annual avg
 dat[is.na(cones), cones := cones_year][, cones_year := NULL]
+dat[is.na(cones_sd), cones_sd := cones_year_sd][, cones_year_sd := NULL]
 
 #lag this value to get t-1, or last year's cones count
 dat[, cones_prev := lag(cones), grid]
@@ -80,3 +83,4 @@ ggplot(dat)+
 # save --------------------------------------------------------------------
 
 saveRDS(dat, "Output/Data/tree_cone_counts.rds")
+saveRDS(cones_year, "Output/Data/tree_cone_counts_annual.rds")
