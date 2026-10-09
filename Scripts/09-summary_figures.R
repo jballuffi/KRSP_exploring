@@ -175,16 +175,6 @@ gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
 
 
 
-# Summary Table -----------------------------------------------------------
-
-# I think you should have a table in the supplementary methods showing sample sizes 
-# (of litters, # of females) per grid and then indicate when food supplementation 
-# occurred on those grids (year start/end) with # of females with and without buckets? 
-# You could have that main table and then a longer table on a per year basis
-
-
-
-
 # save --------------------------------------------------------------------
 
 
