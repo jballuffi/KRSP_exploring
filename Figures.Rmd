@@ -24,6 +24,17 @@ food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
+#read in tables
+tab1 <- fread("Output/Tables/Summary of grids and treatments.csv")
+tab1[, V1 := NULL]
+
+```
+
+Tables
+
+```{r, echo=FALSE, message=FALSE}
+# Display as a styled table
+knitr::kable(tab1, caption = "Table 1")
 ```
 
 Figure Captions
