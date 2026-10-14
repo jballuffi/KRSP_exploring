@@ -144,7 +144,8 @@ dat2 <- dat[!is.na(density)]
 dat2 <- dat2[grid %in% grids & food %in% foods]
 
 #exclude BT and JO 2015 - 2017 due to cort experiment
-dat2 <- dat2[!((grid == "BT" | grid == "JO") & (year <= 2017 & year >= 2015))]
+#exclude JO in 2013 and 2014 because it is marked as food add but no one has a bucket. There was no BT these years
+dat2 <- dat2[!((grid == "BT" | grid == "JO") & (year <= 2017 & year >= 2013))]
 
 #exclude AG 2019 due to shaving experiment
 dat2 <- dat2[!(grid == "AG" & year == 2019)]
