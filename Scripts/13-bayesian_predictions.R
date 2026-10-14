@@ -54,6 +54,52 @@ setnames(cachedat, "treatment_ind", "cache_cat")
 
 
 
+
+# Control Model Ellipse ---------------------------------------------------
+
+controldat[, density_cat := cut(density_std, breaks = 3, labels = c("low", "medium", "high"))]
+
+#Generate posterior predictions for controls with low density
+lowD_gr <- posterior_predict(control_mod, resp = "growthratestd", newdata = controldat[density_cat == "low"], re_formula = NA)
+lowD_ls <- posterior_predict(control_mod, resp = "littersizestd", newdata = controldat[density_cat == "low"], re_formula = NA)
+lowD_joint <- data.frame(
+  gr_pred = rowMeans(lowD_gr),
+  ls_pred = rowMeans(lowD_ls),
+  density = "low"
+)
+
+#Generate posterior predictions for controls with low density
+medD_gr <- posterior_predict(control_mod, resp = "growthratestd", newdata = controldat[density_cat == "medium"], re_formula = NA)
+medD_ls <- posterior_predict(control_mod, resp = "littersizestd", newdata = controldat[density_cat == "medium"], re_formula = NA)
+medD_joint <- data.frame(
+  gr_pred = rowMeans(medD_gr),
+  ls_pred = rowMeans(medD_ls),
+  density = "medium"
+)
+
+#Generate posterior predictions for controls with low density
+highD_gr <- posterior_predict(control_mod, resp = "growthratestd", newdata = controldat[density_cat == "high"], re_formula = NA)
+highD_ls <- posterior_predict(control_mod, resp = "littersizestd", newdata = controldat[density_cat == "high"], re_formula = NA)
+highD_joint <- data.frame(
+  gr_pred = rowMeans(highD_gr),
+  ls_pred = rowMeans(highD_ls),
+  density = "high"
+)
+
+control_joint <- rbind(lowD_joint, medD_joint, highD_joint)
+
+
+#plot growth rate against litter size and add ellipse
+(control_ellipse <- ggplot(control_joint, aes(x = ls_pred, y = gr_pred)) +
+    geom_point(aes(color = density), shape = 1, alpha = 0.1) +
+    geom_smooth(aes(color = density), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = density), level = 0.95, size = 1.2) +
+    scale_color_manual(values = density_cols) +
+    labs(subtitle = "A) Control Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Density") +
+    theme1)
+
+
+
 # Food Model Ellipse ------------------------------------------------------
 
 #Generate posterior predictions for controls
@@ -93,7 +139,7 @@ food_joint <- rbind(control_joint, bucket_joint, nobucket_joint)
     geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
     stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
     scale_color_manual(values = treatment_ind_cols) +
-    labs(subtitle = "A) Food Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment") +
+    labs(subtitle = "B) Food Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment") +
     theme1)
 
 
@@ -136,7 +182,7 @@ cache_joint <- rbind(small_joint, medium_joint, large_joint)
     geom_smooth(aes(color = cache_cat), method = "lm", fill = NA)+
     stat_ellipse(aes(color = cache_cat), level = 0.95, size = 1.2) +
     scale_color_manual(values = cache_cols) +
-    labs(subtitle = "B) Cache Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Cache")+
+    labs(subtitle = "C) Cache Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Cache")+
     theme1)
 
 
@@ -170,7 +216,7 @@ rattle_joint <- rbind(controlrat_joint, rat_joint)
     stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
     scale_color_manual(values = treatment_ind_cols) +
     #lims(y = c(-1, 1), x = c(-1, 1))+
-    labs(subtitle = "C) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment")+
+    labs(subtitle = "D) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment")+
     theme1)
 
 
@@ -338,11 +384,11 @@ df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
 # compile all figures into one --------------------------------------------
 
 #collect all ellipse figures
-ellipse_fig <- ggarrange(food_ellipse, cache_ellipse, rattle_ellipse, ncol = 1, nrow = 3, align = "hv")
+ellipse_fig <- ggarrange(control_ellipse, food_ellipse, cache_ellipse, rattle_ellipse, ncol = 2, nrow = 2, align = "hv")
 
 #collect all cor and cov prediction figures
 cor_cov_fig <- ggarrange(food_cov, food_cor, cache_cov, cache_cor, rattle_cov, rattle_cor, ncol = 2, nrow = 3, align = "hv")
 
-ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 5, height = 10, unit = "in")
+ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 10, height = 8, unit = "in")
 ggsave("Output/Figures/covariance_correlation_predictions.jpeg", cor_cov_fig, width = 7, height = 9, unit = "in")
 
