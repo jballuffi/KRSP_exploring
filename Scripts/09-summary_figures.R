@@ -114,6 +114,7 @@ treatmentplot <- ggarrange(density_treatment, gr_treatment, ls_treatment, nrow =
 
 #linear model for GR ~ LS from control data set
 gr_ls_mod <- lm(growthrate ~ littersize, controls)
+gr_ls_slope <- round(gr_ls_mod$coefficients[2], 2) #this is for the results markdown
 
 #get predictions from the linear model
 gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize")))
