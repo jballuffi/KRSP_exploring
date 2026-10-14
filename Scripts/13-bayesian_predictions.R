@@ -389,6 +389,6 @@ ellipse_fig <- ggarrange(control_ellipse, food_ellipse, cache_ellipse, rattle_el
 #collect all cor and cov prediction figures
 cor_cov_fig <- ggarrange(food_cov, food_cor, cache_cov, cache_cor, rattle_cov, rattle_cor, ncol = 2, nrow = 3, align = "hv")
 
-ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 10, height = 8, unit = "in")
+ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 10, height = 7, unit = "in")
 ggsave("Output/Figures/covariance_correlation_predictions.jpeg", cor_cov_fig, width = 7, height = 9, unit = "in")
 
