@@ -25,17 +25,28 @@ cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 #read in tables
-tab1 <- fread("Output/Tables/Summary of grids and treatments.csv")
+tab1 <- fread("Output/Tables/Summary of grid-treatments.csv")
 tab1[, V1 := NULL]
+
+tab2 <- fread("Output/Tables/Summary of experimental years.csv")
+tab2[, V1 := NULL]
+
 
 ```
 
 Tables
 
-```{r, echo=FALSE, message=FALSE}
+```{r tab1, echo=FALSE, message=FALSE}
 # Display as a styled table
-knitr::kable(tab1, caption = "Table 1. Sample size of female red squirrels and litters and the years of those sample sizes, by grid, grid-treatment, and food treatment when applicable (on food-add grids).")
+knitr::kable(tab1, caption = "Table 1. Sample size of juveniles, litters, and female red squirrels and the years of those sample sizes, by grid and grid-treatment.")
 ```
+
+
+```{r tab2, echo=FALSE, message=FALSE}
+# Display as a styled table
+knitr::kable(tab2, caption = "Table 2. Sample size of juveniles, litters, and female red squirrels, by year, grid, and grid-treatment from 2010 - 2022.")
+```
+
 
 Figure Captions
 
