@@ -10,8 +10,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 
-#read in cone and local density data
-cones <- readRDS("Output/Data/tree_cone_counts.rds")
+#read in annual cone production and raw local density data
 cones_yr <- readRDS("Output/Data/tree_cone_counts_annual.rds")
 dens <- readRDS("Output/Data/local_densities.rds")
 
@@ -25,14 +24,6 @@ years <- data.table(year = rep(seq(min(dat$year), max(dat$year)), 3))
 #next, add in all three treatments to year seq
 years$treatment_gr <- rep(unique(dat$treatment_gr), each = years[, .N]/3)
 
-# #OPTION 1: use the data from post litter merge
-# #get mean + SD for densities, cones, growth rates, and litter size by year and treatment
-# env1 <- dat[, .(density = mean(density, na.rm = TRUE),
-#                 density_sd = sd(density, na.rm = TRUE),
-#                 cones = mean(cones_current, na.rm = TRUE),
-#                 cones_sd = mean(cones_current, na.rm = TRUE)), by = .(year, treatment_gr)]
-
-#OPTION 2: use data pre litter merge
 #get the treatment of every grid every year
 treatments <- dat[, .(treatment_gr = getmode(treatment_gr)), by = .(year, grid)]
 
@@ -40,31 +31,29 @@ treatments <- dat[, .(treatment_gr = getmode(treatment_gr)), by = .(year, grid)]
 dens <- merge(dens[, .(year, grid, density)], treatments, by = c("year", "grid"), all.y = TRUE)
 dens <- dens[, .(density = mean(density, na.rm = TRUE), density_sd = sd(density, na.rm = TRUE)), by = .(year, treatment_gr)]
 
-#do the same but for cone data
-cones <- merge(cones[, .(year, grid, cones)], treatments, by = c("year", "grid"), all.y = TRUE)
-cones <- cones[, .(cones = mean(cones, na.rm = TRUE), cones_sd = sd(cones, na.rm = TRUE)), by = .(year, treatment_gr)]
-
-#merge cone and density data together#merge cone and density data togetherTRUE
-env2 <- merge(dens, cones, by = c("year", "treatment_gr"), all = TRUE)
-
-#merge with years
-annualtrends <- merge(years, env2, by = c("year", "treatment_gr"), all.x = TRUE)
+#merge density with year sequence
+density_yr <- merge(years, dens, by = c("year", "treatment_gr"), all.x = TRUE)
 
 #make a mast year col in cone data
 names(cones_yr) <- c("year", "cones", "cones_sd")
+
+#cut cone data to match year seq
 cones_yr <- cones_yr[year >= min(years$year) & year <= max(years$year)]
+
+#get conf lims
 cones_yr[, cones_low := cones - cones_sd][, cones_max := cones + cones_sd]
 cones_yr[cones_low < 0, cones_low := 0]
+
+#add mast year col
 cones_yr[year %in% mast_years, mast := "yes"]
 cones_yr[is.na(mast), mast := "no"]
-cones_yr[, treatment_gr := "Control"]
 
 
 
 # Cone production and density over time ------------------------------------------------------
 
 #plot density over time by treatment
-(density_year <- ggplot(annualtrends)+
+(density_year <- ggplot(density_yr)+
     geom_vline(aes(xintercept = 2005), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
     geom_vline(aes(xintercept = 2017), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
     geom_vline(aes(xintercept = 2018), linewidth = 0.9, color = "orchid1", alpha = .7, linetype = "dashed")+
@@ -78,20 +67,6 @@ cones_yr[, treatment_gr := "Control"]
     theme(legend.position = "inside",
          legend.position.inside = c(0.1, 0.78))
 )
-
-# #plot density over time by treatment
-# (cones_year_treatment <- ggplot(annualtrends)+
-#     geom_vline(aes(xintercept = 2005), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
-#     geom_vline(aes(xintercept = 2017), linewidth = 0.9, color = "firebrick1", alpha = .7, linetype = "dashed")+
-#     geom_vline(aes(xintercept = 2018), linewidth = 0.9, color = "orchid1", alpha = .7, linetype = "dashed")+
-#     geom_vline(aes(xintercept = 2022), linewidth = 0.9, color = "orchid1", alpha = .7, linetype = "dashed")+
-#     geom_ribbon(aes(x = year, ymin = cones - cones_sd, ymax = cones + cones_sd, fill = treatment_gr), alpha = .3)+
-#     geom_line(aes(x = year, y = cones, color = treatment_gr), alpha = 0.9, linewidth = 0.9)+
-#     labs(x = "Year", y = "Log cone production (cones/tree)", subtitle = "B)", fill = "Grid treatment", color = "Grid treatment")+
-#     scale_fill_manual(values = treatment_gr_cols, guide = NULL)+
-#     scale_color_manual(values = treatment_gr_cols, guide = NULL)+
-#     theme1
-# )
 
 #plot density over time by treatment
 (cones_year <- ggplot(cones_yr)+
@@ -121,8 +96,6 @@ annualplot <- ggarrange(density_year, cones_year, ncol = 1, nrow = 2, align = "h
 (gr_treatment <- ggplot(dat)+
     geom_jitter(aes(x = treatment_ind, y = growthrate), shape = 1, color = "grey40", width = .25, alpha = .15)+
     geom_boxplot(aes(x = treatment_ind, y = growthrate), fill = "grey50", alpha = 0.4, outliers = FALSE)+
-    #scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
-    #scale_color_manual(values = treatment_ind_cols, guide = NULL)+
     labs(x = "Mother Treatment", y = "Litter growth rate (g/day)", subtitle = "B)")+
     theme1)
 
@@ -130,8 +103,6 @@ annualplot <- ggarrange(density_year, cones_year, ncol = 1, nrow = 2, align = "h
 (ls_treatment <- ggplot(dat)+
     geom_jitter(aes(x = treatment_ind, y = littersize), shape = 1, color = "grey40", width = .25, alpha = .15)+
     geom_violin(aes(x = treatment_ind, y = littersize), fill = "grey50", alpha = 0.4)+
-    # scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
-    # scale_color_manual(values = treatment_ind_cols, guide = NULL)+
     labs(x = "Mother Treatment", y = "Litter size", subtitle = "C)")+
     theme1)
 
