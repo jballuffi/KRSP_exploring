@@ -18,8 +18,7 @@ table_treatgrids <- dat2[, .(N_juveniles = sum(littersize),
 #sample sizes but by year for 2010 - 2022
 table_year <- dat2[year <= 2022 & year >= 2010, .(N_juveniles = sum(littersize),
                                                   N_litters = length(unique(litter_id)),
-                                                  N_females = length(unique(mother_id)),
-                                                  Years = paste0(min(year), "-", max(year))), 
+                                                  N_females = length(unique(mother_id))), 
                    by = .(Year = year, Grid = grid, Grid_treatment = treatment_gr)]
 
 setorder(table_year, Year)
