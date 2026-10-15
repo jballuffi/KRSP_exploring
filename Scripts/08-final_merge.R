@@ -116,10 +116,11 @@ dat[duplicated(litter_id) == TRUE]
 dat[food == 0 | food == 18, treatment_gr := "Control"][food == 1, treatment_gr := "Food add"][food == 19, treatment_gr := "Rattle"]
 
 #make a treatment+bucket
-dat[treatment_gr == "Control", treatment_ind := "Control"]
-dat[treatment_gr == "Food add" & bucket == 1, treatment_ind := "Bucket"]
-dat[treatment_gr == "Food add" & bucket == 0, treatment_ind := "No Bucket"]
-dat[treatment_gr == "Rattle", treatment_ind := "Rattle"]
+dat[food == 0, treatment_ind := "Control"]
+dat[food == 18, treatment_ind := "Chickadee"]
+dat[food == 1 & bucket == 1, treatment_ind := "Bucket"]
+dat[food == 1 & bucket == 0, treatment_ind := "No Bucket"]
+dat[food == 19, treatment_ind := "Rattle"]
 unique(dat$treatment_ind)
 
 
