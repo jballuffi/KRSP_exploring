@@ -96,26 +96,31 @@ janitor::get_dupes(database)
 #calculate litter sizes
 database[, littersize := .N, litter_id]
 
+#take only first litters for this analysis, as done by Delaney
+database <- database[ln == 1]
+
 
 
 # collect data from 2010 rattle experiments ----------------------------
 
-#take just rattle data from extras
-extra <- extra[food == 19]
+#take just rattles, chickadees, and first litters
+extra <- extra[food == 19 | food == 18 & ln == 1]
 
 #get list of ear tags in extra data
-extra_tags <- extra[, unique(MTaglft)]
+extra_tags19 <- extra[food == 19, unique(MTaglft)]
+extra_tags18 <- extra[food == 18, unique(MTaglft)]
 #some of those squirrels exist in the database juv/litter data already but aren't scored as rattles
 #remove the moms/litters who are in extra from database
 
-#find those moms based on ear tags and score as rattles 
-database[MTaglft %in% extra_tags & year == 2010, food := 19]
+#find those moms based on ear tags and score as rattles/chickadees
+database[MTaglft %in% extra_tags18 & year == 2010, food := 18]
+database[MTaglft %in% extra_tags19 & year == 2010, food := 19]
 
 #return all the ear tags that are in both the extra data and the database
-overlap_tags <- database[MTaglft %in% extra_tags & year == 2010, unique(MTaglft)]
+overlap_tags <- database[MTaglft %in% extra_tags19 | MTaglft %in% extra_tags18 & year == 2010, unique(MTaglft)]
 
 #get a table of the IDs associated with those overlapping ear tags
-overlap_ids <- database[MTaglft %in% extra_tags & year == 2010, .(mother_id, MTaglft)][duplicated(mother_id) == FALSE]
+overlap_ids <- database[MTaglft %in% extra_tags19 | MTaglft %in% extra_tags18 & year == 2010, .(mother_id, MTaglft)][duplicated(mother_id) == FALSE]
 
 #remove the moms already in the database from the extras
 dat2010 <- extra[!(MTaglft %in% overlap_tags)]
@@ -158,9 +163,6 @@ dat <- rbind(database, dat10, fill = TRUE)
 
 #check for duplicates
 janitor::get_dupes(dat)
-
-#take only first litters for this analysis, as done by Delaney
-dat <- dat[ln == 1]
 
 
 
@@ -249,7 +251,6 @@ janitor::get_dupes(datlitter)
 # Fix birth dates ---------------------------------------------------------
 
 datlitter[is.na(bdate) & weight1 < 50]
-
 
 #create col for source of part date
 datlitter[!is.na(bdate), part_source := "observed"]
