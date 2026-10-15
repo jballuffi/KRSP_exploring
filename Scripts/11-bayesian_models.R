@@ -108,6 +108,7 @@ summary(biv_cache_model)
 
 # Analysis 4: Rattle Analysis ---------------------------------------------
 
+#First test if there is a difference in chickadees and controls
 r_continuous <- bf(
   growthrate_std ~ treatment_ind*density_std + cones_std
   + bjulian_std + mast + sexratio
@@ -133,7 +134,37 @@ summary(biv_rattle_model)
 
 
 
+#Next run model with chickadees as controls
+
+r_continuous2 <- bf(
+  growthrate_std ~ treatment_gr*density_std + cones_std
+  + bjulian_std + mast + sexratio
+  + (1|gridyear) + (1|mother_byear),
+  family = gaussian())
+
+r_ordinal2 <- bf(
+  littersize_std ~ treatment_gr*density_std + cones_std
+  + bjulian_std + mast + sexratio
+  + (1|gridyear) + (1|mother_byear),
+  family = gaussian())
+
+biv_rattle_model2 <- brm(
+  formula = r_continuous2 + r_ordinal2,
+  data = rattle,
+  chains = chain,
+  cores = core,
+  iter = iters,
+  warmup = warms
+)
+
+summary(biv_rattle_model2)
+
+
+
+
+
 saveRDS(biv_control_model, "Output/Models/control_model_litters.rds")
 saveRDS(biv_food_model, "Output/Models/foodtreatment_model_litters.rds")
 saveRDS(biv_cache_model, "Output/Models/cache_model_litters.rds")
-saveRDS(biv_rattle_model, "Output/Models/rattle_model_litters.rds")
+saveRDS(biv_rattle_model2, "Output/Models/rattle_model_litters.rds")
+saveRDS(biv_rattle_model, "Output/Models/rattle_model_litters_TEST.rds")
