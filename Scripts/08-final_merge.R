@@ -197,7 +197,7 @@ dat2[density_std > dens75Q, density_cat := "high"]
 # finalize what are factors -----------------------------------------------
 
 #food, treatment, bucket
-dat2[, food := factor(food)][, treatment_gr := factor(treatment_gr)][, bucket := factor(bucket)][, treatment_ind := factor(treatment_ind)]
+dat2[, food := factor(food)][, treatment_gr := factor(treatment_gr)][, bucket := factor(bucket)]
 
 #mast year
 dat2[, mast := factor(mast)]
@@ -207,6 +207,9 @@ dat2[, littersize := as.numeric(littersize)]
 
 #density category with levels
 dat2[, density_cat := factor(density_cat, levels = c("low", "medium", "high"))]
+
+#make levels to treatment_ind
+dat2[, treatment_ind := factor(treatment_ind, levels = c("Control", "Chickadee", "Rattle", "No Bucket", "Bucket"))]
 
 
 
