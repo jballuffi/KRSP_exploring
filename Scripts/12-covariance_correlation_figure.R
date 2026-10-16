@@ -33,10 +33,13 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 controldat <- make_dataset(x = controls, t = controls$treatment_ind)
 fooddat <- make_dataset(x = food, t = food$treatment_ind)
 cachedat <- make_dataset(x = cache, t = cache$cache_cat)
-rattdat <- make_dataset(x = rattle, t = rattle$treatment_ind)
+rattdat <- make_dataset(x = rattle, t = rattle$treatment_gr)
 
 #rename treatment col in cache dataset
 setnames(cachedat, "treatment_ind", "cache_cat")
+
+#rename treatment col in rattle data set
+setnames(rattdat, "treatment_ind", "treatment_gr")
 
 
 
@@ -174,7 +177,7 @@ litter_ep_rattle <- ep_rattle[, , 2]
 df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
   data.frame(
     density_std = rattdat$density_std[i],
-    treatment_ind = rattdat$treatment_ind[i],
+    treatment_gr = rattdat$treatment_gr[i],
     cov = cov(growth_ep_rattle[, i], litter_ep_rattle[, i]),
     cor = cor(growth_ep_rattle[, i], litter_ep_rattle[, i])
   )
@@ -182,18 +185,18 @@ df_rattle <- map_dfr(seq_len(nrow(rattdat)), function(i) {
 
 #Plot covariance vs. density and correlation vs. density with 3 treatment lines
 #covariance
-(rattle_cov <- ggplot(df_rattle, aes(density_std, cov, color = treatment_ind)) +
+(rattle_cov <- ggplot(df_rattle, aes(density_std, cov, color = treatment_gr)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = treatment_ind_cols) +
+  scale_color_manual(values = treatment_gr_cols) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
   theme1+
   theme(legend.position = "inside", legend.position.inside = c(0.25, 0.2))
   )
 
 #correlation
-(rattle_cor <- ggplot(df_rattle, aes(density_std, cor, color = treatment_ind)) +
+(rattle_cor <- ggplot(df_rattle, aes(density_std, cor, color = treatment_gr)) +
   geom_line(size = 1.2) +
-  scale_color_manual(values = treatment_ind_cols, guide = NULL) +
+  scale_color_manual(values = treatment_gr_cols, guide = NULL) +
   labs(subtitle = "Rattle model", x = "Density (standardized)", y = "", color = "Treatment") +
   theme1)
 
