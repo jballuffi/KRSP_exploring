@@ -368,69 +368,69 @@ display: none;
 ##          mu = identity 
 ## Formula: growthrate_std ~ density_std + cones_std + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
 ##          littersize_std ~ density_std + cones_std + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
-##    Data: controls (Number of observations: 1205) 
+##    Data: controls (Number of observations: 1193) 
 ##   Draws: 2 chains, each with iter = 10000; warmup = 1000; thin = 1;
 ##          total post-warmup draws = 18000
 ## 
 ## Multilevel Hyperparameters:
 ## ~gridyear (Number of levels: 73) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.02      0.02     0.00     0.07 1.00    12357
-## sd(littersizestd_Intercept)     0.02      0.02     0.00     0.07 1.00    12734
+## sd(growthratestd_Intercept)     0.02      0.02     0.00     0.07 1.00    14158
+## sd(littersizestd_Intercept)     0.02      0.02     0.00     0.07 1.00    14930
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)     7309
-## sd(littersizestd_Intercept)     7568
+## sd(growthratestd_Intercept)    10392
+## sd(littersizestd_Intercept)    10235
 ## 
 ## ~mother_byear (Number of levels: 39) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.06      0.04     0.00     0.15 1.00     5390
-## sd(littersizestd_Intercept)     0.07      0.04     0.00     0.16 1.00     4434
+## sd(growthratestd_Intercept)     0.05      0.04     0.00     0.13 1.00     7754
+## sd(littersizestd_Intercept)     0.07      0.05     0.00     0.17 1.00     5490
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)     6946
-## sd(littersizestd_Intercept)     6746
+## sd(growthratestd_Intercept)     9948
+## sd(littersizestd_Intercept)     9967
 ## 
 ## Regression Coefficients:
 ##                              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## growthratestd_Intercept          0.08      0.06    -0.03     0.19 1.00    16819
-## littersizestd_Intercept         -0.06      0.06    -0.17     0.05 1.00    16680
-## growthratestd_density_std       -0.00      0.03    -0.06     0.06 1.00    13865
-## growthratestd_cones_std         -0.00      0.03    -0.06     0.05 1.00    13706
-## growthratestd_mother_age_std    -0.10      0.03    -0.16    -0.04 1.00    18991
-## growthratestd_bjulian_std       -0.14      0.03    -0.20    -0.08 1.00    17420
-## growthratestd_mastyes           -0.03      0.08    -0.19     0.14 1.00    17643
-## growthratestd_sexratio          -0.15      0.09    -0.32     0.03 1.00    17407
-## littersizestd_density_std       -0.04      0.03    -0.10     0.02 1.00    13937
-## littersizestd_cones_std          0.01      0.03    -0.04     0.07 1.00    14596
-## littersizestd_mother_age_std     0.03      0.03    -0.03     0.09 1.00    18227
-## littersizestd_bjulian_std       -0.05      0.03    -0.11     0.01 1.00    17896
-## littersizestd_mastyes           -0.01      0.08    -0.18     0.15 1.00    17486
-## littersizestd_sexratio           0.10      0.09    -0.07     0.28 1.00    17540
+## growthratestd_Intercept          0.08      0.06    -0.03     0.19 1.00    38775
+## littersizestd_Intercept         -0.06      0.06    -0.17     0.05 1.00    35401
+## growthratestd_density_std        0.00      0.03    -0.06     0.06 1.00    33327
+## growthratestd_cones_std         -0.00      0.03    -0.06     0.05 1.00    33079
+## growthratestd_mother_age_std    -0.10      0.03    -0.15    -0.04 1.00    37915
+## growthratestd_bjulian_std       -0.14      0.03    -0.19    -0.08 1.00    39545
+## growthratestd_mastyes           -0.03      0.09    -0.20     0.14 1.00    38520
+## growthratestd_sexratio          -0.15      0.09    -0.32     0.02 1.00    41692
+## littersizestd_density_std       -0.04      0.03    -0.10     0.02 1.00    33571
+## littersizestd_cones_std          0.01      0.03    -0.05     0.07 1.00    36128
+## littersizestd_mother_age_std     0.03      0.03    -0.03     0.09 1.00    37527
+## littersizestd_bjulian_std       -0.05      0.03    -0.11     0.01 1.00    37420
+## littersizestd_mastyes           -0.00      0.09    -0.18     0.17 1.00    35007
+## littersizestd_sexratio           0.10      0.09    -0.08     0.28 1.00    38332
 ##                              Tail_ESS
-## growthratestd_Intercept         12166
-## littersizestd_Intercept         13106
-## growthratestd_density_std       12709
-## growthratestd_cones_std         12927
-## growthratestd_mother_age_std    13575
-## growthratestd_bjulian_std       13688
-## growthratestd_mastyes           13276
-## growthratestd_sexratio          12444
-## littersizestd_density_std       12945
-## littersizestd_cones_std         13541
-## littersizestd_mother_age_std    14322
-## littersizestd_bjulian_std       13474
-## littersizestd_mastyes           12910
-## littersizestd_sexratio          13496
+## growthratestd_Intercept         14752
+## littersizestd_Intercept         13070
+## growthratestd_density_std       14708
+## growthratestd_cones_std         14871
+## growthratestd_mother_age_std    13823
+## growthratestd_bjulian_std       14811
+## growthratestd_mastyes           14055
+## growthratestd_sexratio          14030
+## littersizestd_density_std       14334
+## littersizestd_cones_std         14901
+## littersizestd_mother_age_std    15014
+## littersizestd_bjulian_std       14588
+## littersizestd_mastyes           14717
+## littersizestd_sexratio          13267
 ## 
 ## Further Distributional Parameters:
 ##                     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma_growthratestd     0.96      0.02     0.92     1.00 1.00    19352    13985
-## sigma_littersizestd     0.97      0.02     0.93     1.01 1.00    19642    12340
+## sigma_growthratestd     0.96      0.02     0.92     1.00 1.00    38879    12811
+## sigma_littersizestd     0.97      0.02     0.93     1.01 1.00    37212    12697
 ## 
 ## Residual Correlations: 
 ##                                     Estimate Est.Error l-95% CI u-95% CI Rhat
-## rescor(growthratestd,littersizestd)    -0.35      0.03    -0.39    -0.29 1.00
+## rescor(growthratestd,littersizestd)    -0.34      0.03    -0.39    -0.29 1.00
 ##                                     Bulk_ESS Tail_ESS
-## rescor(growthratestd,littersizestd)    16455    12541
+## rescor(growthratestd,littersizestd)    38647    13387
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -439,90 +439,93 @@ display: none;
 <div id="food-model" class="section level1">
 <h1>Food Model</h1>
 <pre class="r"><code>summary(food_mod)</code></pre>
+<pre><code>## Warning: There were 1 divergent transitions after warmup. Increasing
+## adapt_delta above 0.8 may help. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
 <pre><code>##  Family: MV(gaussian, gaussian) 
 ##   Links: mu = identity
 ##          mu = identity 
 ## Formula: growthrate_std ~ treatment_ind * density_std + cones_std + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
 ##          littersize_std ~ treatment_ind * density_std + cones_std + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
-##    Data: food (Number of observations: 1190) 
+##    Data: food (Number of observations: 1178) 
 ##   Draws: 2 chains, each with iter = 10000; warmup = 1000; thin = 1;
 ##          total post-warmup draws = 18000
 ## 
 ## Multilevel Hyperparameters:
 ## ~gridyear (Number of levels: 51) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.03      0.02     0.00     0.07 1.00    11940
-## sd(littersizestd_Intercept)     0.03      0.02     0.00     0.07 1.00    12459
+## sd(growthratestd_Intercept)     0.03      0.02     0.00     0.07 1.00    12853
+## sd(littersizestd_Intercept)     0.03      0.02     0.00     0.08 1.00    11253
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)     8038
-## sd(littersizestd_Intercept)     8990
+## sd(growthratestd_Intercept)     7941
+## sd(littersizestd_Intercept)     7753
 ## 
 ## ~mother_byear (Number of levels: 19) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.11      0.05     0.02     0.22 1.00     4304
-## sd(littersizestd_Intercept)     0.07      0.05     0.00     0.18 1.00     5498
+## sd(growthratestd_Intercept)     0.10      0.05     0.01     0.22 1.00     4730
+## sd(littersizestd_Intercept)     0.07      0.05     0.00     0.18 1.00     5097
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)     4654
-## sd(littersizestd_Intercept)     7786
+## sd(growthratestd_Intercept)     4568
+## sd(littersizestd_Intercept)     7464
 ## 
 ## Regression Coefficients:
 ##                                                 Estimate Est.Error l-95% CI
-## growthratestd_Intercept                             0.17      0.08     0.02
-## littersizestd_Intercept                            -0.03      0.08    -0.19
-## growthratestd_treatment_indControl                 -0.11      0.07    -0.25
-## growthratestd_treatment_indNoBucket                -0.24      0.09    -0.42
-## growthratestd_density_std                          -0.03      0.06    -0.14
+## growthratestd_Intercept                             0.06      0.08    -0.09
+## littersizestd_Intercept                            -0.08      0.07    -0.23
+## growthratestd_treatment_indNoBucket                -0.12      0.09    -0.30
+## growthratestd_treatment_indBucket                   0.11      0.07    -0.03
+## growthratestd_density_std                          -0.05      0.05    -0.15
 ## growthratestd_cones_std                             0.03      0.04    -0.04
 ## growthratestd_mother_age_std                       -0.02      0.03    -0.08
-## growthratestd_bjulian_std                          -0.18      0.03    -0.23
-## growthratestd_mastyes                               0.01      0.08    -0.14
-## growthratestd_sexratio                             -0.19      0.10    -0.38
-## growthratestd_treatment_indControl:density_std     -0.02      0.07    -0.16
-## growthratestd_treatment_indNoBucket:density_std     0.10      0.08    -0.07
-## littersizestd_treatment_indControl                 -0.05      0.07    -0.19
-## littersizestd_treatment_indNoBucket                 0.01      0.09    -0.17
-## littersizestd_density_std                          -0.13      0.06    -0.24
+## growthratestd_bjulian_std                          -0.17      0.03    -0.23
+## growthratestd_mastyes                               0.01      0.08    -0.15
+## growthratestd_sexratio                             -0.19      0.10    -0.39
+## growthratestd_treatment_indNoBucket:density_std     0.12      0.08    -0.03
+## growthratestd_treatment_indBucket:density_std       0.02      0.07    -0.13
+## littersizestd_treatment_indNoBucket                 0.06      0.09    -0.11
+## littersizestd_treatment_indBucket                   0.05      0.07    -0.09
+## littersizestd_density_std                          -0.05      0.05    -0.15
 ## littersizestd_cones_std                             0.03      0.04    -0.04
 ## littersizestd_mother_age_std                        0.07      0.03     0.01
 ## littersizestd_bjulian_std                          -0.10      0.03    -0.16
 ## littersizestd_mastyes                              -0.03      0.08    -0.19
 ## littersizestd_sexratio                              0.16      0.10    -0.03
-## littersizestd_treatment_indControl:density_std      0.09      0.07    -0.06
-## littersizestd_treatment_indNoBucket:density_std     0.02      0.09    -0.15
+## littersizestd_treatment_indNoBucket:density_std    -0.06      0.08    -0.22
+## littersizestd_treatment_indBucket:density_std      -0.08      0.07    -0.23
 ##                                                 u-95% CI Rhat Bulk_ESS Tail_ESS
-## growthratestd_Intercept                             0.33 1.00    12103    12227
-## littersizestd_Intercept                             0.12 1.00    12478    11123
-## growthratestd_treatment_indControl                  0.03 1.00    12475    12987
-## growthratestd_treatment_indNoBucket                -0.06 1.00    12543    12707
-## growthratestd_density_std                           0.08 1.00     9383    11300
-## growthratestd_cones_std                             0.10 1.00    14320    12411
-## growthratestd_mother_age_std                        0.04 1.00    14909    13430
-## growthratestd_bjulian_std                          -0.11 1.00    16629    13242
-## growthratestd_mastyes                               0.17 1.00    16693    13162
-## growthratestd_sexratio                             -0.01 1.00    17093    14062
-## growthratestd_treatment_indControl:density_std      0.12 1.00     9626    11516
-## growthratestd_treatment_indNoBucket:density_std     0.26 1.00    10746    11847
-## littersizestd_treatment_indControl                  0.09 1.00    12363    11181
-## littersizestd_treatment_indNoBucket                 0.19 1.00    12162    12602
-## littersizestd_density_std                          -0.02 1.00     8827    10200
-## littersizestd_cones_std                             0.10 1.00    13837    13073
-## littersizestd_mother_age_std                        0.13 1.00    16036    13414
-## littersizestd_bjulian_std                          -0.04 1.00    17585    13838
-## littersizestd_mastyes                               0.12 1.00    14797    12787
-## littersizestd_sexratio                              0.36 1.00    17653    13180
-## littersizestd_treatment_indControl:density_std      0.23 1.00     8851    11224
-## littersizestd_treatment_indNoBucket:density_std     0.19 1.00    10195    11530
+## growthratestd_Intercept                             0.21 1.00    11719    10765
+## littersizestd_Intercept                             0.06 1.00    13603    12601
+## growthratestd_treatment_indNoBucket                 0.05 1.00    12808    13721
+## growthratestd_treatment_indBucket                   0.26 1.00    11658    12657
+## growthratestd_density_std                           0.05 1.00     9447    12298
+## growthratestd_cones_std                             0.10 1.00    14562    13884
+## growthratestd_mother_age_std                        0.04 1.00    16637    14196
+## growthratestd_bjulian_std                          -0.11 1.00    16917    13818
+## growthratestd_mastyes                               0.17 1.00    17613    13864
+## growthratestd_sexratio                             -0.01 1.00    18305    13080
+## growthratestd_treatment_indNoBucket:density_std     0.27 1.00    11389    12007
+## growthratestd_treatment_indBucket:density_std       0.16 1.00    11399    12987
+## littersizestd_treatment_indNoBucket                 0.24 1.00    13809    12671
+## littersizestd_treatment_indBucket                   0.19 1.00    11079    12925
+## littersizestd_density_std                           0.05 1.00     8751    11049
+## littersizestd_cones_std                             0.10 1.00    11943    12494
+## littersizestd_mother_age_std                        0.13 1.00    14202    13765
+## littersizestd_bjulian_std                          -0.04 1.00    17979    13553
+## littersizestd_mastyes                               0.13 1.00    17372    13889
+## littersizestd_sexratio                              0.35 1.00    18042    13761
+## littersizestd_treatment_indNoBucket:density_std     0.09 1.00    11656    13453
+## littersizestd_treatment_indBucket:density_std       0.06 1.00    11939    13269
 ## 
 ## Further Distributional Parameters:
 ##                     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma_growthratestd     0.96      0.02     0.92     1.00 1.00    19679    13288
-## sigma_littersizestd     0.97      0.02     0.93     1.01 1.00    19185    13911
+## sigma_growthratestd     0.96      0.02     0.92     1.00 1.00    19920    14169
+## sigma_littersizestd     0.97      0.02     0.93     1.01 1.00    20562    14101
 ## 
 ## Residual Correlations: 
 ##                                     Estimate Est.Error l-95% CI u-95% CI Rhat
-## rescor(growthratestd,littersizestd)    -0.31      0.03    -0.36    -0.26 1.00
+## rescor(growthratestd,littersizestd)    -0.30      0.03    -0.36    -0.25 1.00
 ##                                     Bulk_ESS Tail_ESS
-## rescor(growthratestd,littersizestd)    19664    12850
+## rescor(growthratestd,littersizestd)    19240    14319
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -536,85 +539,85 @@ display: none;
 ##          mu = identity 
 ## Formula: growthrate_std ~ cache_cat * density_std + cones_std + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
 ##          littersize_std ~ cache_cat * density_std + cones_std + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
-##    Data: cache (Number of observations: 455) 
+##    Data: cache (Number of observations: 452) 
 ##   Draws: 2 chains, each with iter = 10000; warmup = 1000; thin = 1;
 ##          total post-warmup draws = 18000
 ## 
 ## Multilevel Hyperparameters:
 ## ~gridyear (Number of levels: 34) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.05      0.04     0.00     0.15 1.00    14306
-## sd(littersizestd_Intercept)     0.05      0.04     0.00     0.14 1.00    12529
+## sd(growthratestd_Intercept)     0.05      0.04     0.00     0.15 1.00    13953
+## sd(littersizestd_Intercept)     0.05      0.04     0.00     0.13 1.00    15330
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)    11138
-## sd(littersizestd_Intercept)    10518
+## sd(growthratestd_Intercept)    10790
+## sd(littersizestd_Intercept)    10930
 ## 
 ## ~mother_byear (Number of levels: 21) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.10      0.07     0.00     0.27 1.00     7455
-## sd(littersizestd_Intercept)     0.15      0.09     0.01     0.35 1.00     4909
+## sd(growthratestd_Intercept)     0.08      0.06     0.00     0.24 1.00     8257
+## sd(littersizestd_Intercept)     0.15      0.09     0.01     0.34 1.00     5412
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)    10745
-## sd(littersizestd_Intercept)     6410
+## sd(growthratestd_Intercept)    11420
+## sd(littersizestd_Intercept)     8391
 ## 
 ## Regression Coefficients:
 ##                                           Estimate Est.Error l-95% CI u-95% CI
-## growthratestd_Intercept                       0.12      0.13    -0.13     0.37
-## littersizestd_Intercept                      -0.15      0.14    -0.41     0.12
-## growthratestd_cache_catmedium                 0.05      0.12    -0.18     0.28
-## growthratestd_cache_catlarge                 -0.00      0.14    -0.27     0.27
-## growthratestd_density_std                    -0.16      0.13    -0.42     0.10
-## growthratestd_cones_std                      -0.01      0.04    -0.09     0.08
-## growthratestd_mother_age_std                 -0.05      0.06    -0.16     0.07
-## growthratestd_bjulian_std                    -0.16      0.05    -0.26    -0.07
-## growthratestd_mastyes                        -0.04      0.16    -0.35     0.28
-## growthratestd_sexratio                       -0.28      0.15    -0.57     0.02
-## growthratestd_cache_catmedium:density_std     0.14      0.14    -0.15     0.41
-## growthratestd_cache_catlarge:density_std      0.20      0.15    -0.11     0.50
-## littersizestd_cache_catmedium                -0.02      0.12    -0.25     0.21
-## littersizestd_cache_catlarge                  0.00      0.14    -0.27     0.28
-## littersizestd_density_std                     0.09      0.13    -0.18     0.34
+## growthratestd_Intercept                       0.14      0.13    -0.11     0.39
+## littersizestd_Intercept                      -0.16      0.13    -0.42     0.10
+## growthratestd_cache_catmedium                 0.02      0.12    -0.20     0.25
+## growthratestd_cache_catlarge                  0.00      0.13    -0.26     0.27
+## growthratestd_density_std                    -0.18      0.13    -0.43     0.07
+## growthratestd_cones_std                      -0.00      0.05    -0.09     0.09
+## growthratestd_mother_age_std                 -0.05      0.06    -0.16     0.06
+## growthratestd_bjulian_std                    -0.16      0.05    -0.26    -0.06
+## growthratestd_mastyes                        -0.03      0.17    -0.36     0.29
+## growthratestd_sexratio                       -0.28      0.15    -0.57     0.01
+## growthratestd_cache_catmedium:density_std     0.16      0.14    -0.12     0.44
+## growthratestd_cache_catlarge:density_std      0.22      0.15    -0.08     0.53
+## littersizestd_cache_catmedium                -0.00      0.12    -0.23     0.23
+## littersizestd_cache_catlarge                  0.01      0.14    -0.26     0.28
+## littersizestd_density_std                     0.13      0.13    -0.13     0.38
 ## littersizestd_cones_std                      -0.03      0.05    -0.12     0.06
-## littersizestd_mother_age_std                 -0.03      0.06    -0.14     0.09
-## littersizestd_bjulian_std                    -0.09      0.05    -0.18     0.01
-## littersizestd_mastyes                        -0.01      0.17    -0.34     0.32
-## littersizestd_sexratio                        0.22      0.15    -0.07     0.52
-## littersizestd_cache_catmedium:density_std    -0.00      0.15    -0.28     0.29
-## littersizestd_cache_catlarge:density_std     -0.11      0.16    -0.42     0.19
+## littersizestd_mother_age_std                 -0.03      0.06    -0.14     0.08
+## littersizestd_bjulian_std                    -0.09      0.05    -0.19     0.00
+## littersizestd_mastyes                         0.02      0.17    -0.31     0.35
+## littersizestd_sexratio                        0.23      0.15    -0.06     0.53
+## littersizestd_cache_catmedium:density_std    -0.05      0.14    -0.33     0.24
+## littersizestd_cache_catlarge:density_std     -0.15      0.15    -0.46     0.15
 ##                                           Rhat Bulk_ESS Tail_ESS
-## growthratestd_Intercept                   1.00    26673    13773
-## littersizestd_Intercept                   1.00    28258    14745
-## growthratestd_cache_catmedium             1.00    26361    14979
-## growthratestd_cache_catlarge              1.00    26534    15754
-## growthratestd_density_std                 1.00    16493    14230
-## growthratestd_cones_std                   1.00    33401    14508
-## growthratestd_mother_age_std              1.00    29915    14719
-## growthratestd_bjulian_std                 1.00    32960    14617
-## growthratestd_mastyes                     1.00    33758    15359
-## growthratestd_sexratio                    1.00    36241    13985
-## growthratestd_cache_catmedium:density_std 1.00    16964    14934
-## growthratestd_cache_catlarge:density_std  1.00    17188    14906
-## littersizestd_cache_catmedium             1.00    27324    14999
-## littersizestd_cache_catlarge              1.00    27358    15111
-## littersizestd_density_std                 1.00    19339    14396
-## littersizestd_cones_std                   1.00    30996    14045
-## littersizestd_mother_age_std              1.00    32160    15066
-## littersizestd_bjulian_std                 1.00    33593    15192
-## littersizestd_mastyes                     1.00    30931    13840
-## littersizestd_sexratio                    1.00    36719    14885
-## littersizestd_cache_catmedium:density_std 1.00    19565    14017
-## littersizestd_cache_catlarge:density_std  1.00    19782    14829
+## growthratestd_Intercept                   1.00    26544    15376
+## littersizestd_Intercept                   1.00    26614    13857
+## growthratestd_cache_catmedium             1.00    24701    14919
+## growthratestd_cache_catlarge              1.00    25648    15511
+## growthratestd_density_std                 1.00    15649    14510
+## growthratestd_cones_std                   1.00    31423    14258
+## growthratestd_mother_age_std              1.00    31605    15027
+## growthratestd_bjulian_std                 1.00    28989    14439
+## growthratestd_mastyes                     1.00    30333    14373
+## growthratestd_sexratio                    1.00    31535    14435
+## growthratestd_cache_catmedium:density_std 1.00    16151    15235
+## growthratestd_cache_catlarge:density_std  1.00    16406    14965
+## littersizestd_cache_catmedium             1.00    26176    15203
+## littersizestd_cache_catlarge              1.00    25753    15015
+## littersizestd_density_std                 1.00    18073    14030
+## littersizestd_cones_std                   1.00    29365    14767
+## littersizestd_mother_age_std              1.00    30271    15017
+## littersizestd_bjulian_std                 1.00    32786    14189
+## littersizestd_mastyes                     1.00    28089    14778
+## littersizestd_sexratio                    1.00    33379    14596
+## littersizestd_cache_catmedium:density_std 1.00    18264    15163
+## littersizestd_cache_catlarge:density_std  1.00    18692    14986
 ## 
 ## Further Distributional Parameters:
 ##                     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma_growthratestd     0.98      0.03     0.92     1.05 1.00    39858    14575
-## sigma_littersizestd     0.99      0.03     0.93     1.06 1.00    32586    13482
+## sigma_growthratestd     0.98      0.03     0.92     1.05 1.00    40697    14429
+## sigma_littersizestd     0.98      0.03     0.92     1.05 1.00    30678    14232
 ## 
 ## Residual Correlations: 
 ##                                     Estimate Est.Error l-95% CI u-95% CI Rhat
-## rescor(growthratestd,littersizestd)    -0.36      0.04    -0.44    -0.28 1.00
+## rescor(growthratestd,littersizestd)    -0.36      0.04    -0.44    -0.27 1.00
 ##                                     Bulk_ESS Tail_ESS
-## rescor(growthratestd,littersizestd)    33966    14609
+## rescor(growthratestd,littersizestd)    31629    14772
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -623,81 +626,78 @@ display: none;
 <div id="rattle-model" class="section level1">
 <h1>Rattle Model</h1>
 <pre class="r"><code>summary(rattle_mod)</code></pre>
-<pre><code>## Warning: There were 1 divergent transitions after warmup. Increasing
-## adapt_delta above 0.8 may help. See
-## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
 <pre><code>##  Family: MV(gaussian, gaussian) 
 ##   Links: mu = identity
 ##          mu = identity 
-## Formula: growthrate_std ~ treatment_ind * density_std + cones_std + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
-##          littersize_std ~ treatment_ind * density_std + cones_std + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
-##    Data: rattle (Number of observations: 222) 
+## Formula: growthrate_std ~ treatment_gr * density_std + cones_std + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
+##          littersize_std ~ treatment_gr * density_std + cones_std + bjulian_std + mast + sexratio + (1 | gridyear) + (1 | mother_byear) 
+##    Data: rattle (Number of observations: 224) 
 ##   Draws: 2 chains, each with iter = 10000; warmup = 1000; thin = 1;
 ##          total post-warmup draws = 18000
 ## 
 ## Multilevel Hyperparameters:
 ## ~gridyear (Number of levels: 21) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.07      0.06     0.00     0.22 1.00    11736
-## sd(littersizestd_Intercept)     0.07      0.06     0.00     0.22 1.00    12660
+## sd(growthratestd_Intercept)     0.07      0.06     0.00     0.22 1.00    11219
+## sd(littersizestd_Intercept)     0.07      0.06     0.00     0.22 1.00     9824
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)     9845
-## sd(littersizestd_Intercept)    10718
+## sd(growthratestd_Intercept)     9435
+## sd(littersizestd_Intercept)     7445
 ## 
 ## ~mother_byear (Number of levels: 17) 
 ##                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-## sd(growthratestd_Intercept)     0.15      0.11     0.01     0.41 1.00     6427
-## sd(littersizestd_Intercept)     0.16      0.11     0.01     0.42 1.00     5814
+## sd(growthratestd_Intercept)     0.14      0.11     0.01     0.40 1.00     5807
+## sd(littersizestd_Intercept)     0.13      0.10     0.01     0.37 1.00     6435
 ##                             Tail_ESS
-## sd(growthratestd_Intercept)     9527
-## sd(littersizestd_Intercept)     8409
+## sd(growthratestd_Intercept)     8467
+## sd(littersizestd_Intercept)     7689
 ## 
 ## Regression Coefficients:
-##                                               Estimate Est.Error l-95% CI
-## growthratestd_Intercept                           0.01      0.18    -0.34
-## littersizestd_Intercept                           0.12      0.18    -0.22
-## growthratestd_treatment_indRattle                -0.10      0.20    -0.50
-## growthratestd_density_std                         0.01      0.12    -0.23
-## growthratestd_cones_std                          -0.02      0.09    -0.19
-## growthratestd_bjulian_std                         0.04      0.07    -0.10
-## growthratestd_mastyes                            -0.09      0.21    -0.51
-## growthratestd_sexratio                            0.07      0.23    -0.37
-## growthratestd_treatment_indRattle:density_std    -0.05      0.24    -0.52
-## littersizestd_treatment_indRattle                -0.13      0.20    -0.52
-## littersizestd_density_std                        -0.09      0.12    -0.34
-## littersizestd_cones_std                          -0.01      0.09    -0.19
-## littersizestd_bjulian_std                        -0.14      0.07    -0.28
-## littersizestd_mastyes                            -0.14      0.21    -0.56
-## littersizestd_sexratio                           -0.23      0.22    -0.66
-## littersizestd_treatment_indRattle:density_std    -0.34      0.23    -0.79
-##                                               u-95% CI Rhat Bulk_ESS Tail_ESS
-## growthratestd_Intercept                           0.36 1.00    19871    13434
-## littersizestd_Intercept                           0.46 1.00    21000    14343
-## growthratestd_treatment_indRattle                 0.29 1.00    19980    14575
-## growthratestd_density_std                         0.25 1.00    19657    14318
-## growthratestd_cones_std                           0.15 1.00    21067    14075
-## growthratestd_bjulian_std                         0.18 1.00    27502    13078
-## growthratestd_mastyes                             0.32 1.00    18578    13499
-## growthratestd_sexratio                            0.52 1.00    28419    14517
-## growthratestd_treatment_indRattle:density_std     0.42 1.00    18793    13888
-## littersizestd_treatment_indRattle                 0.26 1.00    20109    14290
-## littersizestd_density_std                         0.15 1.00    17589    13577
-## littersizestd_cones_std                           0.15 1.00    21139    14181
-## littersizestd_bjulian_std                        -0.00 1.00    28968    14732
-## littersizestd_mastyes                             0.26 1.00    18636    13985
-## littersizestd_sexratio                            0.20 1.00    26695    14249
-## littersizestd_treatment_indRattle:density_std     0.10 1.00    19418    14023
+##                                              Estimate Est.Error l-95% CI
+## growthratestd_Intercept                         -0.00      0.18    -0.35
+## littersizestd_Intercept                          0.14      0.17    -0.20
+## growthratestd_treatment_grRattle                -0.09      0.20    -0.48
+## growthratestd_density_std                        0.02      0.12    -0.21
+## growthratestd_cones_std                         -0.02      0.09    -0.19
+## growthratestd_bjulian_std                        0.04      0.07    -0.10
+## growthratestd_mastyes                           -0.09      0.21    -0.50
+## growthratestd_sexratio                           0.09      0.22    -0.35
+## growthratestd_treatment_grRattle:density_std    -0.07      0.23    -0.53
+## littersizestd_treatment_grRattle                -0.13      0.20    -0.52
+## littersizestd_density_std                       -0.08      0.12    -0.33
+## littersizestd_cones_std                         -0.02      0.09    -0.18
+## littersizestd_bjulian_std                       -0.14      0.07    -0.27
+## littersizestd_mastyes                           -0.13      0.20    -0.53
+## littersizestd_sexratio                          -0.26      0.22    -0.69
+## littersizestd_treatment_grRattle:density_std    -0.31      0.23    -0.76
+##                                              u-95% CI Rhat Bulk_ESS Tail_ESS
+## growthratestd_Intercept                          0.35 1.00    15337    13652
+## littersizestd_Intercept                          0.48 1.00    14961    12276
+## growthratestd_treatment_grRattle                 0.30 1.00    13291    13252
+## growthratestd_density_std                        0.26 1.00    15126    13405
+## growthratestd_cones_std                          0.16 1.00    14746    13005
+## growthratestd_bjulian_std                        0.17 1.00    20259    13190
+## growthratestd_mastyes                            0.31 1.00    13684    12452
+## growthratestd_sexratio                           0.52 1.00    21925    13928
+## growthratestd_treatment_grRattle:density_std     0.38 1.00    13193    12063
+## littersizestd_treatment_grRattle                 0.25 1.00    13927    12254
+## littersizestd_density_std                        0.16 1.00    15588    13480
+## littersizestd_cones_std                          0.15 1.00    16402    14225
+## littersizestd_bjulian_std                       -0.00 1.00    18430    13457
+## littersizestd_mastyes                            0.27 1.00    14167    13192
+## littersizestd_sexratio                           0.17 1.00    23004    13803
+## littersizestd_treatment_grRattle:density_std     0.13 1.00    13153    12916
 ## 
 ## Further Distributional Parameters:
 ##                     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma_growthratestd     0.97      0.05     0.88     1.07 1.00    25578    13739
-## sigma_littersizestd     0.94      0.05     0.86     1.04 1.00    24956    13745
+## sigma_growthratestd     0.96      0.05     0.88     1.06 1.00    19780    13238
+## sigma_littersizestd     0.95      0.05     0.86     1.05 1.00    20677    13664
 ## 
 ## Residual Correlations: 
 ##                                     Estimate Est.Error l-95% CI u-95% CI Rhat
-## rescor(growthratestd,littersizestd)    -0.31      0.06    -0.43    -0.18 1.00
+## rescor(growthratestd,littersizestd)    -0.31      0.06    -0.42    -0.18 1.00
 ##                                     Bulk_ESS Tail_ESS
-## rescor(growthratestd,littersizestd)    26434    14648
+## rescor(growthratestd,littersizestd)    21008    13201
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential

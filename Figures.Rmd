@@ -3,9 +3,9 @@ title: "Preliminary Results"
 author: "Juliana Balluffi-Fry"
 date: "2026-09-18"
 output:
-  word_document: default
   html_document:
     df_print: paged
+  word_document: default
   pdf_document: default
 ---
 
@@ -41,12 +41,10 @@ Tables
 knitr::kable(tab1, caption = "Table 1. Sample size of juveniles, litters, and female red squirrels and the years of those sample sizes, by grid and grid-treatment.")
 ```
 
-
 ```{r tab2, echo=FALSE, message=FALSE}
 # Display as a styled table
 knitr::kable(tab2, caption = "Table 2. Sample size of juveniles, litters, and female red squirrels, by year, grid, and grid-treatment from 2010 - 2022.")
 ```
-
 
 Figure Captions
 
@@ -76,20 +74,24 @@ Supplementary Figures
 
 S1. Visual example of how local density was estimated using squirrel census data. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area (pi\*radius\^2)/10000.
 
-S2. Summary of density and life history outcomes in response to treatments (n = `r dat[, .N]`). A) Local densities (ind/ha) of red squirrels in response to treatment at the grid level, where grids housed either food-add experiments, rattle playback experiments, or were controls. B) Litter growth rate (g/day) and C) litter size in response to treatment of the mother. A mother was either on a control grid, was on a food grid and had a bucket, was on a food grid but did not have a bucket, or was on a rattle playback grid.
+S2. Summary of density and life history outcomes in response to treatments (n = `r dat[, .N]`). A) Local densities (ind/ha) of red squirrels in response to treatment at the grid level, where grids housed either food-add experiments, rattle playback experiments, or were controls. B) Litter growth rate (g/day) and C) litter size in response to treatment of the mother. Females were subject to one of five treatment types: natural conditions (Control), controls for playback experiment (Chickadee playbacks), treatments for playback experiment (Rattle playbacks), controls on food add grids (No Bucket), or treatments on food add grids (Bucket).
 
-S3. Linear model predictions for the relationship between squirrel litter growth rate (g/day) and litter size as an interaction with three categories of squirrel density (low = red, medium = green, and high = blue). Left column: results from four different models, each using data subset to a different experimental treatment, controls (n = `r dat[treatment_ind == "Control", .N]`), buckets (n = `r dat[treatment_ind == "Bucket", .N]`), no buckets (n = `r dat[treatment_ind == "No Bucket", .N]`), and rattles (n = `r dat[treatment_ind == "Rattle", .N]`). Right column: results from one model that used all litters with cache size data (n = `r cache[, .N]`) and interacted litter size with density and the mother's cache size (categorical, either small, medium, or large).
+S3. Best linear unbiased predictors from the rattle model with chickadee playback mothers tested as a separate treatment group.
 
-S4. Predictions for all fixed effects from the control model which did not include any interacting term with density. Litters used in this model were from control grids across all years, and the model did not test for any effect of cache size.
+S4. Linear model predictions for the relationship between squirrel litter growth rate (g/day) and litter size as an interaction with three categories of squirrel density (low = red, medium = green, and high = blue). Left column: results from four different models, each using data subset to a different experimental treatment, controls (n = `r dat[treatment_ind == "Control", .N]`), buckets (n = `r dat[treatment_ind == "Bucket", .N]`), no buckets (n = `r dat[treatment_ind == "No Bucket", .N]`), and rattles (n = `r dat[treatment_ind == "Rattle", .N]`). Right column: results from one model that used all litters with cache size data (n = `r cache[, .N]`) and interacted litter size with density and the mother's cache size (categorical, either small, medium, or large).
 
-S5. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
+S5. Predictions for all fixed effects from the control model which did not include any interacting term with density. Litters used in this model were from control grids across all years, and the model did not test for any effect of cache size.
+
+S6. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
 
 ![S1](Output/Figures/local_density_visual.jpeg)
 
 ![S2](Output/Figures/treatment_summary.jpeg)
 
-![S3](Output/Figures/lm_full.jpeg)
+![S3](Output/Figures/ellipse_rattle_test.jpeg)
 
-![S4](Output/Figures/Control_model_full_results.jpeg)
+![S4](Output/Figures/lm_full.jpeg)
 
-![S5](Output/Figures/Posterior_distributions.jpeg)
+![S5](Output/Figures/Control_model_full_results.jpeg)
+
+![S6](Output/Figures/Posterior_distributions.jpeg)
