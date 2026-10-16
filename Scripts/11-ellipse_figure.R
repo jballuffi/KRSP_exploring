@@ -24,6 +24,7 @@ control_mod <- readRDS("Output/Models/control_model_litters.rds")
 food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
 cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
 rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
+rattle_mod_test <- readRDS("Output/Models/rattle_model_litters_TEST.rds")
 
 
 
@@ -33,10 +34,14 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 controldat <- make_dataset(x = controls, t = controls$treatment_ind)
 fooddat <- make_dataset(x = food, t = food$treatment_ind)
 cachedat <- make_dataset(x = cache, t = cache$cache_cat)
-rattdat <- make_dataset(x = rattle, t = rattle$treatment_ind)
+rattdat <- make_dataset(x = rattle, t = rattle$treatment_gr)
+rattdat_test <- make_dataset(x = rattle, t = rattle$treatment_ind)
 
 #rename treatment col in cache data set
 setnames(cachedat, "treatment_ind", "cache_cat")
+
+#rename treatment col in rattle data set
+setnames(rattdat, "treatment_ind", "treatment_gr")
 
 
 
@@ -172,35 +177,76 @@ cache_joint <- rbind(small_joint, medium_joint, large_joint)
 
 
 
-# Rattle Model ----------------------------------------------------------
+# Rattle Model TEST for supplemental ----------------------------------------------------------
 
 #Generate posterior predictions for controls
-controlrat_gr <- posterior_predict(rattle_mod, resp = "growthratestd", newdata = rattdat[treatment_ind == "Control"], re_formula = NA)
-controlrat_ls <- posterior_predict(rattle_mod, resp = "littersizestd", newdata = rattdat[treatment_ind == "Control"], re_formula = NA)
-controlrat_joint <- data.frame(
-  gr_pred = rowMeans(controlrat_gr),
-  ls_pred = rowMeans(controlrat_ls),
+Tcontrolrat_gr <- posterior_predict(rattle_mod_test, resp = "growthratestd", newdata = rattdat_test[treatment_ind == "Control"], re_formula = NA)
+Tcontrolrat_ls <- posterior_predict(rattle_mod_test, resp = "littersizestd", newdata = rattdat_test[treatment_ind == "Control"], re_formula = NA)
+Tcontrolrat_joint <- data.frame(
+  gr_pred = rowMeans(Tcontrolrat_gr),
+  ls_pred = rowMeans(Tcontrolrat_ls),
   treatment_ind = "Control"
 )
 
 #Generate posterior predictions for controls
-rattle_gr <- posterior_predict(rattle_mod, resp = "growthratestd", newdata = rattdat[treatment_ind == "Rattle"], re_formula = NA)
-rattle_ls <- posterior_predict(rattle_mod, resp = "littersizestd", newdata = rattdat[treatment_ind == "Rattle"], re_formula = NA)
+Tchick_gr <- posterior_predict(rattle_mod_test, resp = "growthratestd", newdata = rattdat_test[treatment_ind == "Chickadee"], re_formula = NA)
+Tchick_ls <- posterior_predict(rattle_mod_test, resp = "littersizestd", newdata = rattdat_test[treatment_ind == "Chickadee"], re_formula = NA)
+Tchick_joint <- data.frame(
+  gr_pred = rowMeans(Tchick_gr),
+  ls_pred = rowMeans(Tchick_ls),
+  treatment_ind = "Chickadee"
+)
+
+#Generate posterior predictions for controls
+Trattle_gr <- posterior_predict(rattle_mod_test, resp = "growthratestd", newdata = rattdat_test[treatment_ind == "Rattle"], re_formula = NA)
+Trattle_ls <- posterior_predict(rattle_mod_test, resp = "littersizestd", newdata = rattdat_test[treatment_ind == "Rattle"], re_formula = NA)
+Trat_joint <- data.frame(
+  gr_pred = rowMeans(Trattle_gr),
+  ls_pred = rowMeans(Trattle_ls),
+  treatment_ind = "Rattle"
+)
+
+Trattle_joint <- rbind(Tcontrolrat_joint, Trat_joint, Tchick_joint)
+
+#plot growth rate against litter size and add ellipse
+(Trattle_ellipse <- ggplot(Trattle_joint, aes(x = ls_pred, y = gr_pred)) +
+    geom_point(aes(color = treatment_ind), shape = 1, alpha = 0.1) +
+    geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
+    scale_color_manual(values = treatment_ind_cols) +
+    labs(subtitle = "D) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment")+
+    theme1)
+
+
+
+# Rattle Model ----------------------------------------------------------
+
+#Generate posterior predictions for controls
+controlrat_gr <- posterior_predict(rattle_mod, resp = "growthratestd", newdata = rattdat[treatment_gr == "Control"], re_formula = NA)
+controlrat_ls <- posterior_predict(rattle_mod, resp = "littersizestd", newdata = rattdat[treatment_gr == "Control"], re_formula = NA)
+controlrat_joint <- data.frame(
+  gr_pred = rowMeans(controlrat_gr),
+  ls_pred = rowMeans(controlrat_ls),
+  treatment_gr = "Control"
+)
+
+#Generate posterior predictions for controls
+rattle_gr <- posterior_predict(rattle_mod, resp = "growthratestd", newdata = rattdat[treatment_gr == "Rattle"], re_formula = NA)
+rattle_ls <- posterior_predict(rattle_mod, resp = "littersizestd", newdata = rattdat[treatment_gr == "Rattle"], re_formula = NA)
 rat_joint <- data.frame(
   gr_pred = rowMeans(rattle_gr),
   ls_pred = rowMeans(rattle_ls),
-  treatment_ind = "Rattle"
+  treatment_gr = "Rattle"
 )
 
 rattle_joint <- rbind(controlrat_joint, rat_joint)
 
 #plot growth rate against litter size and add ellipse
 (rattle_ellipse <- ggplot(rattle_joint, aes(x = ls_pred, y = gr_pred)) +
-    geom_point(aes(color = treatment_ind), shape = 1, alpha = 0.1) +
-    geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
-    stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1.2) +
-    scale_color_manual(values = treatment_ind_cols) +
-    #lims(y = c(-1, 1), x = c(-1, 1))+
+    geom_point(aes(color = treatment_gr), shape = 1, alpha = 0.1) +
+    geom_smooth(aes(color = treatment_gr), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = treatment_gr), level = 0.95, size = 1.2) +
+    scale_color_manual(values = treatment_gr_cols) +
     labs(subtitle = "D) Rattle Model", x = "Predicted litter size", y = "Predicted growth rate", color = "Treatment")+
     theme1)
 
@@ -212,4 +258,4 @@ rattle_joint <- rbind(controlrat_joint, rat_joint)
 ellipse_fig <- ggarrange(control_ellipse, food_ellipse, cache_ellipse, rattle_ellipse, ncol = 2, nrow = 2, align = "hv")
 
 ggsave("Output/Figures/ellipse_predictions.jpeg", ellipse_fig, width = 10, height = 7, unit = "in")
-
+ggsave("Output/Figures/ellipse_rattle_test.jpeg", Trattle_ellipse, width = 6, height = 4, unit = "in")

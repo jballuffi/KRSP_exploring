@@ -6,7 +6,7 @@ library(ggplot2)
 treatment_gr_cols <- c("Control" = "grey40", "Food add" = "firebrick1", "Rattle" = "orchid1")
 
 #colors for individual level treatment
-treatment_ind_cols <- c("Control" = "grey40", "Bucket" = "firebrick1", "Rattle" = "orchid1", "Chickadee" = "navyblue", "No Bucket" = "dodgerblue2") 
+treatment_ind_cols <- c("Control" = "grey40", "Bucket" = "firebrick1", "Rattle" = "orchid1", "Chickadee" = "gold", "No Bucket" = "dodgerblue2") 
 
 #colors for buckets
 bucket_cols <- c("1" = "firebrick1", "0" = "grey60")
