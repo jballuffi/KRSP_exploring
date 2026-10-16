@@ -216,7 +216,7 @@ dat2[, treatment_ind := factor(treatment_ind, levels = c("Control", "Chickadee",
 # make cache size data set ---------------------------------------------------
 
 #take control years with cache data
-cache <- dat2[(grid == "SU" | grid == "KL") & !is.na(cache_prev)]
+cache <- dat2[(grid == "SU" | grid == "KL") & !is.na(cache_prev) & !food == 18]
 
 #standardize cone cache globally
 cache[, cache_std := scale(cache_prev)]
@@ -240,12 +240,12 @@ cache[, cache_cat := factor(cache_cat, levels = c("small", "medium", "large"))]
 # subset data for other analyses --------------------------------------
 
 #make a control only data set
-controls <- dat2[grid == "SU" | grid == "KL"]
+controls <- dat2[(grid == "SU" | grid == "KL") & !food == 18]
 controls[, treatment_ind := factor(treatment_ind)][, treatment_gr := factor(treatment_gr)]
 
 #make food 2 data set: control and food add grids during food years
 foodyears <- dat2[food == 1, unique(year)] #get years with rattles
-food <- dat2[year %in% foodyears & (food == 1 | grid == "SU" | grid == "KL")]
+food <- dat2[year %in% foodyears & (food == 1 | grid == "SU" | grid == "KL") & !food == 18]
 food[, treatment_ind := factor(treatment_ind)][, treatment_gr := factor(treatment_gr)]
 
 #make rattle experiment data set
