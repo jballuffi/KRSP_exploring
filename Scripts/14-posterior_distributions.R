@@ -130,8 +130,8 @@ cov_draws_rattle <- rho_rattle * sig_gr_rattle * sig_ls_rattle
 
 #merge 
 PostDist <- ggarrange(PostDist_control, PostDist_food, PostDist_cache, PostDist_rattle, 
-                      ncol = 1, nrow = 4, align = "hv")
+                      ncol = 2, nrow = 2, align = "hv")
 PostDist
 
 ggsave("Output/Figures/Control_model_full_results.jpeg", combined_plot, width = 10, height = 6, unit = "in")
-ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 5, height = 10, unit = "in")
+ggsave("Output/Figures/Posterior_distributions.jpeg", PostDist, width = 6, height = 4, unit = "in")
