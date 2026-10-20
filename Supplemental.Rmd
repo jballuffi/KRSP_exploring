@@ -3,9 +3,9 @@ title: "Preliminary Results"
 author: "Juliana Balluffi-Fry"
 date: "2026-09-18"
 output:
+  word_document: default
   html_document:
     df_print: paged
-  word_document: default
   pdf_document: default
 ---
 
@@ -16,9 +16,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```{r sourcing, include=FALSE}
 #source the R folder to load any packages and functions
 lapply(dir('R', '*.R', full.names = TRUE), source)
-library(sjPlot)
-
-source("Scripts/09-summary_figures.R")
 
 #read in finalized data
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
