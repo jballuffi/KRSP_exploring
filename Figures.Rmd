@@ -10,12 +10,15 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 ```{r sourcing, include=FALSE}
 #source the R folder to load any packages and functions
 lapply(dir('R', '*.R', full.names = TRUE), source)
+library(sjPlot)
+
+source("Scripts/09-summary_figures.R")
 
 #read in finalized data
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
@@ -23,6 +26,13 @@ controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
+
+#read in models
+control_mod <- readRDS("Output/Models/control_model_litters.rds")
+food_mod <- readRDS("Output/Models/foodtreatment_model_litters.rds")
+cache_mod <- readRDS("Output/Models/cache_model_litters.rds")
+rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
+rattle_mod_test <- readRDS("Output/Models/rattle_model_litters_TEST.rds")
 
 #read in tables
 tab1 <- fread("Output/Tables/Summary of grid-treatments.csv")
@@ -34,6 +44,13 @@ tab2[, V1 := NULL]
 
 ```
 
+Results
+
+General Summary
+
+Across the entire study, squirrels experienced an average local density of `r round(mean(dat$density), 1)` ± `r round(sd(dat$density), 1)` squirrels/ha. Food supplementation increased the local density around mothers on food add grids at a rate of `r round((dat[food == 1 & year == 2017, mean(density)] - dat[food == 1 & year == 2005, mean(density)])/12, 2)` squirrel per hectare per year over the 12 years of its food experiment. Over the entire study, mothers on food supplemented grids experienced higher local densities, with an average of `r dat[food == 1, round(mean(density), 2)]` squirrels/ha, compared to those on control grids, that had on average `r dat[food == 0, round(mean(density), 2)]` squirrels/ha. Mothers on rattle treatment grids had the lowest densities at `r dat[food == 19, round(mean(density), 2)]` squirrels/ha (Figure 1A). However, there was substantial natural variation in local densities over time (Figure 2B). Pups grew at a rate of `r round(mean(dat$growthrate), 1)` ± `r round(sd(dat$growthrate), 1)` g/day, with litters from bucket middens have slightly higher average growth rates at `r dat[treatment_ind == "Bucket", round(mean(growthrate), 1)]` ± `r dat[treatment_ind == "Bucket", round(sd(growthrate), 1)]` g/day (Figure 1C). Litters had `r round(mean(dat$littersize))` pups on average, but could range anywhere from `r min(dat$littersize)` to `r max(dat$littersize)` pups (Figure 1D). Based on data from control grids, with every pup increase in litter size, litter growth rate decreased `r abs(gr_ls_slope)` g/day (Figure 2). The most common age for mothers was `r getmode(dat$mother_age)` years, and litters were born on average at `r round(mean(dat$bjulian))` ± `r round(sd(dat$bjulian))` Julian days into the year.
+
+
 Tables
 
 ```{r tab1, echo=FALSE, message=FALSE}
@@ -42,8 +59,23 @@ knitr::kable(tab1, caption = "Table 1. Sample size of juveniles, litters, and fe
 ```
 
 ```{r tab2, echo=FALSE, message=FALSE}
-# Display as a styled table
-knitr::kable(tab2, caption = "Table 2. Sample size of juveniles, litters, and female red squirrels, by year, grid, and grid-treatment from 2010 - 2022.")
+# show results for control model
+tab_model(control_mod, title = "Control Model")
+```
+
+```{r tab3, echo=FALSE, message=FALSE}
+# show results for control model
+tab_model(food_mod, title = "Food Model")
+```
+
+```{r tab4, echo=FALSE, message=FALSE}
+# show results for control model
+tab_model(cache_mod, title = "Cache Model")
+```
+
+```{r tab5, echo=FALSE, message=FALSE}
+# show results for control model
+tab_model(rattle_mod, title = "Rattle Model")
 ```
 
 Figure Captions
@@ -70,7 +102,14 @@ Figures
 
 ![Figure 5.](Output/Figures/Bayesian_separate_predictions.jpeg)
 
-Supplementary Figures
+
+Supplementary Information
+
+```{r tabS2, echo=FALSE, message=FALSE}
+# Display as a styled table
+knitr::kable(tab2, caption = "Supplementary Table 1. Sample size of juveniles, litters, and female red squirrels, by year, grid, and grid-treatment from 2010 - 2022.")
+```
+
 
 S1. Visual example of how local density was estimated using squirrel census data. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area (pi\*radius\^2)/10000.
 
