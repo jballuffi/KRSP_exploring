@@ -9,6 +9,8 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #read in finalized litter data
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
+food <- readRDS("Output/Data/food_cleaned_litters.rds")
+rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 #read in annual cone production and raw local density data
 cones_yr <- readRDS("Output/Data/tree_cone_counts_annual.rds")
