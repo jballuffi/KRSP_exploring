@@ -10,6 +10,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
+cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 #read in annual cone production and raw local density data
@@ -36,6 +37,11 @@ table_year <- dat2[year <= 2022 & year >= 2010, .(N_juveniles = sum(littersize),
                    by = .(Year = year, Grid = grid, Grid_treatment = treatment_gr)]
 
 setorder(table_year, Year)
+
+table_rattle <- rattle[, .(N_juveniles = sum(littersize),
+                         N_litters = length(unique(litter_id)),
+                         N_females = length(unique(mother_id))), 
+                       by = .(Year = year, Grid_individual = treatment_ind)]
 
 
 
@@ -175,6 +181,7 @@ gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
 #save tables
 write.csv(table_treatgrids, "Output/Tables/Summary of grid-treatments.csv")
 write.csv(table_year, "Output/Tables/Summary of experimental years.csv")
+write.csv(table_rattle, "Output/Tables/Summary of rattle experiment.csv")
 
 #save figs
 ggsave("Output/Figures/annual_summary.jpeg", annualplot, width = 11, height = 8, unit = "in")
