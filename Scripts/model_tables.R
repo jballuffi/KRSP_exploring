@@ -18,21 +18,21 @@ make_table_brms <- function(mod){
   c <- summary(mod)
   
   #get fixed effect table
-  c_fixed <- as.data.table(c$fixed, 2)
+  c_fixed <- as.data.table(round(c$fixed, 2), 2)
   
   #split up response and effect columns
   c_fixed[, c("Response", "Effect") := tstrsplit(rn, "std_", fixed = TRUE)][, rn := NULL]
   
   #get first random effect
-  c_random1 <- as.data.table(c$random$gridyear, 2)
+  c_random1 <- as.data.table(round(c$random$gridyear, 2), 2)
   c_random1[, Effect := "gridyear"][, Response := gsub("std_Intercept", "", rn)][, rn := NULL]
   
   #get second random effect
-  c_random2 <- as.data.table(c$random$mother_byear, 2)
+  c_random2 <- as.data.table(round(c$random$mother_byear, 2), 2)
   c_random2[, Effect := "mother_byear"][, Response := gsub("std_Intercept", "", rn)][, rn := NULL]
   
   #get covariance 
-  c_cov <- as.data.table(c$rescor_pars)
+  c_cov <- as.data.table(round(c$rescor_pars, 2))
   c_cov[, Response := "rescor"]
   
   #rbind all four tables
