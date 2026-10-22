@@ -25,12 +25,11 @@ cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 #read in tables
-tab1 <- fread("Output/Tables/Summary of grid-treatments.csv")
-tab1[, V1 := NULL]
-
 tab2 <- fread("Output/Tables/Summary of experimental years.csv")
 tab2[, V1 := NULL]
 
+tab3 <- fread("Output/Tables/Summary of rattle experiment.csv")
+tab3[, V1 := NULL]
 
 ```
 
@@ -39,10 +38,16 @@ tab2[, V1 := NULL]
 
 Supplementary Information
 
-```{r tabS2, echo=FALSE, message=FALSE}
+```{r tabS1, echo=FALSE, message=FALSE}
 # Display as a styled table
 knitr::kable(tab2, caption = "Supplementary Table 1. Sample size of juveniles, litters, and female red squirrels, by year, grid, and grid-treatment from 2010 - 2022.")
 ```
+
+```{r tabS2, echo=FALSE, message=FALSE}
+# Display as a styled table
+knitr::kable(tab3, caption = "Supplementary Table 2. Sample size of juveniles, litters, and female red squirrels, by year and treatment during the rattle playback experiment.")
+```
+
 
 
 S1. Visual example of how local density was estimated using squirrel census data. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area (pi\*radius\^2)/10000.

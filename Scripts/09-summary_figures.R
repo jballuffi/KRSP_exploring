@@ -41,7 +41,7 @@ setorder(table_year, Year)
 table_rattle <- rattle[, .(N_juveniles = sum(littersize),
                          N_litters = length(unique(litter_id)),
                          N_females = length(unique(mother_id))), 
-                       by = .(Year = year, Grid_individual = treatment_ind)]
+                       by = .(Year = year, Treatment = treatment_ind)]
 
 
 
