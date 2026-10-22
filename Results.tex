@@ -1,0 +1,441 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Preliminary Results},
+  pdfauthor={Juliana Balluffi-Fry},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Preliminary Results}
+\author{Juliana Balluffi-Fry}
+\date{2026-09-18}
+
+\begin{document}
+\maketitle
+
+Results
+
+General Summary
+
+Across the entire study, squirrels experienced an average local density
+of 2.3 ± 1.2 squirrels/ha. Food supplementation increased the local
+density around mothers on food add grids at a rate of 0.12 squirrel per
+hectare per year over the 12 years of its food experiment. Over the
+entire study, mothers on food supplemented grids experienced higher
+local densities, with an average of 2.59 squirrels/ha, compared to those
+on control grids, that had on average 2.15 squirrels/ha. Mothers on
+rattle treatment grids had the lowest densities at 1.61 squirrels/ha
+(Figure 1A). However, there was substantial natural variation in local
+densities over time (Figure 2B). Pups grew at a rate of 1.8 ± 0.5 g/day,
+with litters from bucket middens have slightly higher average growth
+rates at 1.8 ± 0.4 g/day (Figure 1C). Litters had 3 pups on average, but
+could range anywhere from 1 to 7 pups (Figure 1D). Based on data from
+control grids, with every pup increase in litter size, litter growth
+rate decreased 0.16 g/day (Figure 2). The most common age for mothers
+was 2 years, and litters were born on average at 116 ± 24 Julian days
+into the year.
+
+Tables
+
+\begin{longtable}[]{@{}llrrrl@{}}
+\caption{Table 1. Sample size of juveniles, litters, and female red
+squirrels and the years of those sample sizes, by grid and
+grid-treatment.}\tabularnewline
+\toprule\noalign{}
+Grid & Grid\_treatment & N\_juveniles & N\_litters & N\_females &
+Years \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Grid & Grid\_treatment & N\_juveniles & N\_litters & N\_females &
+Years \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+KL & Control & 2214 & 720 & 415 & 1989-2025 \\
+SU & Control & 1461 & 490 & 290 & 1989-2025 \\
+LL & Food add & 506 & 142 & 90 & 2006-2011 \\
+JO & Food add & 460 & 129 & 85 & 2007-2012 \\
+AG & Food add & 1387 & 436 & 257 & 2005-2017 \\
+AG & Rattle & 15 & 4 & 4 & 2010-2010 \\
+JO & Rattle & 150 & 47 & 41 & 2018-2022 \\
+BT & Control & 38 & 12 & 12 & 2010-2021 \\
+LL & Rattle & 45 & 11 & 11 & 2010-2010 \\
+BT & Rattle & 14 & 4 & 4 & 2010-2010 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}llrl@{}}
+\caption{Table 2. Control Model Results.}\tabularnewline
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GR & Intercept & 0.08 & (-0.03, 0.19) \\
+GR & density\_std & 0.00 & (-0.06, 0.06) \\
+GR & cones\_std & 0.00 & (-0.06, 0.05) \\
+GR & mother\_age\_std & -0.10 & (-0.15, -0.04) \\
+GR & bjulian\_std & -0.14 & (-0.19, -0.08) \\
+GR & mastyes & -0.03 & (-0.2, 0.14) \\
+GR & sexratio & -0.15 & (-0.32, 0.02) \\
+LS & Intercept & -0.06 & (-0.17, 0.05) \\
+LS & density\_std & -0.04 & (-0.1, 0.02) \\
+LS & cones\_std & 0.01 & (-0.05, 0.07) \\
+LS & mother\_age\_std & 0.03 & (-0.03, 0.09) \\
+LS & bjulian\_std & -0.05 & (-0.11, 0.01) \\
+LS & mastyes & 0.00 & (-0.18, 0.17) \\
+LS & sexratio & 0.10 & (-0.08, 0.28) \\
+rescor & NA & -0.34 & (-0.39, -0.29) \\
+sd(GR) & gridyear & 0.02 & (0, 0.07) \\
+sd(GR) & mother\_byear & 0.05 & (0, 0.13) \\
+sd(LS) & gridyear & 0.02 & (0, 0.07) \\
+sd(LS) & mother\_byear & 0.07 & (0, 0.17) \\
+\end{longtable}
+
+\begin{longtable}[]{@{}llrl@{}}
+\caption{Table 3. Food Model Results}\tabularnewline
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GR & Intercept & 0.06 & (-0.09, 0.21) \\
+GR & treatment\_indNoBucket & -0.12 & (-0.3, 0.05) \\
+GR & treatment\_indBucket & 0.11 & (-0.03, 0.26) \\
+GR & density\_std & -0.05 & (-0.15, 0.05) \\
+GR & cones\_std & 0.03 & (-0.04, 0.1) \\
+GR & mother\_age\_std & -0.02 & (-0.08, 0.04) \\
+GR & bjulian\_std & -0.17 & (-0.23, -0.11) \\
+GR & mastyes & 0.01 & (-0.15, 0.17) \\
+GR & sexratio & -0.19 & (-0.39, -0.01) \\
+GR & treatment\_indNoBucket:density\_std & 0.12 & (-0.03, 0.27) \\
+GR & treatment\_indBucket:density\_std & 0.02 & (-0.13, 0.16) \\
+LS & Intercept & -0.08 & (-0.23, 0.06) \\
+LS & treatment\_indNoBucket & 0.06 & (-0.11, 0.24) \\
+LS & treatment\_indBucket & 0.05 & (-0.09, 0.19) \\
+LS & density\_std & -0.05 & (-0.15, 0.05) \\
+LS & cones\_std & 0.03 & (-0.04, 0.1) \\
+LS & mother\_age\_std & 0.07 & (0.01, 0.13) \\
+LS & bjulian\_std & -0.10 & (-0.16, -0.04) \\
+LS & mastyes & -0.03 & (-0.19, 0.13) \\
+LS & sexratio & 0.16 & (-0.03, 0.35) \\
+LS & treatment\_indNoBucket:density\_std & -0.06 & (-0.22, 0.09) \\
+LS & treatment\_indBucket:density\_std & -0.08 & (-0.23, 0.06) \\
+rescor & NA & -0.30 & (-0.36, -0.25) \\
+sd(GR) & gridyear & 0.03 & (0, 0.07) \\
+sd(GR) & mother\_byear & 0.10 & (0.01, 0.22) \\
+sd(LS) & gridyear & 0.03 & (0, 0.08) \\
+sd(LS) & mother\_byear & 0.07 & (0, 0.18) \\
+\end{longtable}
+
+\begin{longtable}[]{@{}llrl@{}}
+\caption{Table 3. Cache Model Results}\tabularnewline
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GR & Intercept & 0.14 & (-0.11, 0.39) \\
+GR & cache\_catmedium & 0.02 & (-0.2, 0.25) \\
+GR & cache\_catlarge & 0.00 & (-0.26, 0.27) \\
+GR & density\_std & -0.18 & (-0.43, 0.07) \\
+GR & cones\_std & 0.00 & (-0.09, 0.09) \\
+GR & mother\_age\_std & -0.05 & (-0.16, 0.06) \\
+GR & bjulian\_std & -0.16 & (-0.26, -0.06) \\
+GR & mastyes & -0.03 & (-0.36, 0.29) \\
+GR & sexratio & -0.28 & (-0.57, 0.01) \\
+GR & cache\_catmedium:density\_std & 0.16 & (-0.12, 0.44) \\
+GR & cache\_catlarge:density\_std & 0.22 & (-0.08, 0.53) \\
+LS & Intercept & -0.16 & (-0.42, 0.1) \\
+LS & cache\_catmedium & 0.00 & (-0.23, 0.23) \\
+LS & cache\_catlarge & 0.01 & (-0.26, 0.28) \\
+LS & density\_std & 0.13 & (-0.13, 0.38) \\
+LS & cones\_std & -0.03 & (-0.12, 0.06) \\
+LS & mother\_age\_std & -0.03 & (-0.14, 0.08) \\
+LS & bjulian\_std & -0.09 & (-0.19, 0) \\
+LS & mastyes & 0.02 & (-0.31, 0.35) \\
+LS & sexratio & 0.23 & (-0.06, 0.53) \\
+LS & cache\_catmedium:density\_std & -0.05 & (-0.33, 0.24) \\
+LS & cache\_catlarge:density\_std & -0.15 & (-0.46, 0.15) \\
+rescor & NA & -0.36 & (-0.44, -0.27) \\
+sd(GR) & gridyear & 0.05 & (0, 0.15) \\
+sd(GR) & mother\_byear & 0.08 & (0, 0.24) \\
+sd(LS) & gridyear & 0.05 & (0, 0.13) \\
+sd(LS) & mother\_byear & 0.15 & (0.01, 0.34) \\
+\end{longtable}
+
+\begin{longtable}[]{@{}llrl@{}}
+\caption{Table 4. Rattle Model Results}\tabularnewline
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Response & Effect & Estimate & CI \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GR & Intercept & 0.00 & (-0.35, 0.35) \\
+GR & treatment\_grRattle & -0.09 & (-0.48, 0.3) \\
+GR & density\_std & 0.02 & (-0.21, 0.26) \\
+GR & cones\_std & -0.02 & (-0.19, 0.16) \\
+GR & bjulian\_std & 0.04 & (-0.1, 0.17) \\
+GR & mastyes & -0.09 & (-0.5, 0.31) \\
+GR & sexratio & 0.09 & (-0.35, 0.52) \\
+GR & treatment\_grRattle:density\_std & -0.07 & (-0.53, 0.38) \\
+LS & Intercept & 0.14 & (-0.2, 0.48) \\
+LS & treatment\_grRattle & -0.13 & (-0.52, 0.25) \\
+LS & density\_std & -0.08 & (-0.33, 0.16) \\
+LS & cones\_std & -0.02 & (-0.18, 0.15) \\
+LS & bjulian\_std & -0.14 & (-0.27, 0) \\
+LS & mastyes & -0.13 & (-0.53, 0.27) \\
+LS & sexratio & -0.26 & (-0.69, 0.17) \\
+LS & treatment\_grRattle:density\_std & -0.31 & (-0.76, 0.13) \\
+rescor & NA & -0.31 & (-0.42, -0.18) \\
+sd(GR) & gridyear & 0.07 & (0, 0.22) \\
+sd(GR) & mother\_byear & 0.14 & (0.01, 0.4) \\
+sd(LS) & gridyear & 0.07 & (0, 0.22) \\
+sd(LS) & mother\_byear & 0.13 & (0.01, 0.37) \\
+\end{longtable}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1324}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5147}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1324}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2206}}@{}}
+\caption{Table 5. Rattle Model Results with Chickadee
+test.}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Response
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Effect
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Estimate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CI
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Response
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Effect
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Estimate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+CI
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GR & Intercept & 0.00 & (-0.34, 0.36) \\
+GR & treatment\_indChickadee & -0.09 & (-0.94, 0.74) \\
+GR & treatment\_indRattle & -0.08 & (-0.48, 0.31) \\
+GR & density\_std & 0.05 & (-0.2, 0.3) \\
+GR & cones\_std & -0.02 & (-0.2, 0.16) \\
+GR & bjulian\_std & 0.04 & (-0.1, 0.18) \\
+GR & mastyes & -0.11 & (-0.54, 0.31) \\
+GR & sexratio & 0.08 & (-0.35, 0.52) \\
+GR & treatment\_indChickadee:density\_std & -0.27 & (-1.14, 0.58) \\
+GR & treatment\_indRattle:density\_std & -0.10 & (-0.56, 0.36) \\
+LS & Intercept & 0.14 & (-0.2, 0.49) \\
+LS & treatment\_indChickadee & -0.09 & (-0.92, 0.74) \\
+LS & treatment\_indRattle & -0.14 & (-0.54, 0.24) \\
+LS & density\_std & -0.08 & (-0.33, 0.18) \\
+LS & cones\_std & -0.01 & (-0.18, 0.16) \\
+LS & bjulian\_std & -0.14 & (-0.27, 0) \\
+LS & mastyes & -0.11 & (-0.54, 0.3) \\
+LS & sexratio & -0.26 & (-0.68, 0.17) \\
+LS & treatment\_indChickadee:density\_std & -0.07 & (-0.89, 0.77) \\
+LS & treatment\_indRattle:density\_std & -0.31 & (-0.78, 0.13) \\
+rescor & NA & -0.31 & (-0.42, -0.18) \\
+sd(GR) & gridyear & 0.08 & (0, 0.22) \\
+sd(GR) & mother\_byear & 0.14 & (0.01, 0.4) \\
+sd(LS) & gridyear & 0.08 & (0, 0.23) \\
+sd(LS) & mother\_byear & 0.14 & (0.01, 0.38) \\
+\end{longtable}
+
+Figure Captions
+
+Figure 1. Summary of the annual changes in A) squirrel densities
+(squirrels/ha) and B) spruce cone production (log cones/tree) over the
+37-long study in Kluane, Yukon. Lines representing squirrel densities
+(panel A) are colored by treatment of the study area (grey = food add,
+red = food add, fuchsia = rattle playbacks). Dashed vertical lines of
+the same colors delineate the time frames of each experiment, the food
+supplementation experiment (red) and the rattle playback experiment
+(fuchsia). Diamond points along the line representing cone production
+(panel B) indicates that the associated year was categorized as a mast
+year. Lines represent annual means and shaded areas represent the
+standard deviation.
+
+Figure 2. Raw data from control grids (n = 1198) showing the overall
+negative trade-off between litter size and litter growth rate (g/day).
+Linear relationship is shown.
+
+Figure 3. Best linear unbiased predictors from all three Bayesian
+models, food (n = 1178), cache (n = 454), and rattle (n = 238), that
+test how growth rate and litter size respond to local density. After all
+fixed effects and random effects are accounted for, this is how litter
+size and growth rate relate to one another in each scenario. Data points
+represent litters and are colored based on either A) food treatment, B)
+cache size, or C) rattle treatment. Linear relationships and 95\%
+confidence levels are represented by lines and ellipses, respectively.
+
+Figure 4. Predictions of the covariance (left column) and correlation
+(right column) between litter growth rate (GR) and litter size (LS) in
+response to local density based on three Bayesian models: Food model
+(top row), Cache model (middle row), and Rattle model (bottom row). Each
+model tested a different scenario or experiment. The Food model (n =
+1178) tested how the interaction between a mother's local density and
+her food treatment (control = grey, food add grid with a bucket = red,
+food add grid with no bucket = blue) affects the relationship between
+litter growth rate and litter size. The Cache model (n = 454) tested how
+the interaction between a mother's local density and her cache size in
+the previous autumn (small = yellow, medium = light green, large = dark
+green) affects the relationship between litter growth rate and litter
+size. The Rattle model (n = 238) tested how the interaction between a
+mother's local density and her perceived density treatment (control =
+grey, rattle playback = violet) affects the relationship between litter
+growth rate and litter size.
+
+Figure 5. Linear predictions for litter growth rate (top row) and litter
+size (bottom row), separately, in response to local density based on
+four Bayesian models: A) Control model, B) Food model, C) Cache model,
+and D) Rattle model. Each model tested a different scenario or
+experiment, with the control model (A) being the base model. B)
+Predictions from the Food model (n = 1178) tested how the interaction
+between a mother's local density and her food treatment (control = grey,
+food add grid with a bucket = red, food add grid with no bucket = blue)
+affects the relationship between litter growth rate and litter size. C)
+Predictions from the Cache model (n = 454) that tested how the
+interaction between a mother's local density and her cache size in the
+previous autumn (small = yellow, medium = light green, large = dark
+green) affects the relationship between litter growth rate and litter
+size. D) Predictions from the Rattle model (n = 238) that tested how the
+interaction between a mother's local density and her perceived density
+treatment (control = grey, rattle playback = violet) affects the
+relationship between litter growth rate and litter size.
+
+Figures
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Figure 1}]{Results_files/Output/Figures/annual_summary.jpeg}}
+\caption{Figure 1}
+\end{figure}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Figure 2}]{Results_files/Output/Figures/GR_littersize.jpeg}}
+\caption{Figure 2}
+\end{figure}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Figure 3}]{Results_files/Output/Figures/ellipse_predictions.jpeg}}
+\caption{Figure 3}
+\end{figure}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Figure 4}]{Results_files/Output/Figures/covariance_correlation_predictions.jpeg}}
+\caption{Figure 4}
+\end{figure}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Figure 5.}]{Results_files/Output/Figures/Bayesian_separate_predictions.jpeg}}
+\caption{Figure 5.}
+\end{figure}
+
+\end{document}

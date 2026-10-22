@@ -41,10 +41,15 @@ make_table_brms <- function(mod){
   setcolorder(table, c("Response", "Effect"))
   setorder(table, "Response")
   
-  return(table)
+  #replace growth rate and litter size with abreviations
+  table[, Response := gsub("growthrate", "GR", Response)]
+  table[, Response := gsub("littersize", "LS", Response)]
+  
+  table2 <- table[, .(Response, Effect, Estimate, CI = paste0("(", `l-95% CI`, ", ", `u-95% CI`, ")"))]
+  
+  return(table2)
   
 }
-
 
 
 control_table <- make_table_brms(control_mod)

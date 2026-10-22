@@ -1,28 +1,28 @@
-"","Response","Effect","Estimate","Est.Error","l-95% CI","u-95% CI","Rhat","Bulk_ESS","Tail_ESS"
-"1","growthrate","Intercept",0.14,0.13,-0.11,0.39,1,26544.26,15376.39
-"2","growthrate","cache_catmedium",0.02,0.12,-0.2,0.25,1,24700.93,14918.81
-"3","growthrate","cache_catlarge",0,0.13,-0.26,0.27,1,25647.78,15511.26
-"4","growthrate","density_std",-0.18,0.13,-0.43,0.07,1,15648.78,14510.12
-"5","growthrate","cones_std",0,0.05,-0.09,0.09,1,31422.82,14257.97
-"6","growthrate","mother_age_std",-0.05,0.06,-0.16,0.06,1,31605.04,15026.54
-"7","growthrate","bjulian_std",-0.16,0.05,-0.26,-0.06,1,28989.03,14439.17
-"8","growthrate","mastyes",-0.03,0.17,-0.36,0.29,1,30332.68,14373.02
-"9","growthrate","sexratio",-0.28,0.15,-0.57,0.01,1,31535.42,14434.74
-"10","growthrate","cache_catmedium:density_std",0.16,0.14,-0.12,0.44,1,16150.71,15235.33
-"11","growthrate","cache_catlarge:density_std",0.22,0.15,-0.08,0.53,1,16406.16,14965.27
-"12","littersize","Intercept",-0.16,0.13,-0.42,0.1,1,26613.55,13857.14
-"13","littersize","cache_catmedium",0,0.12,-0.23,0.23,1,26175.59,15203.08
-"14","littersize","cache_catlarge",0.01,0.14,-0.26,0.28,1,25752.82,15015.04
-"15","littersize","density_std",0.13,0.13,-0.13,0.38,1,18073.11,14030.36
-"16","littersize","cones_std",-0.03,0.05,-0.12,0.06,1,29364.56,14766.77
-"17","littersize","mother_age_std",-0.03,0.06,-0.14,0.08,1,30271.1,15017.17
-"18","littersize","bjulian_std",-0.09,0.05,-0.19,0,1,32785.82,14188.51
-"19","littersize","mastyes",0.02,0.17,-0.31,0.35,1,28088.57,14778.16
-"20","littersize","sexratio",0.23,0.15,-0.06,0.53,1,33379.34,14596.3
-"21","littersize","cache_catmedium:density_std",-0.05,0.14,-0.33,0.24,1,18263.62,15163.43
-"22","littersize","cache_catlarge:density_std",-0.15,0.15,-0.46,0.15,1,18692.47,14986.42
-"23","rescor",NA,-0.36,0.04,-0.44,-0.27,1,31629.34,14772.19
-"24","sd(growthrate)","gridyear",0.05,0.04,0,0.15,1,13952.63,10789.92
-"25","sd(growthrate)","mother_byear",0.08,0.06,0,0.24,1,8256.69,11420.08
-"26","sd(littersize)","gridyear",0.05,0.04,0,0.13,1,15329.94,10929.56
-"27","sd(littersize)","mother_byear",0.15,0.09,0.01,0.34,1,5411.98,8390.8
+"","Response","Effect","Estimate","CI"
+"1","GR","Intercept",0.14,"(-0.11, 0.39)"
+"2","GR","cache_catmedium",0.02,"(-0.2, 0.25)"
+"3","GR","cache_catlarge",0,"(-0.26, 0.27)"
+"4","GR","density_std",-0.18,"(-0.43, 0.07)"
+"5","GR","cones_std",0,"(-0.09, 0.09)"
+"6","GR","mother_age_std",-0.05,"(-0.16, 0.06)"
+"7","GR","bjulian_std",-0.16,"(-0.26, -0.06)"
+"8","GR","mastyes",-0.03,"(-0.36, 0.29)"
+"9","GR","sexratio",-0.28,"(-0.57, 0.01)"
+"10","GR","cache_catmedium:density_std",0.16,"(-0.12, 0.44)"
+"11","GR","cache_catlarge:density_std",0.22,"(-0.08, 0.53)"
+"12","LS","Intercept",-0.16,"(-0.42, 0.1)"
+"13","LS","cache_catmedium",0,"(-0.23, 0.23)"
+"14","LS","cache_catlarge",0.01,"(-0.26, 0.28)"
+"15","LS","density_std",0.13,"(-0.13, 0.38)"
+"16","LS","cones_std",-0.03,"(-0.12, 0.06)"
+"17","LS","mother_age_std",-0.03,"(-0.14, 0.08)"
+"18","LS","bjulian_std",-0.09,"(-0.19, 0)"
+"19","LS","mastyes",0.02,"(-0.31, 0.35)"
+"20","LS","sexratio",0.23,"(-0.06, 0.53)"
+"21","LS","cache_catmedium:density_std",-0.05,"(-0.33, 0.24)"
+"22","LS","cache_catlarge:density_std",-0.15,"(-0.46, 0.15)"
+"23","rescor",NA,-0.36,"(-0.44, -0.27)"
+"24","sd(GR)","gridyear",0.05,"(0, 0.15)"
+"25","sd(GR)","mother_byear",0.08,"(0, 0.24)"
+"26","sd(LS)","gridyear",0.05,"(0, 0.13)"
+"27","sd(LS)","mother_byear",0.15,"(0.01, 0.34)"

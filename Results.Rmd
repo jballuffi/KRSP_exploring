@@ -4,9 +4,9 @@ author: "Juliana Balluffi-Fry"
 date: "2026-09-18"
 output:
   word_document: default
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -16,7 +16,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```{r sourcing, include=FALSE}
 #source the R folder to load any packages and functions
 lapply(dir('R', '*.R', full.names = TRUE), source)
-library(sjPlot)
 
 source("Scripts/09-summary_figures.R")
 
@@ -38,6 +37,21 @@ rattle_mod_test <- readRDS("Output/Models/rattle_model_litters_TEST.rds")
 tab1 <- fread("Output/Tables/Summary of grid-treatments.csv")
 tab1[, V1 := NULL]
 
+tab2 <- fread("Output/Tables/control_model_table.csv")
+tab2[, V1 := NULL]
+
+tab3 <- fread("Output/Tables/food_model_table.csv")
+tab3[, V1 := NULL]
+
+tab4 <- fread("Output/Tables/cache_model_table.csv")
+tab4[, V1 := NULL]
+
+tab5 <- fread("Output/Tables/rattle_model_table.csv")
+tab5[, V1 := NULL]
+
+tab6 <- fread("Output/Tables/rattle_model_TEST_table.csv")
+tab6[, V1 := NULL]
+
 ```
 
 Results
@@ -58,23 +72,28 @@ knitr::kable(tab1, caption = "Table 1. Sample size of juveniles, litters, and fe
 
 ```{r tab2, echo=FALSE, message=FALSE}
 # show results for control model
-tab_model(control_mod, title = "Control Model")
+knitr::kable(tab2, caption = "Table 2. Control Model Results.")
 ```
 
 ```{r tab3, echo=FALSE, message=FALSE}
-# show results for control model
-tab_model(food_mod, title = "Food Model")
+knitr::kable(tab3, caption = "Table 3. Food Model Results")
 ```
 
 ```{r tab4, echo=FALSE, message=FALSE}
-# show results for control model
-tab_model(cache_mod, title = "Cache Model")
+knitr::kable(tab4, caption = "Table 3. Cache Model Results")
 ```
 
 ```{r tab5, echo=FALSE, message=FALSE}
-# show results for control model
-tab_model(rattle_mod, title = "Rattle Model")
+knitr::kable(tab5, caption = "Table 4. Rattle Model Results")
 ```
+
+```{r tab6, echo=FALSE, message=FALSE}
+# show results for control model
+knitr::kable(tab6, caption = "Table 5. Rattle Model Results with Chickadee test.")
+```
+
+
+
 
 Figure Captions
 

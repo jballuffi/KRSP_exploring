@@ -1,26 +1,26 @@
-"","Response","Effect","Estimate","Est.Error","l-95% CI","u-95% CI","Rhat","Bulk_ESS","Tail_ESS"
-"1","growthrate","Intercept",0,0.18,-0.34,0.36,1,20928.24,13880.27
-"2","growthrate","treatment_indChickadee",-0.09,0.43,-0.94,0.74,1,22551.12,12632.14
-"3","growthrate","treatment_indRattle",-0.08,0.2,-0.48,0.31,1,23201.41,14707.59
-"4","growthrate","density_std",0.05,0.13,-0.2,0.3,1,21721.91,14072.28
-"5","growthrate","cones_std",-0.02,0.09,-0.2,0.16,1,22496.36,14458.87
-"6","growthrate","bjulian_std",0.04,0.07,-0.1,0.18,1,28645.18,13997.42
-"7","growthrate","mastyes",-0.11,0.22,-0.54,0.31,1,19926.7,13428.5
-"8","growthrate","sexratio",0.08,0.22,-0.35,0.52,1,29263.07,14293.17
-"9","growthrate","treatment_indChickadee:density_std",-0.27,0.43,-1.14,0.58,1,22299.55,13599.18
-"10","growthrate","treatment_indRattle:density_std",-0.1,0.23,-0.56,0.36,1,22098.84,14238.8
-"11","littersize","Intercept",0.14,0.17,-0.2,0.49,1,22144.92,14984.04
-"12","littersize","treatment_indChickadee",-0.09,0.42,-0.92,0.74,1,21294.12,13612.7
-"13","littersize","treatment_indRattle",-0.14,0.2,-0.54,0.24,1,21511.39,13975.99
-"14","littersize","density_std",-0.08,0.13,-0.33,0.18,1,21097.53,14355.29
-"15","littersize","cones_std",-0.01,0.09,-0.18,0.16,1,21259.11,13702.91
-"16","littersize","bjulian_std",-0.14,0.07,-0.27,0,1,28090.36,12624.62
-"17","littersize","mastyes",-0.11,0.22,-0.54,0.3,1,19832.82,13642.49
-"18","littersize","sexratio",-0.26,0.22,-0.68,0.17,1,26103.53,14312.53
-"19","littersize","treatment_indChickadee:density_std",-0.07,0.43,-0.89,0.77,1,20743.56,13237.06
-"20","littersize","treatment_indRattle:density_std",-0.31,0.23,-0.78,0.13,1,21862.69,14027.75
-"21","rescor",NA,-0.31,0.06,-0.42,-0.18,1,25488.02,13235.33
-"22","sd(growthrate)","gridyear",0.08,0.06,0,0.22,1,12133.23,10559.85
-"23","sd(growthrate)","mother_byear",0.14,0.11,0.01,0.4,1,7218.56,9835.01
-"24","sd(littersize)","gridyear",0.08,0.06,0,0.23,1,11570.35,10705.14
-"25","sd(littersize)","mother_byear",0.14,0.1,0.01,0.38,1,7303.85,9763.47
+"","Response","Effect","Estimate","CI"
+"1","GR","Intercept",0,"(-0.34, 0.36)"
+"2","GR","treatment_indChickadee",-0.09,"(-0.94, 0.74)"
+"3","GR","treatment_indRattle",-0.08,"(-0.48, 0.31)"
+"4","GR","density_std",0.05,"(-0.2, 0.3)"
+"5","GR","cones_std",-0.02,"(-0.2, 0.16)"
+"6","GR","bjulian_std",0.04,"(-0.1, 0.18)"
+"7","GR","mastyes",-0.11,"(-0.54, 0.31)"
+"8","GR","sexratio",0.08,"(-0.35, 0.52)"
+"9","GR","treatment_indChickadee:density_std",-0.27,"(-1.14, 0.58)"
+"10","GR","treatment_indRattle:density_std",-0.1,"(-0.56, 0.36)"
+"11","LS","Intercept",0.14,"(-0.2, 0.49)"
+"12","LS","treatment_indChickadee",-0.09,"(-0.92, 0.74)"
+"13","LS","treatment_indRattle",-0.14,"(-0.54, 0.24)"
+"14","LS","density_std",-0.08,"(-0.33, 0.18)"
+"15","LS","cones_std",-0.01,"(-0.18, 0.16)"
+"16","LS","bjulian_std",-0.14,"(-0.27, 0)"
+"17","LS","mastyes",-0.11,"(-0.54, 0.3)"
+"18","LS","sexratio",-0.26,"(-0.68, 0.17)"
+"19","LS","treatment_indChickadee:density_std",-0.07,"(-0.89, 0.77)"
+"20","LS","treatment_indRattle:density_std",-0.31,"(-0.78, 0.13)"
+"21","rescor",NA,-0.31,"(-0.42, -0.18)"
+"22","sd(GR)","gridyear",0.08,"(0, 0.22)"
+"23","sd(GR)","mother_byear",0.14,"(0.01, 0.4)"
+"24","sd(LS)","gridyear",0.08,"(0, 0.23)"
+"25","sd(LS)","mother_byear",0.14,"(0.01, 0.38)"
