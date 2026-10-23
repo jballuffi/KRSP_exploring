@@ -74,6 +74,9 @@ dat[is.na(mother_byear), mother_byear := year - 1]
 #calculate mother age
 dat[, mother_age := year - mother_byear]
 
+#make mother age squared
+dat[, mother_age2 := mother_age^2]
+
 #make grid-year
 dat[, gridyear := paste0(grid, "-", year)]
 
@@ -82,7 +85,7 @@ dat[year %in% mast_years, mast := "yes"][is.na(mast), mast := "no"]
 
 
 
-# Correct issues with treatment -----------------------------------------------------
+# Correct issues with treatment (i.e., the 'food' column) -----------------------------------------------------
 
 #correct for food add based on grid and year
 dat[grid == "AG" & (year >= 2005 & year < 2010), food := 1] #AG between 2005 and 2010 was food add
@@ -170,8 +173,11 @@ dat2[, cones_std := scale(cones_prev)]
 #standardize birth date by grid year
 dat2[, bjulian_std := scale(bjulian), gridyear]
 
-#standardize mother age by grid year
+#standardize mother age globally
 dat2[, mother_age_std := scale(mother_age)]
+
+#standardize mother age squared globally
+dat2[, mother_age2_std := scale(mother_age2)]
 
 #standardize litter size by grid year
 dat2[, littersize_std := scale(littersize), gridyear]
