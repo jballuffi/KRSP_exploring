@@ -22,34 +22,40 @@ make_table_brms <- function(mod){
   
   #split up response and effect columns
   c_fixed[, c("Response", "Effect") := tstrsplit(rn, "std_", fixed = TRUE)][, rn := NULL]
+  c_fixed[, Type := "Fixed"]
   
   #get first random effect
   c_random1 <- as.data.table(round(c$random$gridyear, 2), 2)
   c_random1[, Effect := "gridyear"][, Response := gsub("std_Intercept", "", rn)][, rn := NULL]
+  c_random1[, Type := "Random"]
   
   #get second random effect
   c_random2 <- as.data.table(round(c$random$mother_byear, 2), 2)
   c_random2[, Effect := "mother_byear"][, Response := gsub("std_Intercept", "", rn)][, rn := NULL]
+  c_random2[, Type := "Random"]
   
   #get covariance 
   c_cov <- as.data.table(round(c$rescor_pars, 2))
-  c_cov[, Response := "rescor"]
+  c_cov[, Effect := "rescor"][, Response := "rescor"]
+  c_cov[, Type := "Random"]
   
   #rbind all four tables
   table <- rbind(c_fixed, c_random1, c_random2, c_cov, fill = TRUE)
   
-  setcolorder(table, c("Response", "Effect"))
-  setorder(table, "Response")
-  
-  #replace growth rate and litter size with abreviations
+  #replace growth rate and litter size with abrv. and remove _std from Effects
   table[, Response := gsub("growthrate", "GR", Response)]
   table[, Response := gsub("littersize", "LS", Response)]
+  table[, Effect := gsub("_std", "", Effect)]
   
-  table2 <- table[, .(Response, Effect, Estimate, CI = paste0("(", `l-95% CI`, ", ", `u-95% CI`, ")"))]
+  table[(`l-95% CI` > 0 & `u-95% CI` > 0) | (`l-95% CI` < 0 & `u-95% CI` < 0), Sig := "yes"]
+  table[is.na(Sig), Sig := "-"]
   
+  table2 <- table[, .(Type, Response, Effect, Estimate, CI = paste0("(", `l-95% CI`, ", ", `u-95% CI`, ")"), Sig, Rhat)]
+  setorder(table2, Response)
+
   return(table2)
-  
 }
+
 
 
 control_table <- make_table_brms(control_mod)
