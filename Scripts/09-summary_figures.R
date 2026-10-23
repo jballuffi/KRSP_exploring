@@ -43,6 +43,7 @@ table_rattle <- rattle[, .(N_juveniles = sum(littersize),
                          N_females = length(unique(mother_id))), 
                        by = .(Year = year, Treatment = treatment_ind)]
 
+setorder(table_rattle, Year)
 
 
 # get annual means -------------------------------------------------------

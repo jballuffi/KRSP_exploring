@@ -72,7 +72,7 @@ knitr::kable(tab1, caption = "Table 1. Sample size of juveniles, litters, and fe
 
 ```{r tab2, echo=FALSE, message=FALSE}
 # show results for control model
-knitr::kable(tab2, caption = "Table 2. Control Model Results.")
+knitr::kable(tab2, caption = "Table 2. Results from a bivariate-response mixed model predicting red squirrel litter size and growth rate on control study areas. All continuous variables were transformed to a mean of zero and are expressed in units of standard deviations. Random effect variances are forced to be positive, so their associated 95% credible intervals (CI) do not necessarily indicate statistical significance from zero. Effects were interpreted to be significant based on CI.")
 ```
 
 ```{r tab3, echo=FALSE, message=FALSE}

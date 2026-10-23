@@ -42,15 +42,24 @@ make_table_brms <- function(mod){
   #rbind all four tables
   table <- rbind(c_fixed, c_random1, c_random2, c_cov, fill = TRUE)
   
-  #replace growth rate and litter size with abrv. and remove _std from Effects
+  #replace characters with more concise versions
   table[, Response := gsub("growthrate", "GR", Response)]
   table[, Response := gsub("littersize", "LS", Response)]
   table[, Effect := gsub("_std", "", Effect)]
+  table[, Effect := gsub("treatment_indNoBucket", "NoBucket", Effect)]
+  table[, Effect := gsub("treatment_indBucket", "Bucket", Effect)]
+  table[, Effect := gsub("cache_catmedium", "Cache_Med", Effect)]
+  table[, Effect := gsub("cache_catlarge", "Cache_large", Effect)]
+  table[, Effect := gsub("treatment_grRattle", "Rattle", Effect)]
+  table[, Effect := gsub("treatment_indChickadee", "Chickadee", Effect)] #only for chickadee test
+  table[, Effect := gsub("treatment_indRattle", "Rattle", Effect)] #only for chickadee test
   
+  #create a significance col based on credible intervals
   table[(`l-95% CI` > 0 & `u-95% CI` > 0) | (`l-95% CI` < 0 & `u-95% CI` < 0), Sig := "yes"]
   table[is.na(Sig), Sig := "-"]
   
-  table2 <- table[, .(Type, Response, Effect, Estimate, CI = paste0("(", `l-95% CI`, ", ", `u-95% CI`, ")"), Sig, Rhat)]
+  #take cols of interest for final table, in the right order
+  table2 <- table[, .(Type, Response, Effect, Estimate, CI = paste0("(", `l-95% CI`, ", ", `u-95% CI`, ")"), Sig)]
   setorder(table2, Response)
 
   return(table2)
