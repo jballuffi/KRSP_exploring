@@ -25,14 +25,14 @@ rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 #formula for growth rate
 b_continuous <- bf(
   growthrate_std ~ density_std + cones_std
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 #formula for litter size
 b_ordinal <- bf(
   littersize_std ~ density_std + cones_std
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
@@ -54,13 +54,13 @@ summary(biv_control_model)
 
 f_continuous <- bf(
   growthrate_std ~ treatment_ind*density_std + cones_std
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 f_ordinal <- bf(
   littersize_std ~ treatment_ind*density_std + cones_std
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
@@ -83,13 +83,13 @@ summary(biv_food_model)
 
 c_continuous <- bf(
   growthrate_std ~ cache_cat*density_std + cones_std
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 c_ordinal <- bf(
   littersize_std ~ cache_cat*density_std + cones_std
-  + mother_age_std + mother_age_std^2 + bjulian_std + mast + sexratio
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
