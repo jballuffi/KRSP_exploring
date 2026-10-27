@@ -52,6 +52,13 @@ tab5[, V1 := NULL]
 tab6 <- fread("Output/Tables/rattle_model_TEST_table.csv")
 tab6[, V1 := NULL]
 
+#read in tables
+exp_tab <- fread("Output/Tables/Summary of experimental years.csv")
+exp_tab[, V1 := NULL]
+
+rat_tab <- fread("Output/Tables/Summary of rattle experiment.csv")
+rat_tab[, V1 := NULL]
+
 ```
 
 Results
@@ -59,9 +66,6 @@ Results
 General Summary
 
 Across the entire study, squirrels experienced an average local density of `r round(mean(dat$density), 1)` ± `r round(sd(dat$density), 1)` squirrels/ha. Food supplementation increased the local density around mothers on food add grids at a rate of `r round((dat[food == 1 & year == 2017, mean(density)] - dat[food == 1 & year == 2005, mean(density)])/12, 2)` squirrel per hectare per year over the 12 years of its food experiment. Over the entire study, mothers on food supplemented grids experienced higher local densities, with an average of `r dat[food == 1, round(mean(density), 2)]` squirrels/ha, compared to those on control grids, that had on average `r dat[food == 0, round(mean(density), 2)]` squirrels/ha. Mothers on rattle treatment grids had the lowest densities at `r dat[food == 19, round(mean(density), 2)]` squirrels/ha (Figure 1A). However, there was substantial natural variation in local densities over time (Figure 2B). Pups grew at a rate of `r round(mean(dat$growthrate), 1)` ± `r round(sd(dat$growthrate), 1)` g/day, with litters from bucket middens have slightly higher average growth rates at `r dat[treatment_ind == "Bucket", round(mean(growthrate), 1)]` ± `r dat[treatment_ind == "Bucket", round(sd(growthrate), 1)]` g/day (Figure 1C). Litters had `r round(mean(dat$littersize))` pups on average, but could range anywhere from `r min(dat$littersize)` to `r max(dat$littersize)` pups (Figure 1D). Based on data from control grids, with every pup increase in litter size, litter growth rate decreased `r abs(gr_ls_slope)` g/day (Figure 2). The most common age for mothers was `r getmode(dat$mother_age)` years, and litters were born on average at `r round(mean(dat$bjulian))` ± `r round(sd(dat$bjulian))` Julian days into the year.
-
-
-
 
 Tables
 
@@ -92,9 +96,6 @@ knitr::kable(tab5, caption = "Table 4. Rattle Model Results")
 knitr::kable(tab6, caption = "Table 5. Rattle Model Results with Chickadee test.")
 ```
 
-
-
-
 Figure Captions
 
 Figure 1. Summary of the annual changes in A) squirrel densities (squirrels/ha) and B) spruce cone production (log cones/tree) over the `r dat[, length(unique(year))]`-long study in Kluane, Yukon. Lines representing squirrel densities (panel A) are colored by treatment of the study area (grey = food add, red = food add, fuchsia = rattle playbacks). Dashed vertical lines of the same colors delineate the time frames of each experiment, the food supplementation experiment (red) and the rattle playback experiment (fuchsia). Diamond points along the line representing cone production (panel B) indicates that the associated year was categorized as a mast year. Lines represent annual means and shaded areas represent the standard deviation.
@@ -119,4 +120,34 @@ Figures
 
 ![Figure 5.](Output/Figures/Bayesian_separate_predictions.jpeg)
 
+Supplementary Information
 
+```{r tabS1, echo=FALSE, message=FALSE}
+# Display as a styled table
+knitr::kable(exp_tab, caption = "Supplementary Table 1. Sample size of juveniles, litters, and female red squirrels, by year, grid, and grid-treatment from 2010 - 2022.")
+```
+
+```{r tabS2, echo=FALSE, message=FALSE}
+# Display as a styled table
+knitr::kable(rat_tab, caption = "Supplementary Table 2. Sample size of juveniles, litters, and female red squirrels, by year and treatment during the rattle playback experiment.")
+```
+
+S1. Visual example of how local density was estimated using squirrel census data. All grey points represent the locations (meters) of censused squirrels on one grid during one spring, with one squirrel randomly selected in red. Density was calculated for each squirrel each spring by tallying the number of censused squirrels whose locations fell within a `r radius` m radius (red circle) of that squirrel's location divided by the area (pi\*radius\^2)/10000.
+
+S2. Summary of density and life history outcomes in response to treatments (n = `r dat[, .N]`). A) Local densities (ind/ha) of red squirrels in response to treatment at the grid level, where grids housed either food-add experiments, rattle playback experiments, or were controls. B) Litter growth rate (g/day) and C) litter size in response to treatment of the mother. Females were subject to one of five treatment types: natural conditions (Control), controls for playback experiment (Chickadee playbacks), treatments for playback experiment (Rattle playbacks), controls on food add grids (No Bucket), or treatments on food add grids (Bucket).
+
+S3. Best linear unbiased predictors from the rattle model with chickadee playback mothers tested as a separate treatment group.
+
+S4. Predictions for all fixed effects from the control model which did not include any interacting term with density. Litters used in this model were from control grids across all years, and the model did not test for any effect of cache size.
+
+S5. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
+
+![S1](Output/Figures/local_density_visual.jpeg)
+
+![S2](Output/Figures/treatment_summary.jpeg)
+
+![S3](Output/Figures/ellipse_rattle_test.jpeg)
+
+![S4](Output/Figures/Control_model_full_results.jpeg)
+
+![S5](Output/Figures/Posterior_distributions.jpeg)
