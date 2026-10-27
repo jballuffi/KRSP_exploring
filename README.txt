@@ -7,9 +7,11 @@ Working exploratory project for a study testing how a common reproductive trade-
 
 TO RUN CODE:
 
-Download and load all packages in the R/packages.R script. Some additional Bayesian packages are required in the Bayesian scripts (10 - 14). Data is mostly sourced from the Kluane Red Squirrel Project (KRSP) database. To run any code linked to the database requires access to the KRSP database.
+Download and load all packages in "R/packages.R". Some additional Bayesian packages plus Rtools are required in the Bayesian scripts. Data is mostly sourced from the Kluane Red Squirrel Project (KRSP) database. To run any code linked to the database requires access to the KRSP database.
 
-For a breakdown of the analysis steps and a map showing script associations/paths, see the 'Guide to Project.xlsx' spreadsheet. It has two sheets within it, one for steps and one or a script map.
+For a breakdown of the analysis steps and a map showing script associations/paths, see the 'Guide to Project.xlsx' spreadsheet. It has two sheets within it, one for steps done to complete all data collation and one for a script map.
+
+If everything works (packages are installed and access to the KRSP database is a-okay) code can be run using the "Master" scripts. To do this, first source "Scripts/Master_Data_Prep.R" to collate and clean all data. This runs scripts 01 - 08. Next source the 9th script, "Scripts/09-bayesian-models.R", separately to run the bayesian models. This might take a while depending on computing power. It also requires the installation of Rtools. This sometimes is tricky to trouble shoot. For both of these reasons, I did not include this script in the master scripts. The third step is to source the "Scripts/Master_Bayesian_Results.R" to create all tables and figures from bayesian models. If you'd like to create the example figure for how we calculate local density, run the 15th script, "Scripts/15-density_method_figures.R". Finally, to update methods and results, knit the markdown files.
 
 
 SYNTAX:
