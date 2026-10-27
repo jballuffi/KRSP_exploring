@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 #source the R folder to load any packages and functions
 lapply(dir('R', '*.R', full.names = TRUE), source)
 
-source("Scripts/09-summary_figures.R")
+source("Scripts/08-summary_figures.R")
 
 #read in finalized data
 dat <- readRDS("Output/Data/full_cleaned_litters.rds")
