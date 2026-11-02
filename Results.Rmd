@@ -140,7 +140,7 @@ S3. Best linear unbiased predictors from the rattle model with chickadee playbac
 
 S4. Predictions for all fixed effects from the control model which did not include any interacting term with density. Litters used in this model were from control grids across all years, and the model did not test for any effect of cache size.
 
-S5. Posterior distributions of the covariance response from the three models, food, cache, and rattle.
+S5. Posterior distributions of the covariance response from the four models, control, food, cache, and rattle.
 
 ![S1](Output/Figures/local_density_visual.jpeg)
 
@@ -150,4 +150,4 @@ S5. Posterior distributions of the covariance response from the three models, fo
 
 ![S4](Output/Figures/Control_model_full_results.jpeg)
 
-![S5](Output/Figures/Posterior_distributions.jpeg)
+![S5](Output/Figures/Posterior_distributions_treatment.jpeg)
