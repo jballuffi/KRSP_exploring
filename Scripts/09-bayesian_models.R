@@ -23,14 +23,14 @@ rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 # ANALYSIS 1: CONTROL DATA -----------------------------------
 
 #formula for growth rate
-b_continuous <- bf(
+b_GR <- bf(
   growthrate_std ~ density_std + cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 #formula for litter size
-b_ordinal <- bf(
+b_LS <- bf(
   littersize_std ~ density_std + cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
@@ -38,7 +38,7 @@ b_ordinal <- bf(
 
 #run model using brm function. chains, cores, iterations, and warm ups are pre-loaded in the 'R/bayesian_values.R'
 biv_control_model <- brm(
-  formula = b_continuous + b_ordinal, #merge both formulas
+  formula = b_GR + b_LS, #merge both formulas
   data = controls, #call data set
   chains = chain, #The more chains the longer it will take to run, bella said 4 chains is ideal
   cores = core, # Parallel processing, dependent on computer you are using
@@ -52,20 +52,20 @@ summary(biv_control_model)
 
 # ANALYSIS 2: FOOD ADD DATA -----------------------------------------------
 
-f_continuous <- bf(
+f_GR <- bf(
   growthrate_std ~ treatment_ind*density_std + cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
-f_ordinal <- bf(
+f_LS <- bf(
   littersize_std ~ treatment_ind*density_std + cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 biv_food_model <- brm(
-  formula = f_continuous + f_ordinal,
+  formula = f_GR + f_LS,
   data = food,
   chains = chain, 
   cores = core, 
@@ -81,20 +81,20 @@ summary(biv_food_model)
 
 #Data from KL/SU to assess impact of hoarded cones on co-variance.
 
-c_continuous <- bf(
+c_GR <- bf(
   growthrate_std ~ cache_cat*density_std + cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
-c_ordinal <- bf(
+c_LS <- bf(
   littersize_std ~ cache_cat*density_std + cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 biv_cache_model <- brm(
-  formula = c_continuous + c_ordinal,
+  formula = c_GR + c_LS,
   data = cache,
   chains = chain,
   cores = core,
@@ -109,20 +109,20 @@ summary(biv_cache_model)
 # Analysis 4: Rattle Analysis ---------------------------------------------
 
 #First test if there is a difference in chickadees and controls
-r_continuous <- bf(
+r_GR <- bf(
   growthrate_std ~ treatment_ind*density_std + cones_std
   + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
-r_ordinal <- bf(
+r_LS <- bf(
   littersize_std ~ treatment_ind*density_std + cones_std
   + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 biv_rattle_model <- brm(
-  formula = r_continuous + r_ordinal,
+  formula = r_GR + r_LS,
   data = rattle,
   chains = chain,
   cores = core,
@@ -136,20 +136,20 @@ summary(biv_rattle_model)
 
 #Next run model with chickadees as controls
 
-r_continuous2 <- bf(
+r_GR2 <- bf(
   growthrate_std ~ treatment_gr*density_std + cones_std
   + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
-r_ordinal2 <- bf(
+r_LS2 <- bf(
   littersize_std ~ treatment_gr*density_std + cones_std
   + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 biv_rattle_model2 <- brm(
-  formula = r_continuous2 + r_ordinal2,
+  formula = r_GR2 + r_LS2,
   data = rattle,
   chains = chain,
   cores = core,
