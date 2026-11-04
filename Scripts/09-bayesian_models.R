@@ -24,15 +24,15 @@ rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 #formula for growth rate
 b_GR <- bf(
-  growthrate_std ~ density_std + cones_std
+  growthrate_std ~ density_std*cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
 #formula for litter size
 b_LS <- bf(
-  littersize_std ~ density_std + cones_std
-  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
+  littersize_std ~ density_std*cones_std
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio1
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
