@@ -27,6 +27,10 @@ buckets <- fread("Input/fed_squirrels.csv")
 #read in extra life history data from 2010 playback experiments
 extra <- fread("Input/2010_offgrid_lifehistory.csv")
 
+#lifetime data
+lifetime <- as.data.table(tbl(con, "flastall2") %>% collect())
+lifetime <- lifetime[, .(squirrel_id, fdate = ymd(datee), f2)]
+
 
 
 # prep bucket info --------------------------------------------------------
@@ -80,6 +84,9 @@ juv2[weight1 == 0, weight1 := NA][weight2 == 0, weight2 := NA]
 #check for duplicates
 janitor::get_dupes(juv2)
 
+#merge juvenile data with lifetime fates
+juv2 <- merge(juv2, lifetime, by = "squirrel_id", all.x = TRUE)
+
 
 
 # merge juvenile and litter data, calculate litter size -----------------------------------------------------
@@ -101,7 +108,30 @@ database <- database[ln == 1]
 
 
 
-# collect data from 2010 rattle experiments ----------------------------
+# calculate annual reproductive success (ARS) -----------------------------
+
+#create new col for whether juvenile survived to be 200 days or not
+database[fdate - bdate >= 200, survived := "yes"]
+database[fdate - bdate < 200, survived := "no"]
+
+#tally up number of surviving juveniles by litter, call it ARS
+survive <- database[survived == "yes", .(ars = .N), by = .(litter_id)]
+
+#tally number of non surviving juveniles by litter
+nosurvive <- database[survived == "no", .(died = .N), by = .(litter_id)]
+
+#merge surviving and non surviving together
+ars <- merge(survive, nosurvive, by = c("litter_id"), all = TRUE)
+
+#if missing ARS, make zero, removed died
+ars[is.na(ars), ars := 0][, died := NULL]
+
+#merge ars back in with database
+database <- merge(database, ars, by = "litter_id", all.x = TRUE)
+
+
+
+# collect data from 2010 rattle experiments ---------------
 
 #take just rattles, chickadees, and first litters
 extra <- extra[food == 19 | food == 18 & ln == 1]
@@ -237,7 +267,7 @@ datlitter <- dat2[, .(growthrate = mean(growthrate),
                       weight1 = mean(weight1),
                       weight2 = mean(weight2)),
                   by = .(litter_id, year, grid, mother_id, MTaglft,
-                         food, bucket, bdate, date1, date2, littersize)]
+                         food, bucket, bdate, date1, date2, littersize, ars)]
 
 
 #merge back in with litter data set
