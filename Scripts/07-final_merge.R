@@ -185,6 +185,9 @@ dat2[, littersize_std := scale(littersize), gridyear]
 #standardize growth rate by grid year
 dat2[, growthrate_std := scale(growthrate), gridyear]
 
+#standardize ARS by grid year
+dat2[, ars_std := scale(ars), gridyear]
+
 
 
 # make density categories ---------------------------------------------------
