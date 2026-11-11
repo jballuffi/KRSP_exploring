@@ -32,11 +32,18 @@ b_GR <- bf(
 #formula for litter size
 b_LS <- bf(
   littersize_std ~ density_std*cones_std
-  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio1
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
 
-#run model using brm function. chains, cores, iterations, and warm ups are pre-loaded in the 'R/bayesian_values.R'
+#formula for ARS
+b_ARS <- bf(
+  ars_std ~ density_std*cones_std
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
+  + (1|gridyear) + (1|mother_byear),
+  family = gaussian())
+
+#run bivariate model
 biv_control_model <- brm(
   formula = b_GR + b_LS, #merge both formulas
   data = controls, #call data set
@@ -46,7 +53,19 @@ biv_control_model <- brm(
   warmup = warms #how many warm ups to help model converge
 )
 
+#run triviate model
+#chains, cores, iterations, and warmups are preloaded from R/ folder
+triv_control_model <- brm(
+  formula = b_GR + b_LS + b_ARS, #merge both formulas
+  data = controls, #call data set
+  chains = chain, #The more chains the longer it will take to run, bella said 4 chains is ideal
+  cores = core, # Parallel processing, dependent on computer you are using
+  iter = iters, #how many times are you going to sample
+  warmup = warms #how many warm ups to help model converge
+)
+
 summary(biv_control_model)
+summary(triv_control_model)
 
 
 
@@ -163,6 +182,7 @@ summary(biv_rattle_model2)
 
 
 
+saveRDS(triv_control_model, "Output/Models/control_model_litters_trivariate.rds")
 saveRDS(biv_control_model, "Output/Models/control_model_litters.rds")
 saveRDS(biv_food_model, "Output/Models/foodtreatment_model_litters.rds")
 saveRDS(biv_cache_model, "Output/Models/cache_model_litters.rds")
