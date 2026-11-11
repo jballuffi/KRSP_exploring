@@ -37,10 +37,10 @@ ggplot(mcadam)+
   geom_boxplot(aes(x = mast, y = litter_fit))
 
 ggplot(mcadam)+
-  geom_point(aes(x = std_Growt, y = litter_fit))
+  geom_point(aes(x = mean_growth, y = litter_fit))
 
 ggplot(mcadam)+
-  geom_point(aes(x = std_LS, y = litter_fit, color = mast))
+  geom_point(aes(x = ls, y = litter_fit, color = mast))
 
 
 
@@ -50,6 +50,7 @@ mod2 <- glmer(litter_fit ~ grid + mast + std_Julian + mean_growth + ls + ls2 + l
              control = glmerControl(optimizer = "bobyqa"))
 
 summary(mod2)
+
 
 
 # run model on my data ----------------------------------------------------
