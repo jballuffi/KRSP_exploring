@@ -24,11 +24,14 @@ rattle_mod <- readRDS("Output/Models/rattle_model_litters.rds")
 
 
 
-# Food model --------------------------------------------------------------
+# Control model --------------------------------------------------------------
+
+#make a categorical variable for density in the dummy data set
+controls[, density_cat := cut(density_std, breaks = 3, labels = c("low", "medium", "high"))]
 
 ep <- posterior_epred(control_mod)
 dim(ep)
-treat <- controls[!is.na(littersize_std), treatment_gr]
+treat <- controls[!is.na(littersize_std), density_cat]
 length(treat)
 
 cov_draws <- lapply(unique(treat), function(trt){
@@ -57,7 +60,7 @@ cov_draws <- do.call(rbind, cov_draws)
 (controlplot <- ggplot(cov_draws, aes(x = covariance, y = treatment, fill = treatment))+
   geom_violin(alpha = 0.5)+
   geom_boxplot(width = 0.1, outliers = FALSE)+
-  scale_fill_manual(values = treatment_ind_cols, guide = NULL)+
+  scale_fill_manual(values = density_cols, guide = NULL)+
   labs(subtitle = "Control model", y = NULL, x = "GR:LS Covariance")+
   theme1)
 
