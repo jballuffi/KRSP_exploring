@@ -10,13 +10,13 @@ controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 
 # fix my data to try and match --------------------------------------------
 
-controls <- controls[year < 2018 & year > 1988]
+controls2 <- controls[year < 2018 & year > 1988]
 
-controls[, littersize_std_2 := littersize_std^2, gridyear]
+controls2[, littersize_std_2 := littersize_std^2, gridyear]
 
-controls[, .N]
-controls[, length(unique(mother_id))]
-controls[, length(unique(year))]
+controls2[, .N]
+controls2[, length(unique(mother_id))]
+controls2[, length(unique(year))]
 
 
 
@@ -37,69 +37,72 @@ summary(mod)
 
 # run model on my data ----------------------------------------------------
 
-ggplot(controls)+
+ggplot(controls2)+
   geom_boxplot(aes(x = mast, y = ars))
 
 
 mod <- glmer(ars ~ grid + mast + bjulian_std + growthrate_std + littersize_std + littersize_std_2 + littersize_std*mast + (1|mother_id) + (1|year),
-             data = controls,
+             data = controls2,
              family = poisson(link = "log"),
              control = glmerControl(optimizer = "bobyqa"))
 
 summary(mod)
 
 
-# #connemod# #connect with database
-# con <- krsp_connect(
-#   host = "krsp.cepb5cjvqban.us-east-2.rds.amazonaws.com",
-#   dbname = "krsp",
-#   username = Sys.getenv("krsp_user"),
-#   password = Sys.getenv("krsp_password")
-# )
-# 
-# 
-# #get individual juvenile data 
-# juv <- as.data.table(tbl(con, "juvenile") %>% collect())
-# juv <- juv[, .(squirrel_id, litter_id)]
-# 
-# #get litter data
-# lit <- as.data.table(tbl(con, "litter") %>% collect())
-# lit <- lit[, .(mother_id = squirrel_id, litter_id = id, year = yr, grid, food, ln, bdate = ymd(fieldBDate))]
-# 
-# #lifetime data
-# lifetime <- as.data.table(tbl(con, "flastall2") %>% collect())
-# lifetime <- lifetime[, .(squirrel_id, sdate = ymd(dates), f1, fdate = ymd(datee), f2)]
-# 
-# 
-# 
-# # merge everything together -----------------------------------------------
-# 
-# dat <- merge(lit, juv, by = "litter_id", all.y = TRUE)
-# dat <- merge(dat, lifetime, by = "squirrel_id", all.x = TRUE)
-# 
-# #clean out unwanted data
-# dat <- dat[(grid == "SU" | grid == "KL") & ln == 1 & food == 0]
-# 
-# 
-# 
-# # calculate ARS -----------------------------------------------------------
-# 
-# #calculate known lifespan
-# dat[, lifespan := fdate - bdate]
-# 
-# #who lived to be over 200 days
-# dat[lifespan >= 200, survival := "yes"]
-# dat[lifespan < 200, survival := "no"]
-# 
-# #tally up number of surviving juveniles by mother and year
-# survive <- dat[survival == "yes", .(ars = .N), by = .(mother_id, year, litter_id)]
-# nosurvive <- dat[survival == "no", .(died = .N), by = .(mother_id, year, litter_id)]
-# 
-# ars <- merge(survive, nosurvive, by = c("mother_id", "year", "litter_id"), all = TRUE)
-# ars[is.na(ars), ars := 0][, died := NULL]
-# 
-# 
-# #save
-# saveRDS(ars, "Output/Data/ars.rds")
-# 
-#     
+
+
+
+
+# Cov of LS and GR on ARS -------------------------------------------------
+
+
+#get line predicting correlation
+corline <- lm(growthrate ~ littersize, controls)
+int <- corline$coefficients[1] #intercept
+slope <- corline$coefficients[2] #slope
+
+#plot correlation using intercept and slope
+ggplot(controls)+
+  geom_point(aes(x = littersize, y = growthrate))+
+  geom_abline(aes(intercept = int, slope = slope))
+
+#based on line, make growth rate predictions
+controls[, growthrate_pred := littersize*slope + int]
+
+#get residuals based on those predicted values and actual values
+controls[, growthrate_resid := growthrate - growthrate_pred]
+
+
+ggplot(controls)+
+  geom_point(aes(x = growthrate_resid, y = ars))
+
+
+mod2 <- glmer(ars ~ grid + mast + bjulian_std + growthrate_std*littersize_std + (1|mother_id) + (1|year),
+             data = controls,
+             family = poisson(link = "log"),
+             control = glmerControl(optimizer = "bobyqa"))
+summary(mod2)
+
+
+
+# 2. Perform PCA 
+# Always use scale. = TRUE if variables are on different units or scales
+pca_result <- prcomp(controls[, .(growthrate, littersize)], center = TRUE, scale. = TRUE)
+
+# 3. View Summary (Variance explained by PC1 and PC2)
+summary(pca_result)
+
+head(pca_result$x)
+pca_result$x
+
+
+
+
+
+
+
+
+
+
+
+
