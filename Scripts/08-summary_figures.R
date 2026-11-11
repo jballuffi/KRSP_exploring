@@ -136,7 +136,14 @@ annualplot <- ggarrange(density_year, cones_year, ncol = 1, nrow = 2, align = "h
     labs(x = "Mother Treatment", y = "Litter size", subtitle = "C)")+
     theme1)
 
-treatmentplot <- ggarrange(density_treatment, gr_treatment, ls_treatment, nrow = 3, ncol = 1, align = "h")
+#litter size by treatments
+(ars_treatment <- ggplot(dat)+
+    geom_jitter(aes(x = treatment_ind, y = ars), shape = 1, color = "grey40", width = .25, alpha = .15)+
+    geom_violin(aes(x = treatment_ind, y = ars), fill = "grey50", alpha = 0.4)+
+    labs(x = "Mother Treatment", y = "Annual reproductive success", subtitle = "D)")+
+    theme1)
+
+treatmentplot <- ggarrange(density_treatment, gr_treatment, ls_treatment, ars_treatment, nrow = 2, ncol = 2, align = "h")
 
 
 
@@ -186,7 +193,7 @@ write.csv(table_rattle, "Output/Tables/Summary of rattle experiment.csv")
 
 #save figs
 ggsave("Output/Figures/annual_summary.jpeg", annualplot, width = 11, height = 8, unit = "in")
-ggsave("Output/Figures/treatment_summary.jpeg", treatmentplot, width = 4, height = 10)
+ggsave("Output/Figures/treatment_summary.jpeg", treatmentplot, width = 10, height = 9)
 ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 5, height = 5, unit = "in")
 ggsave("Output/Figures/GR_birthmonth.jpeg", bd, width = 6, height = 4, unit = "in")
 
