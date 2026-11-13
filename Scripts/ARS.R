@@ -5,6 +5,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 #read in my data and McAdam's data
 mcadam <- fread("Litter_data_mcadam2019.csv")
 controls <- readRDS("Output/Data/control_cleaned_litters.rds")
+dat <- readRDS("Output/Data/full_cleaned_litters.rds")
 
 
 
