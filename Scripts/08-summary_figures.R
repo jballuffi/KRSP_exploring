@@ -150,15 +150,15 @@ treatmentplot <- ggarrange(density_treatment, gr_treatment, ls_treatment, ars_tr
 # Growth rate in response to litter size -------------------------------------------------
 
 #linear model for GR ~ LS from control data set
-gr_ls_mod <- lm(growthrate ~ littersize, controls)
+gr_ls_mod <- lm(growthrate_std ~ littersize_std, controls)
 gr_ls_slope <- round(gr_ls_mod$coefficients[2], 2) #this is for the results markdown
 
 #get predictions from the linear model
-gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize")))
+gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize_std")))
 
 #plot control data and linear model
 (ls <- ggplot()+
-    geom_point(aes(x = littersize, y = growthrate), shape = 1, color = "grey40", alpha = 0.3, data = controls)+
+    geom_point(aes(x = littersize_std, y = growthrate_std), shape = 1, color = "grey40", alpha = 0.3, data = controls)+
     geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_ls_pred)+
     geom_line(aes(x = x, y = predicted), linewidth = .9, data = gr_ls_pred)+
     labs(x = "Litter size", y = "Growth rate (g/day)")+
