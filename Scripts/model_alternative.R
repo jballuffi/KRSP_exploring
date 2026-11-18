@@ -15,6 +15,58 @@ rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 
 
+# control density models ----------------------------------------------------------
+
+#formula for growth rate
+d_GR <- bf(
+  growthrate_std ~ cones_std
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
+  + (1|gridyear) + (1|mother_byear),
+  family = gaussian())
+
+#formula for litter size
+d_LS <- bf(
+  littersize_std ~ cones_std
+  + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
+  + (1|gridyear) + (1|mother_byear),
+  family = gaussian())
+
+#create a different model for each treatment
+density_low_model <- brm(
+  formula = d_GR + d_LS,
+  data = controls[density_cat == "low"],
+  chains = chain, 
+  cores = core, 
+  iter = iters, 
+  warmup = warms 
+)
+
+density_medium_model <- brm(
+  formula = d_GR + d_LS,
+  data = controls[density_cat == "medium"],
+  chains = chain, 
+  cores = core, 
+  iter = iters, 
+  warmup = warms 
+)
+
+density_high_model <- brm(
+  formula = d_GR + d_LS,
+  data = controls[density_cat == "high"],
+  chains = chain, 
+  cores = core, 
+  iter = iters, 
+  warmup = warms 
+)
+
+summary(density_low_model)
+summary(density_medium_model)
+summary(density_high_model)
+
+
+
+# Food models -------------------------------------------------------------
+
 #write out model formulas
 f_GR <- bf(
   growthrate_std ~ density_std + cones_std
@@ -156,7 +208,7 @@ summary(rattle_rattle_model)
 
 # save alternative models in separate folder ------------------------------
 
-saveRDS(density_low_mode, "Output/Models/alternative_models/density_low.rds")
+saveRDS(density_low_model, "Output/Models/alternative_models/density_low.rds")
 saveRDS(density_medium_model, "Output/Models/alternative_models/density_medium.rds")
 saveRDS(density_high_model, "Output/Models/alternative_models/density_high.rds")
 
