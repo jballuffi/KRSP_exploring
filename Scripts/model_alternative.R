@@ -7,13 +7,8 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 library(brms)
 library(tidybayes)
 
-# library(cmdstanr)
-# check_cmdstan_toolchain()
-# install_cmdstan(cores = 2)
-# set_cmdstan_path(PATH_TO_CMDSTAN)
-
-
 #read in finalized data
+controls <- readRDS("Output/Data/control_cleaned_litters.rds")
 food <- readRDS("Output/Data/food_cleaned_litters.rds")
 cache <- readRDS("Output/Data/cache_cleaned_litters.rds")
 rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
@@ -32,7 +27,6 @@ f_LS <- bf(
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
   + (1|gridyear) + (1|mother_byear),
   family = gaussian())
-
 
 #create a different model for each treatment
 food_control_model <- brm(
@@ -71,6 +65,7 @@ summary(food_nobucket_model)
 
 # cache models ------------------------------------------------------------
 
+#write out model formulas
 c_GR <- bf(
   growthrate_std ~ density_std + cones_std
   + mother_age_std + mother_age2_std + bjulian_std + mast + sexratio
@@ -129,35 +124,41 @@ r_LS <- bf(
 
 rattle_rattle_model <- brm(
   formula = r_GR + r_LS,
-  data = rattle[treatment_ind == "Rattle"],
+  data = rattle[treatment_gr == "Rattle"],
   chains = chain,
   cores = core,
   iter = iters,
   warmup = warms
 )
-
 
 rattle_control_model <- brm(
   formula = r_GR + r_LS,
-  data = rattle[treatment_ind == "Control"],
+  data = rattle[treatment_gr == "Control"],
   chains = chain,
   cores = core,
   iter = iters,
   warmup = warms
 )
 
-rattle_chickadee_model <- brm(
-  formula = r_GR + r_LS,
-  data = rattle[treatment_ind == "Chickadee"],
-  chains = chain,
-  cores = core,
-  iter = iters,
-  warmup = warms
-)
+# rattle_chickadee_model <- brm(
+#   formula = r_GR + r_LS,
+#   data = rattle[treatment_ind == "Chickadee"],
+#   chains = chain,
+#   cores = core,
+#   iter = iters,
+#   warmup = warms
+# )
+
+summary(rattle_control_model)
+summary(rattle_rattle_model)
 
 
 
+# save alternative models in separate folder ------------------------------
 
+saveRDS(density_low_mode, "Output/Models/alternative_models/density_low.rds")
+saveRDS(density_medium_model, "Output/Models/alternative_models/density_medium.rds")
+saveRDS(density_high_model, "Output/Models/alternative_models/density_high.rds")
 
 saveRDS(food_control_model, "Output/Models/alternative_models/food_control.rds")
 saveRDS(food_bucket_model, "Output/Models/alternative_models/food_bucket.rds")
@@ -169,7 +170,7 @@ saveRDS(cache_large_model, "Output/Models/alternative_models/cache_large.rds")
 
 saveRDS(rattle_rattle_model, "Output/Models/alternative_models/rattle_rattle.rds")
 saveRDS(rattle_control_model, "Output/Models/alternative_models/rattle_control.rds")
-saveRDS(rattle_chickadee_model, "Output/Models/alternative_models/rattle_chickadee.rds")
+#saveRDS(rattle_chickadee_model, "Output/Models/alternative_models/rattle_chickadee.rds")
 
 
 
