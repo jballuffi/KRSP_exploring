@@ -11,24 +11,46 @@ rattle <- readRDS("Output/Data/rattle_cleaned_litters.rds")
 
 #square litter size
 controls[, littersize2 := littersize^2]
+controls[, littersize_int := as.factor(littersize)]
+
+
+#alternative model where the response is the rate
+# model <- glmer(
+#   cbind(ars, littersize - ars) ~ grid + bjulian_std + growthrate + littersize + mast + (1|year),
+#   family = binomial(link = "logit"),
+#   data = controls
+# )
 
 
 
-# Exploring ARS in non-mast years -------------------------------------------------
+# Exploring ARS in controls for different conditions, mast vs. non-mast and low density vs. high density -------------------------------------------------
 
-mod_mast <- glmer(ars ~ grid + bjulian_std + growthrate*littersize + mast + littersize2 + (1|year),
+#change mast year
+controls[mast == "yes", mast := "mast"]
+controls[mast == "no", mast := "non-mast"]
+
+med_dens <- median(controls$density)
+
+#create binary category for density
+controls[density > med_dens, density_bin := "high"]
+controls[density <= med_dens, density_bin := "low"]
+controls[, .N, density_bin]
+
+#create a mast-dens category
+controls[, mast_dens := paste0(mast, " ", density_bin)]
+controls[, .N, mast_dens]
+
+mod <- glmer(ars ~ grid + bjulian_std + growthrate + offset(log(littersize))*mast_dens +  (1|year),
                      data = controls,
                      family = poisson(link = "log"),
                      control = glmerControl(optimizer = "bobyqa"))
 
-summary(mod_mast)
+summary(mod)
 
-mast_pred <- as.data.table(ggpredict(mod_mast, terms = c("growthrate", "littersize", "mast")))
-setorder(mast_pred, group, x)
+pred <- as.data.table(ggpredict(mod, terms = c("growthrate", "littersize", "mast_dens")))
+setorder(pred, group, x)
 
-
-ggplot(mast_pred)+
-  #geom_point(aes(x = growthrate, y = ars, color = littersize_int), alpha = 0.2, controls)+
+ggplot(pred)+
   geom_ribbon(aes(x = x, ymin = predicted - std.error, ymax = predicted + std.error, fill = group), alpha = 0.2)+
   geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
   labs(x = "Growth rate (g/day)", y = "ARS", color = "Litter size", fill = "Litter size")+
@@ -39,66 +61,45 @@ ggplot(mast_pred)+
 
 
 
+# exploring ARS in different food add conditions --------------------------
 
-mod_nonmast <- glmer(ars ~ grid + bjulian_std + growthrate + littersize + (1|year),
-             data = controls[mast == "no"],
+mod_food <- glmer(ars ~ grid + bjulian_std + growthrate + offset(log(littersize))*treatment_ind + (1|year),
+             data = food,
              family = poisson(link = "log"),
              control = glmerControl(optimizer = "bobyqa"))
 
-nonmast_pred <- as.data.table(ggpredict(mod_nonmast, terms = c("growthrate", "littersize")))
+anova(mod_food)
 
-controls[, littersize_int := as.factor(littersize)]
+pred_food <- as.data.table(ggpredict(mod_food, terms = c("growthrate", "littersize", "treatment_ind")))
 
-nonmast <- ggplot()+
-  geom_point(aes(x = growthrate, y = ars, color = littersize_int), alpha = 0.2, controls[mast == "no"])+
-  geom_line(aes(x = x, y = predicted, color = group), linewidth = 1, nonmast_pred)+
-  labs(subtitle = "Non-mast years", x = "Growth rate (g/day)", y = "ARS", color = "Litter size")+
+ggplot(pred_food)+
+  geom_ribbon(aes(x = x, ymin = predicted - std.error, ymax = predicted + std.error, fill = group), alpha = 0.2)+
+  geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+  labs(x = "Growth rate (g/day)", y = "ARS", color = "Litter size", fill = "Litter size")+
+  facet_wrap(~facet, scales = "free")+
   theme1
 
 
 
 
-####
 
-mod_mast <- glmer(ars ~ grid + bjulian_std + growthrate + littersize + (1|year),
-                     data = controls[mast == "yes"],
-                     family = poisson(link = "log"),
-                     control = glmerControl(optimizer = "bobyqa"))
+# exploring ARS and cache size --------------------------------------------
 
-summary(mod_mast)
+mod_cache <- glmer(ars ~ grid + bjulian_std + growthrate + offset(log(littersize))*cache_cat + (1|year),
+                  data = cache,
+                  family = poisson(link = "log"),
+                  control = glmerControl(optimizer = "bobyqa"))
 
-mast_pred <- as.data.table(ggpredict(mod_mast, terms = c("growthrate", "littersize")))
+anova(mod_cache)
 
+pred_cache <- as.data.table(ggpredict(mod_cache, terms = c("growthrate", "littersize", "cache_cat")))
 
-mast <- ggplot()+
-  geom_point(aes(x = growthrate, y = ars, color = littersize_int), alpha = 0.2, controls[mast == "yes"])+
-  geom_line(aes(x = x, y = predicted, color = group), linewidth = 1, mast_pred)+
-  labs(subtitle = "Mast years", x = "Growth rate (g/day)", y = "ARS", color = "Litter size")+
+ggplot(pred_cache)+
+  geom_ribbon(aes(x = x, ymin = predicted - std.error, ymax = predicted + std.error, fill = group), alpha = 0.2)+
+  geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
+  labs(x = "Growth rate (g/day)", y = "ARS", color = "Litter size", fill = "Litter size")+
+  facet_wrap(~facet, scales = "free")+
   theme1
-
-
-ars_plot <- ggarrange(nonmast, mast)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ggsave("Output/Figures/ars_by_mastyear.jpeg", ars_plot, width = 8, height = 7, unit = "in")
-
-
-
 
 
 
