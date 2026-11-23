@@ -40,7 +40,7 @@ controls[, .N, density_bin]
 controls[, mast_dens := paste0(mast, " + ", density_bin)]
 controls[, .N, mast_dens]
 
-mod <- glmer(ars ~ grid + bjulian_std + growthrate + offset(log(littersize))*mast_dens +  (1|year),
+mod <- glmer(ars ~ grid + bjulian_std + offset(log(littersize))*growthrate*mast_dens +  (1|year),
                      data = controls,
                      family = poisson(link = "log"),
                      control = glmerControl(optimizer = "bobyqa"))
@@ -54,6 +54,7 @@ ggplot(pred)+
   geom_ribbon(aes(x = x, ymin = predicted - std.error, ymax = predicted + std.error, fill = group), alpha = 0.2)+
   geom_line(aes(x = x, y = predicted, color = group), linewidth = 1)+
   labs(x = "Growth rate (g/day)", y = "ARS", color = "Litter size", fill = "Litter size")+
+  ylim(0, 6)+
   facet_wrap(~facet, scales = "free")+
   theme1
 
@@ -63,7 +64,7 @@ ggplot(pred)+
 
 # exploring ARS in different food add conditions --------------------------
 
-mod_food <- glmer(ars ~ grid + bjulian_std + growthrate + offset(log(littersize))*treatment_ind + (1|year),
+mod_food <- glmer(ars ~ grid + bjulian_std + offset(log(littersize))*treatment_ind*growthrate + (1|year),
              data = food,
              family = poisson(link = "log"),
              control = glmerControl(optimizer = "bobyqa"))
@@ -85,7 +86,7 @@ ggplot(pred_food)+
 
 # exploring ARS and cache size --------------------------------------------
 
-mod_cache <- glmer(ars ~ grid + bjulian_std + growthrate + offset(log(littersize))*cache_cat + (1|year),
+mod_cache <- glmer(ars ~ grid + bjulian_std + offset(log(littersize))*cache_cat*growthrate + (1|year),
                   data = cache,
                   family = poisson(link = "log"),
                   control = glmerControl(optimizer = "bobyqa"))
