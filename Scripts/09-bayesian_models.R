@@ -45,7 +45,7 @@ b_ARS <- bf(
 
 #run bivariate model
 biv_control_model <- brm(
-  formula = b_GR + b_LS, #merge both formulas
+  formula = b_GR + b_LS + set_rescor(TRUE), #merge both formulas
   data = controls, #call data set
   chains = chain, #The more chains the longer it will take to run, bella said 4 chains is ideal
   cores = core, # Parallel processing, dependent on computer you are using
@@ -84,7 +84,7 @@ f_LS <- bf(
   family = gaussian())
 
 biv_food_model <- brm(
-  formula = f_GR + f_LS,
+  formula = f_GR + f_LS + set_rescor(TRUE),
   data = food,
   chains = chain, 
   cores = core, 
@@ -93,7 +93,7 @@ biv_food_model <- brm(
 )
 
 summary(biv_food_model)
-
+get_variables(as_draws_df(food_mod))
 
 
 # ANALYSIS 3: CONE CACHE DATA --------------------------------------------------------------
@@ -113,7 +113,7 @@ c_LS <- bf(
   family = gaussian())
 
 biv_cache_model <- brm(
-  formula = c_GR + c_LS,
+  formula = c_GR + c_LS + set_rescor(TRUE),
   data = cache,
   chains = chain,
   cores = core,
@@ -141,7 +141,7 @@ r_LS <- bf(
   family = gaussian())
 
 biv_rattle_model <- brm(
-  formula = r_GR + r_LS,
+  formula = r_GR + r_LS + set_rescor(TRUE),
   data = rattle,
   chains = chain,
   cores = core,

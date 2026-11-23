@@ -85,6 +85,32 @@ cov_draws_food <- rho_food * sig_gr_food * sig_ls_food
     labs(subtitle = "Food Model", x = NULL)
 )
 
+# Calculate treatment-specific posterior means for growth rate
+treat_draws <- data.frame(
+  Control  = draws_food$b_growthratestd_Intercept,
+  NoBucket = draws_food$b_growthratestd_Intercept +
+    draws_food$b_growthratestd_treatment_indNoBucket,
+  Bucket   = draws_food$b_growthratestd_Intercept +
+    draws_food$b_growthratestd_treatment_indBucket
+)
+
+# Plot posterior distributions
+PostDist_food <- mcmc_areas(
+  treat_draws,
+  pars = c("Control", "NoBucket", "Bucket"),
+  prob = 0.95
+) +
+  labs(
+    subtitle = "Growth Rate by Treatment",
+    x = "Standardized Growth Rate"
+  )
+
+
+
+
+
+
+
 
 # CACHE MODEL -------------------------------------------------------------
 
