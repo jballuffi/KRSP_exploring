@@ -32,12 +32,12 @@ controls[mast == "no", mast := "non-mast"]
 med_dens <- median(controls$density)
 
 #create binary category for density
-controls[density > med_dens, density_bin := "high"]
-controls[density <= med_dens, density_bin := "low"]
+controls[density > med_dens, density_bin := "high density"]
+controls[density <= med_dens, density_bin := "low density"]
 controls[, .N, density_bin]
 
 #create a mast-dens category
-controls[, mast_dens := paste0(mast, " ", density_bin)]
+controls[, mast_dens := paste0(mast, " + ", density_bin)]
 controls[, .N, mast_dens]
 
 mod <- glmer(ars ~ grid + bjulian_std + growthrate + offset(log(littersize))*mast_dens +  (1|year),
