@@ -72,13 +72,10 @@ cov_draws_control <- rho_control * sig_gr_control * sig_ls_control
 #extract draws
 draws_food <- as_draws_df(food_mod)
 
-#get residual SDs
-sig_gr_food <- draws_food$sigma_growthratestd
-sig_ls_food <- draws_food$sigma_littersizestd
-rho_food  <- draws_food$rescor__growthratestd__littersizestd
-
 #Convert the correlation and standard deviations into the covariance metric for each posterior draw:
-cov_draws_food <- rho_food * sig_gr_food * sig_ls_food
+cov_draws_food <- draws_food$rescor__growthratestd__littersizestd * 
+  draws_food$sigma_growthratestd * 
+  draws_food$sigma_littersizestd
 
 #plot using Using bayesplot
 (PostDist_food <- mcmc_areas(data.frame(covariance = cov_draws_food), pars = "covariance", prob = 0.95) +
@@ -88,10 +85,8 @@ cov_draws_food <- rho_food * sig_gr_food * sig_ls_food
 # Calculate treatment-specific posterior means for growth rate
 treat_draws <- data.frame(
   Control  = draws_food$b_growthratestd_Intercept,
-  NoBucket = draws_food$b_growthratestd_Intercept +
-    draws_food$b_growthratestd_treatment_indNoBucket,
-  Bucket   = draws_food$b_growthratestd_Intercept +
-    draws_food$b_growthratestd_treatment_indBucket
+  NoBucket = draws_food$b_growthratestd_Intercept + draws_food$b_growthratestd_treatment_indNoBucket,
+  Bucket   = draws_food$b_growthratestd_Intercept + draws_food$b_growthratestd_treatment_indBucket
 )
 
 # Plot posterior distributions
