@@ -93,7 +93,7 @@ biv_food_model <- brm(
 )
 
 summary(biv_food_model)
-get_variables(as_draws_df(food_mod))
+variables(biv_food_model)
 
 
 # ANALYSIS 3: CONE CACHE DATA --------------------------------------------------------------
