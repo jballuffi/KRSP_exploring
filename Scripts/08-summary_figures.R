@@ -46,6 +46,7 @@ table_rattle <- rattle[, .(N_juveniles = sum(littersize),
 setorder(table_rattle, Year)
 
 
+
 # get annual means -------------------------------------------------------
 
 #first, create year sequence, repeated three times
@@ -147,40 +148,44 @@ treatmentplot <- ggarrange(density_treatment, gr_treatment, ls_treatment, ars_tr
 
 
 
-# Growth rate in response to litter size -------------------------------------------------
+# Ellipses showing observed growth rate and litter size -------------------------------------------------
 
-#linear model for GR ~ LS from control data set
-gr_ls_mod <- lm(growthrate_std ~ littersize_std, controls)
-gr_ls_slope <- round(gr_ls_mod$coefficients[2], 2) #this is for the results markdown
-
-#get predictions from the linear model
-gr_ls_pred <- as.data.table(ggpredict(gr_ls_mod, terms = c("littersize_std")))
-
-#plot control data and linear model
-(ls <- ggplot()+
-    geom_point(aes(x = littersize_std, y = growthrate_std), shape = 1, color = "grey40", alpha = 0.3, data = controls)+
-    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_ls_pred)+
-    geom_line(aes(x = x, y = predicted), linewidth = .9, data = gr_ls_pred)+
-    labs(x = "Litter size", y = "Growth rate (g/day)")+
+(control_ellipse <- ggplot(controls, aes(x = littersize_std, y = growthrate_std)) +
+    geom_point(aes(color = density_cat), shape = 1, alpha = 0.7) +
+    geom_smooth(aes(color = density_cat), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = density_cat), level = 0.95, size = 1) +
+    scale_color_manual(values = density_cols) +
+    labs(subtitle = "A) Controls", x = "Observed litter size", y = "Observed growth rate", color = "Density") +
     theme1)
 
-
-
-# Growth rate in response to birth date -----------------------------------
-
-#linear model for GR ~ Birthdate from control data set
-gr_bd_mod <- lm(growthrate ~ bjulian, controls)
-
-#get predictions from the linear model
-gr_bd_pred <- as.data.table(ggpredict(gr_bd_mod, terms = c("bjulian")))
-
-#plot control data and linear model
-(bd <- ggplot()+
-    geom_point(aes(x = bjulian, y = growthrate), shape = 1, color = "grey40", alpha = 0.3,  data = controls)+
-    geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), alpha = 0.2, data = gr_bd_pred)+
-    geom_line(aes(x = x, y = predicted), linewidth = .9, data = gr_bd_pred)+
-    labs(x = "Birthday (Julian day)", y = "Growth rate (g/day)")+
+#plot growth rate against litter size and add ellipse
+(food_ellipse <- ggplot(food, aes(x = littersize_std, y = growthrate_std)) +
+    geom_point(aes(color = treatment_ind), shape = 1, alpha = 0.7) +
+    geom_smooth(aes(color = treatment_ind), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = treatment_ind), level = 0.95, size = 1) +
+    scale_color_manual(values = treatment_ind_cols) +
+    labs(subtitle = "B) Food experiment", x = "Observed litter size", y = "Observed growth rate", color = "Treatment") +
     theme1)
+
+#plot growth rate against litter size and add ellipse
+(cache_ellipse <- ggplot(cache, aes(x = littersize_std, y = growthrate_std)) +
+    geom_point(aes(color = cache_cat), shape = 1, alpha = 0.7) +
+    geom_smooth(aes(color = cache_cat), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = cache_cat), level = 0.95, size = 1) +
+    scale_color_manual(values = cache_cols) +
+    labs(subtitle = "C) Cache size", x = "Observed litter size", y = "Observed growth rate", color = "Cache size")+
+    theme1)
+
+#plot growth rate against litter size and add ellipse
+(rattle_ellipse <- ggplot(rattle, aes(x = littersize_std, y = growthrate_std)) +
+    geom_point(aes(color = treatment_gr), shape = 1, alpha = 0.7) +
+    geom_smooth(aes(color = treatment_gr), method = "lm", fill = NA)+
+    stat_ellipse(aes(color = treatment_gr), level = 0.95, size = 1) +
+    scale_color_manual(values = treatment_gr_cols) +
+    labs(subtitle = "D) Playback Experiment", x = "Observed litter size", y = "Observed growth rate", color = "Treatment")+
+    theme1)
+
+ellipseplot <- ggarrange(control_ellipse, food_ellipse, cache_ellipse, rattle_ellipse, ncol = 2, nrow = 2, align = "hv")
 
 
 
@@ -194,6 +199,6 @@ write.csv(table_rattle, "Output/Tables/Summary of rattle experiment.csv")
 #save figs
 ggsave("Output/Figures/annual_summary.jpeg", annualplot, width = 11, height = 8, unit = "in")
 ggsave("Output/Figures/treatment_summary.jpeg", treatmentplot, width = 10, height = 9)
-ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 5, height = 5, unit = "in")
-ggsave("Output/Figures/GR_birthmonth.jpeg", bd, width = 6, height = 4, unit = "in")
+#ggsave("Output/Figures/GR_littersize.jpeg", ls, width = 5, height = 5, unit = "in")
+ggsave("Output/Figures/ellipse_observed.jpeg", ellipseplot, width = 10, height = 6, unit = "in")
 
